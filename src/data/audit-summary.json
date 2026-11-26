@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-11-26",
+  "annotationCount": 144,
+  "knowledgeCount": 20,
+  "jarsScanned": 115,
+  "indexAnnotations": 1109,
+  "docsLinks": 284,
+  "uniqueDocs": 215,
+  "linksOk": 215,
+  "autoChecks": null,
+  "manualSample": 0.4,
+  "auditErrors": 0,
+  "auditWarnings": 0,
+  "fixedIssues": 23,
+  "verdict": "可发布：自动审计 0 错误 / 0 存疑，人工抽查 45.1%（74/164），215/215 官方链接 HTTP 200"
+}

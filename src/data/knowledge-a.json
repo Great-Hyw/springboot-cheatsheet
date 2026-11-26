@@ -1,0 +1,262 @@
+{
+  "generatedBy": "knowledge-a",
+  "items": [
+    {
+      "id": "ioc-and-di",
+      "title": "IoC 和 DI：到底谁在创建对象？",
+      "category": "principle",
+      "level": "入门",
+      "readingMinutes": 3,
+      "summary": "用点外卖讲清控制反转与依赖注入：谁创建对象、谁把依赖递给你，以及这样做的好处。",
+      "tags": [
+        "IoC",
+        "依赖注入",
+        "Spring 容器",
+        "Bean"
+      ],
+      "content": "## 一句话结论\n\nIoC（Inversion of Control，控制反转）说的是：对象不再自己 new 依赖，而是把「我需要什么」声明出来，由 Spring 容器在启动时创建好对象、再递给你。DI（Dependency Injection，依赖注入）是落实 IoC 的具体手段——容器把依赖注入到对象里。一句话：创建对象的控制权，从你手里反转到了容器手里。\n\n## 用点外卖打个比方\n\n自己做饭：买菜、洗菜、开火、装盘全自己来，饭是吃上了，但人被绑在厨房里。点外卖：你只写「一份牛肉面」，平台负责找店、下单、配送，你拿到手就吃。\n\nIoC 就是这个「平台」。类只在构造器或字段上声明「我需要一个 UserRepository」，Spring 负责把它创建出来并塞进去。反过来看，不用 IoC 的写法有两种：自己 new（`new JdbcUserRepository()`），或者用「服务定位器」——主动去容器里按名字要一个 Bean（比如实现 ApplicationContextAware 后调 getBean）。这两种写法都把「找依赖」的细节留在了业务类里，换实现、写单测都得跟着改。\n\n好处很实在：\n\n- 换实现不用改调用方：把 JDBC 实现换成 MyBatis 实现，UserService 的代码不动；\n- 创建和配置统一管：单例、作用域、生命周期都交给容器；\n- 测试更好写：单测时直接 new UserService(mockRepository)，不用启动整个容器。\n\n## Spring 里具体长什么样\n\n@Repository 和 @Service 都是 @Component 的特化，作用是把类标记成 Bean（Bean 就是「交给 Spring 管理的 Java 对象」）。启动时 @ComponentScan 扫到它们并注册，容器再按构造器参数把依赖装配进去。\n\n```java\nimport org.springframework.stereotype.Repository;\nimport org.springframework.stereotype.Service;\n\n@Repository\npublic class JdbcUserRepository implements UserRepository {\n    @Override\n    public String findName(long id) {\n        return \"user-\" + id; // 示例值，真实项目里查数据库\n    }\n}\n\n@Service\npublic class UserService {\n    private final UserRepository userRepository;\n\n    // 只有一个构造器时，Spring 4.3+ 会自动注入，不必写 @Autowired\n    public UserService(UserRepository userRepository) {\n        this.userRepository = userRepository;\n    }\n\n    public String hello(long id) {\n        return \"hello \" + userRepository.findName(id);\n    }\n}\n```\n\n注意注入的是接口 UserRepository，不是某个实现类。所以将来换实现，只要换一个 Bean 就行，这也是这套设计真正的价值。\n\n顺带说清 Spring 启动时干了三件事：先扫描（@ComponentScan 找到带注解的类），再把这些类解析成 BeanDefinition（Bean 的「配方」：类名、作用域、依赖关系），最后由 BeanFactory 按配方实例化并注入。注入方式有三种：构造器注入（推荐）、setter 注入、字段注入；Spring 4.3 之后只有一个构造器时可以省略 @Autowired。\n\n## 三个常见误区\n\n- **IoC 不是「禁止 new」**：普通值对象、工具对象照旧 new，只有需要容器管理、需要被注入的对象才交给容器。\n- **注入不是「按类型乱猜」**：默认按类型匹配；同一个接口有多个实现时会报错（NoUniqueBeanDefinitionException），要用 @Primary 或 @Qualifier(\"名字\") 指定用哪个。\n- **字段注入能跑但不推荐**：@Autowired 写在字段上，依赖可能为 null、也不方便单测；构造器注入能保证依赖不为空，还能让循环依赖在启动时就暴露出来。",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2 参考文档：IoC 容器与 Bean 简介",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/introduction.html"
+        }
+      ]
+    },
+    {
+      "id": "bean-lifecycle",
+      "title": "一个 Bean 的生命周期：从创建到销毁",
+      "category": "principle",
+      "level": "入门",
+      "readingMinutes": 3,
+      "summary": "Bean 从实例化、属性填充、初始化到销毁各发生了什么，@PostConstruct 和 afterPropertiesSet 谁先谁后。",
+      "tags": [
+        "Bean 生命周期",
+        "@PostConstruct",
+        "InitializingBean",
+        "销毁回调"
+      ],
+      "content": "## 一句话结论\n\n一个 Bean 的一生有四步：实例化（创建对象）→ 属性填充（把依赖注入进去）→ 初始化（执行你写的启动逻辑）→ 销毁（容器关闭前清理）。@PostConstruct 标在初始化阶段，@PreDestroy 标在销毁阶段，它们来自 jakarta.annotation，是 Boot 3.x 里的标准写法。\n\n## 四个阶段里各发生了什么\n\n1. **实例化**：容器调用构造器创建对象。构造器注入的依赖在这一步就传进来了。\n2. **属性填充**：给 @Autowired 的字段、setter 赋值，同时执行 Aware 回调（让 Bean 拿到容器相关信息）和 BeanPostProcessor 的前置处理。\n3. **初始化**：先执行 @PostConstruct 方法，再执行 InitializingBean.afterPropertiesSet()，最后执行 @Bean(initMethod) 指定的方法。几种机制都配了也不会跳过，Spring 按这个顺序依次调用。\n4. **销毁**：容器关闭时，先执行 @PreDestroy，再执行 DisposableBean.destroy()，最后执行 @Bean(destroyMethod) 指定的方法。\n\n官方文档明确建议：**别实现 InitializingBean / DisposableBean 接口**，因为业务代码会被 Spring 的接口绑死；用 @PostConstruct / @PreDestroy 或普通 POJO 方法更干净。\n\n四个阶段中间还有几张「插件位」：Aware 系列接口让 Bean 拿到自己的名字、容器等基础设施；BeanPostProcessor 在初始化方法前后各插一脚，@Autowired 的注入、@PostConstruct 的识别、AOP 代理的创建，都是靠它完成的。理解这一点就能明白：初始化方法执行时，Bean 已经能拿到别的 Bean，但还没被 AOP 包起来。\n\n## 代码：观察一次完整的生命周期\n\n```java\nimport jakarta.annotation.PostConstruct;\nimport jakarta.annotation.PreDestroy;\nimport org.springframework.stereotype.Component;\n\n@Component\npublic class CacheWarmer {\n\n    public CacheWarmer() {\n        System.out.println(\"1. 构造器：对象被创建\");\n    }\n\n    @PostConstruct\n    public void warmUp() {\n        // 此时依赖已经注入完成，可以放心调用别的 Bean\n        System.out.println(\"2. @PostConstruct：初始化\");\n    }\n\n    @PreDestroy\n    public void shutdown() {\n        System.out.println(\"3. @PreDestroy：清理资源\");\n    }\n}\n```\n\n启动日志里会先打印 1、再打印 2；正常关停（例如 Ctrl+C 触发上下文关闭）时打印 3。\n\n也顺带解释一个常见疑问：初始化逻辑为什么不写在构造器里？因为构造器执行时依赖注入还没完成，字段注入和 setter 注入的依赖此时还是 null；而 @PostConstruct 执行时依赖已经就绪，所以官方推荐把「需要用依赖的启动逻辑」放在这里。\n\n## 踩坑提醒\n\n- **@PostConstruct 里别依赖事务**：事务代理是在 Bean 初始化完成之后才包上去的，此时调用 @Transactional 方法不会开启事务。启动时要跑数据，用 ApplicationRunner 或 CommandLineRunner。\n- **prototype 作用域的 Bean 不走销毁回调**：容器只负责创建，销毁得调用方自己做，官方作用域文档写得很清楚。\n- **初始化方法别做重活**：@PostConstruct 会拖慢启动，还会让应用在「还没准备好」时就对外暴露；大批量预热适合放到启动完成后执行。\n- **@PostConstruct 没执行**：确认方法不是 static、没有参数，类确实被扫描成 Bean；另外 Boot 3 用的是 jakarta.annotation，别从 javax 导包，导错了注解会被静默忽略。",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2：Bean 生命周期与初始化回调",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-nature.html"
+        },
+        {
+          "label": "Spring Framework 6.2：@PostConstruct 与 @PreDestroy",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/postconstruct-and-predestroy-annotations.html"
+        }
+      ]
+    },
+    {
+      "id": "circular-dependency",
+      "title": "循环依赖和三级缓存到底怎么回事",
+      "category": "principle",
+      "level": "进阶",
+      "readingMinutes": 3,
+      "summary": "A 依赖 B、B 依赖 A 时 Spring 怎么办：构造器为什么救不了、三级缓存怎么绕过、Boot 为什么默认报错。",
+      "tags": [
+        "循环依赖",
+        "三级缓存",
+        "BeanCurrentlyInCreationException"
+      ],
+      "content": "## 一句话结论\n\nA 依赖 B、B 又依赖 A，就是循环依赖。对 setter/字段注入的单例，Spring 能用三级缓存绕过去；但**构造器注入救不了**。而 Spring Boot 默认禁止循环引用，启动直接报错让你改设计——所以真遇到，优先改代码，别急着打开开关。\n\n## 构造器注入为什么救不了\n\n创建 A 需要先有 B，创建 B 又需要先有 A。容器发现 A 正在创建中（还没造完），于是抛出 BeanCurrentlyInCreationException。这不是 bug，是构造器注入的必然结果：**对象都还没 new 出来，没有半成品可以给别人引用**。官方文档给的解法是改成 setter 注入（文档原话是「不推荐，但可以这么做」），并明确指出循环依赖会迫使某个 Bean 在完全初始化之前就被注入出去。\n\n## 「三级缓存」是怎么绕过去的\n\nsetter 注入可以先创建一个空壳，再填属性。Spring 的单例注册表 DefaultSingletonBeanRegistry 里有三个 Map，俗称三级缓存：\n\n| 层级 | 字段 | 放什么 |\n| --- | --- | --- |\n| 一级 | singletonObjects | 初始化完成的成品 Bean |\n| 二级 | earlySingletonObjects | 提前暴露的半成品（属性还没填完） |\n| 三级 | singletonFactories | 能生成半成品的 ObjectFactory（需要时提前生成 AOP 代理） |\n\n流程是：创建 A 时先把「能拿到 A 的工厂」放进三级缓存，再去创建 B；B 需要 A，就依次查一级、二级、三级，从三级工厂拿到 A 的半成品（此时 A 还没填属性），B 创建完成；回到 A 继续填属性，A 完成后放进一级缓存。这样两个对象都拿到了对方的引用。\n\n要注意这套机制只对单例有效：prototype 作用域不缓存，循环依赖照样失败。另外，能被三级缓存救回来的环，本质是两个单例在「属性还没填完时先互相引用」，对象可能在未完成初始化时就被别处使用，所以官方也只把它当兼容手段，而不是推荐写法。\n\n## Boot 默认禁止，以及正确的修法\n\n即使 setter 注入能解，Spring Boot 的 `spring.main.allow-circular-references` 默认也是 `false`，启动时直接报错。官方属性文档明确列了这一项。真要临时打开就设成 true，但更推荐从设计上拆开：\n\n- **拆职责**：A 和 B 互相需要，往往说明有个「第三者」更合适，把共用逻辑抽到 C。\n- **用 @Lazy**：在注入点加 @Lazy，先注入一个延迟代理，真正调用时才创建目标对象，环就断开了。\n- **改事件或回调**：A 创建完发事件，B 监听后反向处理，别在构造阶段互相拉扯。\n- **确认不是设计问题再开开关**：allow-circular-references=true 只适合老项目过渡，新代码不要依赖它。\n\n用 @Lazy 也有代价：注入点拿到的是代理，目标对象推迟到第一次调用时才创建。如果那一步执行失败，报错会从「启动时」推迟到「运行期」，排查反而更难。所以它适合打破启动期的环，不适合掩盖本该拆掉的耦合。",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2：依赖注入与循环依赖",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-collaborators.html"
+        },
+        {
+          "label": "Spring Boot 3.5 应用属性：spring.main.allow-circular-references",
+          "url": "https://docs.spring.io/spring-boot/3.5/appendix/application-properties/index.html"
+        },
+        {
+          "label": "Spring Framework 6.2.x 源码：DefaultSingletonBeanRegistry",
+          "url": "https://github.com/spring-projects/spring-framework/blob/6.2.x/spring-beans/src/main/java/org/springframework/beans/factory/support/DefaultSingletonBeanRegistry.java"
+        }
+      ]
+    },
+    {
+      "id": "bean-scopes",
+      "title": "Bean 作用域怎么选：singleton 到 request",
+      "category": "principle",
+      "level": "入门",
+      "readingMinutes": 3,
+      "summary": "五种作用域的区别与选择，以及单例里注入 request Bean 为什么要加代理。",
+      "tags": [
+        "Bean 作用域",
+        "singleton",
+        "prototype",
+        "request"
+      ],
+      "content": "## 一句话结论\n\n默认作用域是 singleton：整个容器里只有一个实例。需要「每次用都新建」就用 prototype。Web 项目里还有 request、session、application 三种，分别对应一次请求、一个会话、整个应用。选错了最典型的后果是：把有状态的 Bean 做成了单例，多个请求互相串数据。\n\n## 五种作用域一张表\n\n| 作用域 | 实例数量 | 谁负责销毁 | 典型用途 |\n| --- | --- | --- | --- |\n| singleton（默认） | 每个容器每个 Bean 定义一个 | 容器 | 无状态的 Service、Repository |\n| prototype | 每次获取或注入都新建 | 调用方自己 | 有状态、短生命周期的对象 |\n| request | 每个 HTTP 请求一个 | 容器（请求结束时） | 请求级上下文、traceId |\n| session | 每个 HTTP 会话一个 | 容器（会话过期时） | 登录用户信息 |\n| application | 每个 ServletContext 一个 | 容器 | 全应用共享的只读数据 |\n\n注意 singleton 和 GoF 设计模式里的单例不是一回事：它只是「每个容器里每个 Bean 定义恰好一个」，你完全可以再 new 一个同类实例。\n\n还有两个隐含区别：singleton 实例被所有线程共享，所以 Service 里别放可变的成员变量（比如 `private int count`），否则并发下数据会乱；prototype 每次新建，天然没有共享问题，但创建开销和引用管理得调用方自己负责。request/session/application 只在 Web 环境可用——在普通 main 方法里启动的 ApplicationContext 去拿这些作用域的 Bean，会直接抛 IllegalStateException。\n\n## 两个最容易踩的坑\n\n第一个：**单例里注入 prototype，只会拿到一个实例**。单例只在创建时注入一次，之后一直是同一个对象。想让单例每次都拿新的，就注入 ObjectProvider 并调 getObject()，或者用 @Lookup 方法注入。\n\n第二个：**单例里注入 request 作用域的 Bean，必须注入代理**。request Bean 只在请求线程里存在，单例初始化时根本没有请求。Spring 的做法是在注入点放一个 AOP 代理，每次调用时由代理去当前请求里取真身。@RequestScope 注解默认就带代理（proxyMode = ScopedProxyMode.TARGET_CLASS）；如果手写 @Scope(\"request\")，要自己指定 proxyMode。\n\n## 代码：原型与请求作用域\n\n```java\nimport org.springframework.beans.factory.ObjectProvider;\nimport org.springframework.context.annotation.Scope;\nimport org.springframework.stereotype.Component;\nimport org.springframework.web.context.annotation.RequestScope;\n\n// 每次获取都新建一个实例\n@Component\n@Scope(\"prototype\")\npublic class ReportBuilder {\n    private final StringBuilder buffer = new StringBuilder();\n    public void append(String line) { buffer.append(line).append('\\n'); }\n    public String build() { return buffer.toString(); }\n}\n\n// 每个 HTTP 请求一个实例；单例里注入它时，实际注入的是代理\n@Component\n@RequestScope\npublic class RequestUser {\n    private String name;\n    public String getName() { return name; }\n    public void setName(String name) { this.name = name; }\n}\n\n// 在单例里正确拿新的原型实例\n@Component\npublic class ReportService {\n    private final ObjectProvider<ReportBuilder> builders;\n    public ReportService(ObjectProvider<ReportBuilder> builders) {\n        this.builders = builders;\n    }\n    public String export() {\n        ReportBuilder builder = builders.getObject(); // 每次都是新对象\n        builder.append(\"header\");\n        return builder.build();\n    }\n}\n```\n\n无状态、可共享就用默认单例；有状态、用完即弃用 prototype；请求级数据配代理用 request；登录态用 session。判断标准很简单：这个 Bean 有没有「随每次调用变化」的状态？没有就用单例，有就考虑 prototype。",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2：Bean 作用域",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-scopes.html"
+        }
+      ]
+    },
+    {
+      "id": "aop-proxy",
+      "title": "Spring AOP 是怎么实现的：代理与自调用",
+      "category": "principle",
+      "level": "进阶",
+      "readingMinutes": 3,
+      "summary": "用代理、切点、通知三个词讲清 Spring AOP，以及自调用为什么会绕过增强。",
+      "tags": [
+        "AOP",
+        "动态代理",
+        "切点",
+        "通知"
+      ],
+      "content": "## 一句话结论\n\nSpring AOP 的本质是**给目标对象套一个代理**：调用先到代理，代理按切点判断要不要执行通知（比如记日志、开事务），再决定何时调用真正的方法。所以「AOP 不生效」十有八九是调用没走代理，最常见的就是类内部自调用。\n\n## 五个词搞懂 AOP\n\n- **切面（Aspect）**：横切关注点的模块化，比如「给所有 Service 方法记耗时」。\n- **连接点（Join point）**：程序执行中的某个点。Spring AOP 里永远只指「方法执行」。\n- **切点（Pointcut）**：匹配连接点的表达式，决定「哪些方法要被增强」。\n- **通知（Advice）**：真正要执行的逻辑，分 before、after returning、after throwing、after finally、around 五种。\n- **代理（Proxy）**：包在目标对象外面的那一层，调用先经过它。织入（weaving）就是把切面接进业务流程的动作，Spring AOP 在运行时织入。\n\n代理用哪种由目标类决定：实现了至少一个接口，默认用 JDK 动态代理；没实现接口，用 CGLIB 生成子类。于是有几条硬限制（官方文档明说）：final 类不能被 CGLIB 代理，final 方法不能被增强，private 方法不能被增强（子类覆盖不了）。需要强制用 CGLIB 时设 proxyTargetClass = true。\n\n五种通知里，around 最灵活（能决定调不调、能改返回值），也最容易写错；其余四种只是在固定时机插一段逻辑。切点表达式 `execution(* com.example.service..*(..))` 的读法是：任意返回类型、service 包及子包、任意方法名、任意参数。常用的切点可以用 @Pointcut 抽出来复用。\n\n## 一个最小切面\n\n```java\nimport org.aspectj.lang.ProceedingJoinPoint;\nimport org.aspectj.lang.annotation.Around;\nimport org.aspectj.lang.annotation.Aspect;\nimport org.springframework.stereotype.Component;\n\n@Aspect\n@Component\npublic class TimingAspect {\n\n    // 切点：com.example.service 包及子包下的所有方法\n    @Around(\"execution(* com.example.service..*(..))\")\n    public Object time(ProceedingJoinPoint pjp) throws Throwable {\n        long start = System.nanoTime();\n        try {\n            return pjp.proceed(); // 真正调用目标方法\n        } finally {\n            long cost = (System.nanoTime() - start) / 1_000_000;\n            System.out.println(pjp.getSignature().toShortString() + \" 耗时 \" + cost + \"ms\");\n        }\n    }\n}\n```\n\n@Around 里必须调用 pjp.proceed()，否则目标方法根本不会执行——这是新手最常见的 bug。\n\n## 为什么自调用不生效\n\n官方文档讲得很直接：调用一旦进入目标对象，方法内部再调用 `this.bar()`，走的是 this 引用而不是代理，通知没有机会执行。所以下面这种写法，事务和日志都会失效：\n\n```java\nimport org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\n\n@Service\npublic class OrderService {\n\n    public void outer() {\n        this.inner(); // 直接调 this，绕过了代理\n    }\n\n    @Transactional\n    public void inner() {\n        // 事务注解不生效\n    }\n}\n```\n\n修法：把 inner 挪到另一个 Bean 里调用；或者在类里注入自己的代理（自注入）后通过它调用。AopContext.currentProxy() 也能用，但官方明确不推荐，因为它把业务代码和 Spring 绑在了一起。\n\n还有一个隐蔽问题：同一个类里既写业务又写 @Transactional、@Cacheable 时，凡是「调用经过代理」这个前提被打破，增强就会失效。排查 AOP 问题时先问一句：这次调用到底走的是代理，还是 this？",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2：AOP 概念与术语",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/introduction-defn.html"
+        },
+        {
+          "label": "Spring Framework 6.2：理解 AOP 代理",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/proxying.html"
+        }
+      ]
+    },
+    {
+      "id": "mvc-request-flow",
+      "title": "一个请求在 Spring MVC 里经历了什么",
+      "category": "web",
+      "level": "入门",
+      "readingMinutes": 3,
+      "summary": "跟着一次请求走完 Spring MVC：DispatcherServlet、HandlerMapping、HandlerAdapter 各干什么。",
+      "tags": [
+        "Spring MVC",
+        "DispatcherServlet",
+        "HandlerMapping",
+        "请求流程"
+      ],
+      "content": "## 一句话结论\n\n请求先到 DispatcherServlet（前端控制器），由它问 HandlerMapping「这个 URL 该谁处理」，再用 HandlerAdapter 真正调用你的 @GetMapping 方法，最后把返回值通过 HttpMessageConverter 写成 JSON，或交给 ViewResolver 渲染页面。你的 Controller 只是整条流水线上的一站。\n\n## 五步走完一个请求\n\n1. **接单**：Tomcat 把请求交给 DispatcherServlet，它先把 WebApplicationContext 绑定到当前请求上，后续组件都能拿到。\n2. **找 handler**：HandlerMapping 按 URL、HTTP 方法、请求头匹配；@RequestMapping 系列由 RequestMappingHandlerMapping 负责。返回的不只是方法，还有一串拦截器（HandlerExecutionChain）。\n3. **执行**：HandlerAdapter 负责参数解析（@PathVariable、@RequestBody 等）、数据绑定、校验，再反射调用你的方法。它的作用是让 DispatcherServlet 不用关心「具体怎么调」。\n4. **处理返回值**：标了 @ResponseBody（或类上是 @RestController）就走 HttpMessageConverter，把对象序列化成 JSON 写回响应，不再走视图；返回的是视图名则交给 ViewResolver 找模板渲染。\n5. **异常兜底**：任何一步抛异常，都交给 HandlerExceptionResolver（@ExceptionHandler 属于这一层）。\n\nDispatcherServlet 自己也是个 Servlet，启动时会初始化自己的 WebApplicationContext（可以有一个根上下文作为父上下文），所以 Controller 里能用 @Autowired 拿到 Service。第 3 步的细节值得单独记：参数解析靠 HandlerMethodArgumentResolver，返回值处理靠 HandlerMethodReturnValueHandler，@RequestBody 的 JSON 转换最终交给 Jackson。第 4 步用哪个 HttpMessageConverter，由请求头、返回类型和已注册的转换器共同决定。\n\n## 代码：注解控制器落在哪一步\n\n```java\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController   // = @Controller + @ResponseBody\npublic class UserController {\n\n    private final UserService userService;\n\n    public UserController(UserService userService) {\n        this.userService = userService;\n    }\n\n    @GetMapping(\"/users/{id}\")\n    public UserView get(@PathVariable long id) {\n        return userService.view(id);\n    }\n}\n```\n\n这个类会被扫描成 Bean，@GetMapping 注册进 RequestMappingHandlerMapping 的映射表。请求进来后第 2 步查到它，第 3 步把路径里的 id 转成 long 传进来，第 4 步因为 @RestController 直接把 UserView 序列化成 JSON。返回 JSON 还是页面，就看有没有 @ResponseBody。\n\n为什么中间要隔一层 HandlerAdapter？因为 Spring MVC 支持的 handler 不止注解方法一种（还有实现 Controller 接口的类、HttpRequestHandler 等），DispatcherServlet 只面向 HandlerAdapter 编程，新增一种 handler 类型时不需要改核心代码。另外，第 2 步查不到 handler 返回 404；查到了但 HTTP 方法不匹配（比如用 POST 调 @GetMapping）返回 405——这两个状态码能帮你快速区分是 URL 写错还是方法写错。\n\n## 三个常见误解\n\n- **「DispatcherServlet 就是 Spring MVC 全部」**：它只是调度中心，真正干活的是 HandlerMapping、HandlerAdapter、ViewResolver、HandlerExceptionResolver 这些策略组件，换一个实现行为就变。\n- **「@ResponseBody 一定转成 JSON」**：返回 String 时默认由 StringHttpMessageConverter 按纯文本写出，不会加引号也不会转义；要 JSON 就返回对象，别自己拼 JSON 字符串。\n- **「拦截器就是过滤器」**：Filter 属于 Servlet 规范，在 DispatcherServlet 之前执行；HandlerInterceptor 在 DispatcherServlet 内部，能拿到 handler 信息。请求体在参数解析时通常已被读走，拦截器里别再读一遍。\n\n另外两个排查技巧：接口 404 先确认 URL 有没有匹配到 HandlerMapping（打开 debug 日志能看到映射表），404 说明请求根本没找到方法，和方法体无关；接口 415/400 则多半是参数解析或消息转换器不匹配，比如请求头 Content-Type 写错了。",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2：DispatcherServlet 处理流程",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/sequence.html"
+        },
+        {
+          "label": "Spring Framework 6.2：Web MVC 专用 Bean 类型",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/special-bean-types.html"
+        },
+        {
+          "label": "Spring Framework 6.2：@ResponseBody 与 HttpMessageConverter",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-methods/responsebody.html"
+        }
+      ]
+    },
+    {
+      "id": "global-exception",
+      "title": "全局异常处理：@ControllerAdvice 怎么用",
+      "category": "web",
+      "level": "入门",
+      "readingMinutes": 2,
+      "summary": "用 @RestControllerAdvice 集中处理异常：匹配规则、优先级，以及返回统一错误结构的写法。",
+      "tags": [
+        "@ControllerAdvice",
+        "异常处理",
+        "REST",
+        "统一响应"
+      ],
+      "content": "## 一句话结论\n\n把 @ExceptionHandler 写进一个 @RestControllerAdvice 类，就成了全局异常处理：所有 Controller 抛出的异常都能在这里统一转成 JSON。优先级记住一条：**本 Controller 内的 handler 先于全局；全局里再按「异常类型越接近越优先」匹配。**\n\n## 三个关键规则\n\n1. **作用范围不同**：@ExceptionHandler 写在某个 @Controller 里，只影响这个类（及子类）；写在 @ControllerAdvice / @RestControllerAdvice 里，影响所有 Controller。@RestControllerAdvice = @ControllerAdvice + @ResponseBody，返回对象会直接序列化成 JSON。\n2. **匹配按继承距离**：抛出的异常会匹配它自己、它的父类，以及它的 cause（cause 可以是任意深度）。同一层级有多个候选时，根异常优先于 cause。@ExceptionHandler({A.class, B.class}) 能一次覆盖多个类型。\n3. **全局后于局部**：局部 @ExceptionHandler 先被应用，全局兜底在后。所以「特殊 Controller 特殊处理，公共的交给全局」是可行的。\n\n官方文档还提示：@ControllerAdvice 可以用 annotations、basePackages、assignableTypes 缩小作用范围，但每次请求都做运行时检查有成本，范围越小越好。\n\n有了全局处理，Controller 里就不必到处 try-catch：业务代码只管抛出自定义异常，转成什么 HTTP 状态码、返回什么结构，统一在一个地方决定。这样改错误格式只需要动一个类。\n\n## 代码：统一错误结构\n\n```java\nimport org.springframework.http.HttpStatus;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.web.bind.annotation.ExceptionHandler;\nimport org.springframework.web.bind.annotation.RestControllerAdvice;\n\n@RestControllerAdvice\npublic class GlobalExceptionHandler {\n\n    public record ErrorBody(String code, String message) {}\n\n    @ExceptionHandler(BusinessException.class)\n    public ResponseEntity<ErrorBody> handleBusiness(BusinessException ex) {\n        return ResponseEntity.status(HttpStatus.BAD_REQUEST)\n                .body(new ErrorBody(\"BIZ_ERROR\", ex.getMessage()));\n    }\n\n    // 兜底：别把堆栈信息直接返回给前端\n    @ExceptionHandler(Exception.class)\n    public ResponseEntity<ErrorBody> handleOther(Exception ex) {\n        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)\n                .body(new ErrorBody(\"INTERNAL\", \"服务器开小差了\"));\n    }\n}\n\nclass BusinessException extends RuntimeException {\n    public BusinessException(String message) {\n        super(message);\n    }\n}\n```\n\n前端拿到统一的 { code, message } 结构，判断逻辑就不用在每个接口里再写一遍。\n\n## 三个坑\n\n- **异常被 catch 吞掉**：handler 只在异常抛到 DispatcherServlet 时才生效。方法里 try-catch 之后不重新抛出，全局处理永远不会触发。\n- **@ExceptionHandler 方法里再次抛异常**：会落到容器默认的 500 处理，你写的返回结构失效；记日志就好，别再抛。\n- **兜底方法忘了打日志**：一定要 log.error(\"...\", ex)，否则线上只剩一句「服务器开小差了」，排查时无从下手。另外自定义错误体里不要放异常堆栈、SQL 或表名。\n- **兜底写得太宽**：@ExceptionHandler(Exception.class) 会把参数校验失败之类的框架异常也一并吞掉，返回 500，掩盖真实原因。业务异常单独写方法，兜底只负责「真的没预料到」的那类。\n\n最后补一句错误结构的设计：错误码最好分两类——业务错误（可预期，用 4xx 加明确 code，比如余额不足）和系统错误（不可预期，用 5xx，只给通用文案，细节进日志）。前端按 code 做分支，比解析 message 字符串可靠得多。",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2：@ControllerAdvice 与 @ExceptionHandler",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-advice.html"
+        },
+        {
+          "label": "Spring Framework 6.2：@ExceptionHandler 的匹配规则",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-exceptionhandler.html"
+        }
+      ]
+    },
+    {
+      "id": "transaction-failure",
+      "title": "@Transactional 失效的六种情况",
+      "category": "data",
+      "level": "进阶",
+      "readingMinutes": 3,
+      "summary": "自调用、非 public、异常被吞、受检异常、非 Bean、跨线程——六种让 @Transactional 失效的场景与修法。",
+      "tags": [
+        "@Transactional",
+        "事务失效",
+        "事务传播",
+        "回滚"
+      ],
+      "content": "## 一句话结论\n\n@Transactional 靠代理实现：只有**从外部、经过代理**调用方法，事务才生效。所以自调用、方法不是 public、异常被吞、抛了受检异常、对象不是 Spring Bean、换了线程，这六种情况都会让事务「看起来没生效」。先按清单排查，别一上来就怀疑数据库。\n\n## 六个失效场景\n\n| 场景 | 为什么失效 | 修法 |\n| --- | --- | --- |\n| 类内部 this.method() 自调用 | 没经过代理 | 拆到另一个 Bean，或自注入代理 |\n| 方法不是 public | 接口代理只拦 public 方法 | 改 public；6.0+ 类代理支持 protected/包可见 |\n| 异常被 try-catch 吞掉 | Spring 看不到异常，正常提交 | 重新抛出，或手动标记 rollback-only |\n| 抛的是受检异常 | 默认只对 RuntimeException 和 Error 回滚 | 加 rollbackFor = Exception.class |\n| 对象是 new 出来的 | 没有代理，注解等于注释 | 交给容器管理，注入使用 |\n| 在新线程或 @Async 里执行 | 事务绑定线程，新线程没有事务上下文 | 事务方法放在最外层同步执行 |\n\n默认回滚规则是官方文档写明的：**运行时异常和 Error 才回滚**，受检异常不回滚，想改就配 rollbackFor。另外，接口代理要求方法 public 且定义在接口里，类代理（proxyTargetClass=true）从 Spring 6.0 起才支持 protected 和包可见方法。\n\n排查时按这个顺序走：先打开事务相关 DEBUG 日志，确认调用时到底有没有开启事务；再看调用是不是从另一个 Bean 经代理进来的；然后看异常有没有被吞、类型是受检还是运行时；最后确认数据库和表引擎本身支持事务（比如 MySQL 的 MyISAM 不支持事务，建表要用 InnoDB）。\n\n## 传播行为：默认的 REQUIRED 通常够用\n\nREQUIRED 是默认值：当前没有事务就新开一个物理事务，有就加入外层。同一线程里嵌套调用时，内外层其实是一个事务；内层失败会把事务标成 rollback-only，外层若继续走到提交，就会抛 UnexpectedRollbackException。\n\n需要「内层失败不影响外层」时用 REQUIRES_NEW：它会挂起外层、另开一个独立物理事务，自己提交或回滚。代价是同时占用两条数据库连接，高并发下连接池可能被打满（官方文档提醒池大小至少要比并发线程数多 1）。典型用法是记操作日志：主业务回滚了，日志那条记录也要留下来。\n\n## 一段能跑对的写法\n\n```java\nimport org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Propagation;\nimport org.springframework.transaction.annotation.Transactional;\n\n@Service\npublic class OrderService {\n\n    private final OrderRepository orderRepository;\n    private final StockClient stockClient;\n\n    public OrderService(OrderRepository orderRepository, StockClient stockClient) {\n        this.orderRepository = orderRepository;\n        this.stockClient = stockClient;\n    }\n\n    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)\n    public void placeOrder(long userId, long skuId) {\n        orderRepository.insert(userId, skuId);\n        stockClient.deduct(skuId); // 抛异常则整单回滚\n    }\n}\n```\n\n补一句：远程调用放在事务里会拉长事务时间，真实项目更推荐先扣库存再落库，或者把远程调用移到事务外，别让数据库连接陪着网络等待。",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2：@Transactional 与代理模式",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/annotations.html"
+        },
+        {
+          "label": "Spring Framework 6.2：事务传播行为",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/tx-propagation.html"
+        },
+        {
+          "label": "Spring Framework 6.2：事务回滚规则",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/rolling-back.html"
+        }
+      ]
+    },
+    {
+      "id": "jpa-vs-mybatis",
+      "title": "JPA 和 MyBatis 怎么选？",
+      "category": "data",
+      "level": "入门",
+      "readingMinutes": 3,
+      "summary": "JPA 与 MyBatis 的差别、各自适合谁，以及两种持久层混用时要注意什么。",
+      "tags": [
+        "JPA",
+        "MyBatis",
+        "持久层选型",
+        "Spring Data"
+      ],
+      "content": "## 一句话结论\n\nJPA 帮你把「对象怎么变成 SQL」包起来，常规查询几乎不写 SQL；MyBatis 把 SQL 交还给你，只负责参数绑定和结果映射。选型本质上一句话：**团队 SQL 功底强、查询复杂多变，选 MyBatis；领域模型稳定、CRUD 为主、想少写重复 SQL，选 JPA。**\n\n## 一张表看清差别\n\n| 维度 | JPA（Spring Data JPA） | MyBatis |\n| --- | --- | --- |\n| SQL 归属 | 框架按方法名或注解生成 | 你写在注解或 XML 里 |\n| 常规 CRUD | 继承 JpaRepository 就有 | 自己写或接第三方 |\n| 复杂查询 | @Query、Criteria、原生 SQL | 动态 SQL 很顺手 |\n| 学习曲线 | 要懂实体映射、级联、抓取策略 | 会 SQL 就能上手 |\n| 可移植性 | 较好，方言可切换 | 一般，SQL 常带方言 |\n| 表结构不规范的老库 | 映射麻烦 | 更灵活 |\n\n底层差别其实可以压缩成一句话：JPA 维护一个「持久化上下文」，你把实体的字段改掉，框架在事务提交时自动生成 UPDATE；MyBatis 每次执行你写的 SQL，结果通过结果映射变成对象，改完要显式调 update。一个是「面向对象、框架推断」，一个是「面向 SQL、你来掌控」。\n\n## 两种写法长什么样\n\n```java\nimport java.util.List;\nimport org.springframework.data.jpa.repository.JpaRepository;\n\n// JPA：方法名就是查询，Spring Data 自动生成实现\npublic interface UserRepository extends JpaRepository<User, Long> {\n    List<User> findByStatusAndCity(String status, String city);\n}\n```\n\n```java\nimport java.util.List;\nimport org.apache.ibatis.annotations.Mapper;\nimport org.apache.ibatis.annotations.Param;\nimport org.apache.ibatis.annotations.Select;\n\n// MyBatis：SQL 自己写，@Mapper 由 starter 扫描注册\n@Mapper\npublic interface UserMapper {\n    @Select(\"SELECT * FROM t_user WHERE status = #{status} AND city = #{city}\")\n    List<User> findByStatusAndCity(@Param(\"status\") String status,\n                                   @Param(\"city\") String city);\n}\n```\n\nBoot 里引 spring-boot-starter-data-jpa，就等于引入 Hibernate、Spring Data JPA 和 Spring ORM；引 mybatis-spring-boot-starter 会自动建 SqlSessionFactory 和 SqlSessionTemplate，并把 @Mapper 接口注册进容器。\n\n## 怎么选，以及常见误区\n\n- **不要为了「都用」而全量混用**：两套持久层同时放在一个模块里，事务边界和实体映射容易打架。可以「JPA 为主 + 个别复杂查询写原生 SQL」，或「MyBatis 为主 + 简单表交给 JPA」，但要划清边界。\n- **JPA 不是零 SQL**：复杂报表、批量更新照样要写 SQL；方法名查询写长了也很难读，超过三四个条件就考虑 @Query。\n- **MyBatis 不是回到 JDBC**：参数绑定、结果映射、SQL 复用（`<sql>`、`<include>` 标签）都帮你做了；但表结构变更时 SQL 要跟着改。\n- **版本要对齐**：mybatis-spring-boot-starter 3.0 对应 Boot 3.2–3.5、Java 17+；Boot 3.5 项目别引 2.x 时代的老 starter。\n\n再补两条选型时容易忽略的现实因素：一是团队，组里没人熟悉 JPA 的级联、懒加载和 N+1 查询，贸然上 JPA 会在线上遇到「查一个列表发出几十条 SQL」这类问题；二是项目阶段，新项目、领域模型清楚、接口以 CRUD 为主，JPA 的开发速度优势明显；老库表命名混乱、报表 SQL 又多又复杂，MyBatis 更省心。混用两者时，让它们共用同一个 DataSource 和事务管理器，@Transactional 才管得住；如果配了多个数据源，就要给每个事务管理器单独指定。",
+      "sources": [
+        {
+          "label": "Spring Boot 3.5：SQL 数据访问（JPA 与 Spring Data）",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/data/sql.html"
+        },
+        {
+          "label": "MyBatis-Spring-Boot 自动配置文档",
+          "url": "https://mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/"
+        }
+      ]
+    },
+    {
+      "id": "validation-in-practice",
+      "title": "参数校验落地：@Valid、@Validated 与统一错误响应",
+      "category": "web",
+      "level": "入门",
+      "readingMinutes": 3,
+      "summary": "分清 @Valid 与 @Validated，掌握分组校验和统一错误响应，避开三个常见坑。",
+      "tags": [
+        "参数校验",
+        "@Valid",
+        "@Validated",
+        "Bean Validation"
+      ],
+      "content": "## 一句话结论\n\nSpring Boot 引了 spring-boot-starter-validation 就自动启用 Bean Validation。校验请求体时在参数上写 @Valid 或 @Validated；想分组校验用 @Validated(Group.class)；校验失败会抛 MethodArgumentNotValidException，用 @RestControllerAdvice 接住就能返回统一错误结构。关键区别：**@Valid 只表示「触发校验」，@Validated 是 Spring 的注解，支持分组。**\n\n先记住一件事：服务端校验不是可选项。前端的校验只负责体验，绕过页面直接调接口太容易了，接口自己必须兜底，否则脏数据会一路进数据库。\n\n## @Valid 与 @Validated 先分清\n\n- @Valid 来自 jakarta.validation，是标准注解，用来触发校验；写在字段上表示「这个嵌套对象也要校验」。\n- @Validated 来自 Spring，功能与 @Valid 类似，额外支持 groups（分组），还能标在类上启用方法校验。\n- 在 Controller 参数上，两者都能触发 MVC 内置校验；要分组就必须用 @Validated(Group.class)。\n\n官方文档特别提醒：用了 MVC 6.1 内置的方法校验后，**不要在 Controller 类上加 @Validated**，否则方法校验会走 AOP，和内置校验重复甚至冲突。\n\n分组（groups）的典型用途是「新增」和「修改」的规则不同：新增时不需要 id，修改时 id 必填。给约束标上 groups，再在参数上写 @Validated(Group.class)，就只校验这一组。注意没写 groups 的约束属于 Default 组，分组校验时不会生效——这一点最容易漏，加完分组发现某个 @NotBlank 不校验了，往往就是这个原因。\n\n## 代码：校验、分组、统一错误响应\n\n```java\nimport jakarta.validation.constraints.NotBlank;\nimport jakarta.validation.constraints.Size;\nimport org.springframework.validation.annotation.Validated;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class UserController {\n\n    public interface Create {}\n\n    public record CreateUser(\n            @NotBlank(groups = Create.class) String name,\n            @Size(min = 6, max = 20, groups = Create.class) String password) {}\n\n    @PostMapping(\"/users\")\n    public String create(@Validated(Create.class) @RequestBody CreateUser req) {\n        return \"created: \" + req.name();\n    }\n}\n```\n\n```java\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.web.bind.MethodArgumentNotValidException;\nimport org.springframework.web.bind.annotation.ExceptionHandler;\nimport org.springframework.web.bind.annotation.RestControllerAdvice;\n\n@RestControllerAdvice\npublic class ValidationAdvice {\n\n    @ExceptionHandler(MethodArgumentNotValidException.class)\n    public ResponseEntity<String> onInvalid(MethodArgumentNotValidException ex) {\n        String msg = ex.getBindingResult().getFieldErrors().stream()\n                .findFirst()\n                .map(e -> e.getField() + \" \" + e.getDefaultMessage())\n                .orElse(\"参数不合法\");\n        return ResponseEntity.badRequest().body(msg);\n    }\n}\n```\n\nService 层也可以校验：在类上加 @Validated，方法参数上直接写 @NotNull、@Size 之类的约束，调用时由 AOP 拦截校验，失败抛 jakarta.validation.ConstraintViolationException。它适合防「绕过 Controller 的内部调用」，但要注意两点：它依赖代理，同类内部自调用不会触发；而且方法校验和 MVC 参数校验抛的是不同异常，统一处理器里要分别写 @ExceptionHandler。生产环境通常会把 fieldErrors 全部收集成 {字段: 提示} 返回，前端可以逐项标红；上面的代码只用 findFirst() 演示取一条。\n\n## 三个容易翻车的点\n\n- **约束没生效**：被校验的类得是 Spring Bean（有 @Component/@Service 之类），并且 classpath 上有 validation 实现。另外，直接在 @RequestParam 上写约束属于方法校验，抛的是 HandlerMethodValidationException，不是上面那个异常，要单独处理。\n- **嵌套对象不校验**：User 里有个 Address 字段，只在 Address 上加约束不够，必须在 User 的 address 字段上写 @Valid 才会级联校验。\n- **错误消息写死中文**：把提示文案放到 messages.properties，通过 MessageSource 解析（官方文档提到消息里的 {参数} 会走 MessageSource），改文案和多语言都方便。",
+      "sources": [
+        {
+          "label": "Spring Boot 3.5：Bean Validation",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/io/validation.html"
+        },
+        {
+          "label": "Spring Framework 6.2：MVC 内置校验",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-validation.html"
+        },
+        {
+          "label": "Spring Framework 6.2：Bean Validation 集成",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/validation/beanvalidation.html"
+        }
+      ]
+    }
+  ]
+}

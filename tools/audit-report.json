@@ -1,0 +1,2510 @@
+{
+  "schemaVersion": "1.0",
+  "tool": "tools/audit.mjs",
+  "generatedAt": "2026-11-26T08:11:00.911Z",
+  "options": {
+    "dataDir": "src\\data",
+    "skipLinks": false,
+    "sampleRatio": 0.4,
+    "linkTimeoutMs": 20000,
+    "concurrency": 8
+  },
+  "index": {
+    "file": "tools\\annotation-audit\\index\\annotations.txt",
+    "annotations": 1109,
+    "simpleNames": 1062
+  },
+  "coverage": {
+    "files": [
+      {
+        "file": "annotations-boot.json",
+        "kind": "annotation",
+        "generatedBy": "content-boot",
+        "items": 38
+      },
+      {
+        "file": "annotations-core.json",
+        "kind": "annotation",
+        "generatedBy": "content-core",
+        "items": 36
+      },
+      {
+        "file": "annotations-data.json",
+        "kind": "annotation",
+        "generatedBy": "content-data",
+        "items": 34
+      },
+      {
+        "file": "annotations-web.json",
+        "kind": "annotation",
+        "generatedBy": "content-web",
+        "items": 36
+      },
+      {
+        "file": "knowledge-a.json",
+        "kind": "knowledge",
+        "generatedBy": "knowledge-a",
+        "items": 10
+      },
+      {
+        "file": "knowledge-b.json",
+        "kind": "knowledge",
+        "generatedBy": "knowledge-b",
+        "items": 10
+      }
+    ],
+    "annotationItems": 144,
+    "knowledgeItems": 20,
+    "categories": [
+      "aop",
+      "async",
+      "boot",
+      "core",
+      "data",
+      "engineering",
+      "migration",
+      "principle",
+      "security",
+      "test",
+      "validation",
+      "web"
+    ],
+    "filesWithErrors": []
+  },
+  "summary": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 7,
+    "verdict": "pass",
+    "byCode": {
+      "VERSION_NOTE_NO_VERSION": 2,
+      "ATTR_FORMAT": 1,
+      "ID_NAME_MISMATCH": 3,
+      "SAME_NAME_OTHER_PACKAGE": 1
+    },
+    "linkChecks": {
+      "total": 215,
+      "ok": 215,
+      "failed": 0,
+      "skipped": 0
+    },
+    "perFile": {
+      "annotations-boot.json": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 3
+      },
+      "annotations-core.json": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 1
+      },
+      "annotations-data.json": {
+        "errors": 0,
+        "warnings": 0,
+        "infos": 3
+      }
+    }
+  },
+  "issues": [
+    {
+      "severity": "info",
+      "code": "VERSION_NOTE_NO_VERSION",
+      "file": "annotations-boot.json",
+      "id": "enable-method-security",
+      "message": "versionNote 没有版本号：官方文档：@EnableMethodSecurity 取代 @EnableGlobalMethodSecurity；且 Spring Boot Starter Security 默认不开启方法级授权，必须显式声明。"
+    },
+    {
+      "severity": "info",
+      "code": "VERSION_NOTE_NO_VERSION",
+      "file": "annotations-boot.json",
+      "id": "secured",
+      "message": "versionNote 没有版本号：Spring Security 官方文档已把 @Secured 标为 legacy 选项，并明确推荐改用 @PreAuthorize。"
+    },
+    {
+      "severity": "info",
+      "code": "ATTR_FORMAT",
+      "file": "annotations-boot.json",
+      "id": "with-mock-user",
+      "message": "attributes[1].desc 偏短（建议一句话说明含义/默认值）"
+    },
+    {
+      "severity": "info",
+      "code": "ID_NAME_MISMATCH",
+      "file": "annotations-core.json",
+      "id": "enable-aspectj-auto-proxy",
+      "message": "id「enable-aspectj-auto-proxy」与注解名推导的「enable-aspect-j-auto-proxy」不一致（确认是否有意）"
+    },
+    {
+      "severity": "info",
+      "code": "ID_NAME_MISMATCH",
+      "file": "annotations-data.json",
+      "id": "param-mybatis",
+      "message": "id「param-mybatis」与注解名推导的「param」不一致（确认是否有意）"
+    },
+    {
+      "severity": "info",
+      "code": "SAME_NAME_OTHER_PACKAGE",
+      "file": "annotations-data.json",
+      "id": "param-mybatis",
+      "message": "与 @Param::org.springframework.data.repository.query.Param 同名但不同包（合法的不同注解，注意示例 import 不要混）"
+    },
+    {
+      "severity": "info",
+      "code": "ID_NAME_MISMATCH",
+      "file": "annotations-data.json",
+      "id": "param-spring-data",
+      "message": "id「param-spring-data」与注解名推导的「param」不一致（确认是否有意）"
+    }
+  ],
+  "linkChecks": [
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/using/using-the-springbootapplication-annotation.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/using/using-the-springbootapplication-annotation.html",
+      "cached": true,
+      "owners": 2
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/SpringBootApplication.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/SpringBootApplication.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/SpringBootConfiguration.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/SpringBootConfiguration.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/using/auto-configuration.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/using/auto-configuration.html",
+      "cached": true,
+      "owners": 2
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html#features.external-config.typesafe-configuration-properties",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html",
+      "cached": true,
+      "owners": 3
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/ConfigurationProperties.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/ConfigurationProperties.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/EnableConfigurationProperties.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/EnableConfigurationProperties.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/ConfigurationPropertiesScan.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/ConfigurationPropertiesScan.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html",
+      "cached": true,
+      "owners": 3
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/AutoConfiguration.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/AutoConfiguration.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html#features.developing-auto-configuration.condition-annotations",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html",
+      "cached": true,
+      "owners": 7
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnClass.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnClass.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnProperty.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnProperty.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnBean.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnBean.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnMissingClass.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnMissingClass.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnResource.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnResource.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/web/servlet.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/web/servlet.html",
+      "cached": true,
+      "owners": 3
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/web/servlet/ServletComponentScan.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/web/servlet/ServletComponentScan.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/enable.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/enable.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/ImportAutoConfiguration.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/ImportAutoConfiguration.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/testing/spring-boot-applications.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/testing/spring-boot-applications.html",
+      "cached": true,
+      "owners": 7
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/context/SpringBootTest.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/context/SpringBootTest.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/servlet/WebMvcTest.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/servlet/WebMvcTest.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/orm/jpa/DataJpaTest.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/orm/jpa/DataJpaTest.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/json/JsonTest.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/json/JsonTest.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/client/RestClientTest.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/client/RestClientTest.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/context/TestConfiguration.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/context/TestConfiguration.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/mock/mockito/MockBean.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/mock/mockito/MockBean.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-mockitobean.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-mockitobean.html",
+      "cached": true,
+      "owners": 2
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/bean/override/mockito/MockitoBean.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/bean/override/mockito/MockitoBean.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/bean/override/mockito/MockitoSpyBean.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/bean/override/mockito/MockitoSpyBean.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/servlet/AutoConfigureMockMvc.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/servlet/AutoConfigureMockMvc.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-activeprofiles.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-activeprofiles.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/ActiveProfiles.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/ActiveProfiles.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-testpropertysource.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-testpropertysource.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/TestPropertySource.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/TestPropertySource.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-dirtiescontext.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-dirtiescontext.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/annotation/DirtiesContext.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/annotation/DirtiesContext.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-security/reference/servlet/configuration/java.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-security/reference/servlet/configuration/java.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html",
+      "cached": true,
+      "owners": 6
+    },
+    {
+      "url": "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-security/reference/servlet/authentication/architecture.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-security/reference/servlet/authentication/architecture.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/authentication.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/authentication.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/classpath-scanning.html#beans-stereotype-annotations",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/classpath-scanning.html",
+      "cached": true,
+      "owners": 3
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/configuration-annotation.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/configuration-annotation.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/bean-annotation.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/bean-annotation.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/classpath-scanning.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/classpath-scanning.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/composing-configuration-classes.html#beans-java-using-import",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/composing-configuration-classes.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/composing-configuration-classes.html#beans-java-combining-xml-centric",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/composing-configuration-classes.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/environment.html#beans-using-propertysource",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/environment.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/value-annotations.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/value-annotations.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired-qualifiers.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired-qualifiers.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired-primary.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired-primary.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-scopes.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-scopes.html",
+      "cached": true,
+      "owners": 2
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-lazy-init.html#lazy",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-lazy-init.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/environment.html#beans-definition-profiles",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/environment.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-dependson.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-dependson.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired.html#beans-factory-ordered",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/core/annotation/Order.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/core/annotation/Order.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/postconstruct-and-predestroy-annotations.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/postconstruct-and-predestroy-annotations.html",
+      "cached": true,
+      "owners": 3
+    },
+    {
+      "url": "https://jakarta.ee/specifications/annotations/2.1/apidocs/jakarta.annotation/jakarta/annotation/PostConstruct.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/annotations/2.1/apidocs/jakarta.annotation/jakarta/annotation/PostConstruct.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/annotations/2.1/apidocs/jakarta.annotation/jakarta/annotation/PreDestroy.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/annotations/2.1/apidocs/jakarta.annotation/jakarta/annotation/PreDestroy.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/context-introduction.html#context-functionality-events-annotation",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/context-introduction.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/event.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/event.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/context/annotation/Conditional.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/context/annotation/Conditional.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/resource.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/resource.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/annotations/3.0/apidocs/jakarta.annotation/jakarta/annotation/Resource.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/annotations/3.0/apidocs/jakarta.annotation/jakarta/annotation/Resource.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/standard-annotations.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/standard-annotations.html",
+      "cached": true,
+      "owners": 2
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/core/annotation/AliasFor.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/core/annotation/AliasFor.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/at-aspectj.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/at-aspectj.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/pointcuts.html#aop-pointcuts-designators",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/pointcuts.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-advice-before",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-advice-after-finally",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-advice-after-returning",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-advice-after-throwing",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-ataspectj-around-advice",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/aspectj-support.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/aspectj-support.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/context/annotation/EnableAspectJAutoProxy.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/context/annotation/EnableAspectJAutoProxy.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html",
+      "cached": true,
+      "owners": 2
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/transaction/annotation/Transactional.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/transaction/annotation/Transactional.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/transaction/annotation/EnableTransactionManagement.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/transaction/annotation/EnableTransactionManagement.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html",
+      "cached": true,
+      "owners": 5
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Entity.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Entity.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Table.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Table.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Id.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Id.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/GeneratedValue.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/GeneratedValue.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/GenerationType.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/GenerationType.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Column.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Column.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Transient.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Transient.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Enumerated.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Enumerated.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/ManyToOne.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/ManyToOne.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/OneToMany.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/OneToMany.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/JoinColumn.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/JoinColumn.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Version.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Version.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html",
+      "cached": true,
+      "owners": 3
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/Query.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/Query.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/Modifying.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/Modifying.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/commons/docs/3.5.13/api/org/springframework/data/repository/query/Param.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-data/commons/docs/3.5.13/api/org/springframework/data/repository/query/Param.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/config/EnableJpaRepositories.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/config/EnableJpaRepositories.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://mybatis.org/mybatis-3/java-api.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://mybatis.org/mybatis-3/java-api.html",
+      "cached": true,
+      "owners": 7
+    },
+    {
+      "url": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Mapper.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Mapper.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://mybatis.org/spring/mappers.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://mybatis.org/spring/mappers.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://mybatis.org/spring/apidocs/org/mybatis/spring/annotation/MapperScan.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://mybatis.org/spring/apidocs/org/mybatis/spring/annotation/MapperScan.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Select.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Select.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Param.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Param.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Results.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Results.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/integration/cache.html#enable-caching",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/integration/cache.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/EnableCaching.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/EnableCaching.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html",
+      "cached": true,
+      "owners": 4
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/Cacheable.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/Cacheable.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CachePut.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CachePut.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CacheEvict.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CacheEvict.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CacheConfig.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CacheConfig.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html#scheduling-annotation-support-async",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html",
+      "cached": true,
+      "owners": 2
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/EnableAsync.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/EnableAsync.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/Async.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/Async.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html#scheduling-annotation-support-scheduled",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html",
+      "cached": true,
+      "owners": 2
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/EnableScheduling.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/EnableScheduling.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RestController.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RestController.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html",
+      "cached": true,
+      "owners": 6
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PostMapping.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PostMapping.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/DeleteMapping.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/DeleteMapping.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PatchMapping.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PatchMapping.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestparam.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestparam.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/arguments.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/arguments.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestbody.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestbody.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/responsebody.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/responsebody.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestHeader.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestHeader.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestheader.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestheader.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/CookieValue.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/CookieValue.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/cookievalue.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/cookievalue.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ModelAttribute.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ModelAttribute.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/modelattrib-method-args.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/modelattrib-method-args.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestAttribute.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestAttribute.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestattrib.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestattrib.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/SessionAttribute.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/SessionAttribute.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/sessionattribute.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/sessionattribute.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/SessionAttributes.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/SessionAttributes.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/sessionattributes.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/sessionattributes.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/InitBinder.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/InitBinder.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-initbinder.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-initbinder.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ControllerAdvice.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ControllerAdvice.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-advice.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-advice.html",
+      "cached": true,
+      "owners": 2
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RestControllerAdvice.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RestControllerAdvice.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ExceptionHandler.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ExceptionHandler.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html",
+      "cached": true,
+      "owners": 2
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ResponseStatus.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ResponseStatus.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/Valid.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/Valid.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/validation/annotation/Validated.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/validation/annotation/Validated.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotNull.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotNull.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html",
+      "cached": true,
+      "owners": 11
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotBlank.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotBlank.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotEmpty.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotEmpty.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Size.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Size.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Min.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Min.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Max.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Max.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Pattern.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Pattern.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Email.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Email.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Past.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Past.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Future.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Future.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Positive.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Positive.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/introduction.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/introduction.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-nature.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-nature.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-collaborators.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-collaborators.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/appendix/application-properties/index.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/appendix/application-properties/index.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://github.com/spring-projects/spring-framework/blob/6.2.x/spring-beans/src/main/java/org/springframework/beans/factory/support/DefaultSingletonBeanRegistry.java",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://github.com/spring-projects/spring-framework/blob/6.2.x/spring-beans/src/main/java/org/springframework/beans/factory/support/DefaultSingletonBeanRegistry.java",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/introduction-defn.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/introduction-defn.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/proxying.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/proxying.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/sequence.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/sequence.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/special-bean-types.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/special-bean-types.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-methods/responsebody.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-methods/responsebody.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-advice.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-advice.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-exceptionhandler.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-exceptionhandler.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/annotations.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/annotations.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/tx-propagation.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/tx-propagation.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/rolling-back.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/rolling-back.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/data/sql.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/data/sql.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/io/validation.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/io/validation.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-validation.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-validation.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/6.2/core/validation/beanvalidation.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/validation/beanvalidation.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/features/spring-application.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/spring-application.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/features/profiles.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/profiles.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/interceptors.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/interceptors.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/filters.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/filters.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/features/aop.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/aop.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html",
+      "cached": true,
+      "owners": 2
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/features/task-execution-and-scheduling.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/task-execution-and-scheduling.html",
+      "cached": true,
+      "owners": 2
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/maven-plugin/packaging.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/maven-plugin/packaging.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/how-to/deployment/traditional-deployment.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/how-to/deployment/traditional-deployment.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/web/graceful-shutdown.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/web/graceful-shutdown.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/features/logging.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/logging.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/actuator/enabling.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/actuator/enabling.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/reference/actuator/endpoints.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/actuator/endpoints.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/3.5/system-requirements.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/3.5/system-requirements.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-framework/reference/overview.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-framework/reference/overview.html",
+      "cached": true,
+      "owners": 1
+    },
+    {
+      "url": "https://docs.spring.io/spring-boot/4.0/system-requirements.html",
+      "status": 200,
+      "ok": true,
+      "finalUrl": "https://docs.spring.io/spring-boot/4.0/system-requirements.html",
+      "cached": true,
+      "owners": 1
+    }
+  ],
+  "sample": {
+    "ratio": 0.4,
+    "total": 164,
+    "sampled": 74,
+    "list": [
+      {
+        "file": "annotations-boot.json",
+        "id": "configuration-properties",
+        "name": "@ConfigurationProperties",
+        "category": "boot"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "conditional-on-resource",
+        "name": "@ConditionalOnResource",
+        "category": "boot"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "spring-boot-configuration",
+        "name": "@SpringBootConfiguration",
+        "category": "boot"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "auto-configuration",
+        "name": "@AutoConfiguration",
+        "category": "boot"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "conditional-on-bean",
+        "name": "@ConditionalOnBean",
+        "category": "boot"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "import-auto-configuration",
+        "name": "@ImportAutoConfiguration",
+        "category": "boot"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "conditional-on-missing-bean",
+        "name": "@ConditionalOnMissingBean",
+        "category": "boot"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "web-mvc-test",
+        "name": "@WebMvcTest",
+        "category": "test"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "mockito-spy-bean",
+        "name": "@MockitoSpyBean",
+        "category": "test"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "active-profiles",
+        "name": "@ActiveProfiles",
+        "category": "test"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "data-jpa-test",
+        "name": "@DataJpaTest",
+        "category": "test"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "auto-configure-mock-mvc",
+        "name": "@AutoConfigureMockMvc",
+        "category": "test"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "json-test",
+        "name": "@JsonTest",
+        "category": "test"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "enable-web-security",
+        "name": "@EnableWebSecurity",
+        "category": "security"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "enable-method-security",
+        "name": "@EnableMethodSecurity",
+        "category": "security"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "secured",
+        "name": "@Secured",
+        "category": "security"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "roles-allowed",
+        "name": "@RolesAllowed",
+        "category": "security"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "import",
+        "name": "@Import",
+        "category": "core"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "property-source",
+        "name": "@PropertySource",
+        "category": "core"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "transactional-event-listener",
+        "name": "@TransactionalEventListener",
+        "category": "core"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "resource",
+        "name": "@Resource",
+        "category": "core"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "depends-on",
+        "name": "@DependsOn",
+        "category": "core"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "value",
+        "name": "@Value",
+        "category": "core"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "profile",
+        "name": "@Profile",
+        "category": "core"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "service",
+        "name": "@Service",
+        "category": "core"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "primary",
+        "name": "@Primary",
+        "category": "core"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "component",
+        "name": "@Component",
+        "category": "core"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "lazy",
+        "name": "@Lazy",
+        "category": "core"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "order",
+        "name": "@Order",
+        "category": "core"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "after",
+        "name": "@After",
+        "category": "aop"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "after-returning",
+        "name": "@AfterReturning",
+        "category": "aop"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "before",
+        "name": "@Before",
+        "category": "aop"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "enable-aspectj-auto-proxy",
+        "name": "@EnableAspectJAutoProxy",
+        "category": "aop"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "one-to-many",
+        "name": "@OneToMany",
+        "category": "data"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "select",
+        "name": "@Select",
+        "category": "data"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "cache-evict",
+        "name": "@CacheEvict",
+        "category": "data"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "modifying",
+        "name": "@Modifying",
+        "category": "data"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "update",
+        "name": "@Update",
+        "category": "data"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "join-column",
+        "name": "@JoinColumn",
+        "category": "data"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "cache-put",
+        "name": "@CachePut",
+        "category": "data"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "enable-jpa-repositories",
+        "name": "@EnableJpaRepositories",
+        "category": "data"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "cache-config",
+        "name": "@CacheConfig",
+        "category": "data"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "id",
+        "name": "@Id",
+        "category": "data"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "version",
+        "name": "@Version",
+        "category": "data"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "table",
+        "name": "@Table",
+        "category": "data"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "enable-scheduling",
+        "name": "@EnableScheduling",
+        "category": "async"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "scheduled",
+        "name": "@Scheduled",
+        "category": "async"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "delete-mapping",
+        "name": "@DeleteMapping",
+        "category": "web"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "request-param",
+        "name": "@RequestParam",
+        "category": "web"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "cookie-value",
+        "name": "@CookieValue",
+        "category": "web"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "exception-handler",
+        "name": "@ExceptionHandler",
+        "category": "web"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "put-mapping",
+        "name": "@PutMapping",
+        "category": "web"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "controller-advice",
+        "name": "@ControllerAdvice",
+        "category": "web"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "response-status",
+        "name": "@ResponseStatus",
+        "category": "web"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "response-body",
+        "name": "@ResponseBody",
+        "category": "web"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "request-header",
+        "name": "@RequestHeader",
+        "category": "web"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "post-mapping",
+        "name": "@PostMapping",
+        "category": "web"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "validated",
+        "name": "@Validated",
+        "category": "validation"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "size",
+        "name": "@Size",
+        "category": "validation"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "not-empty",
+        "name": "@NotEmpty",
+        "category": "validation"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "valid",
+        "name": "@Valid",
+        "category": "validation"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "future",
+        "name": "@Future",
+        "category": "validation"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "past",
+        "name": "@Past",
+        "category": "validation"
+      },
+      {
+        "file": "knowledge-a.json",
+        "id": "aop-proxy",
+        "name": "Spring AOP 是怎么实现的：代理与自调用",
+        "category": "principle"
+      },
+      {
+        "file": "knowledge-a.json",
+        "id": "bean-lifecycle",
+        "name": "一个 Bean 的生命周期：从创建到销毁",
+        "category": "principle"
+      },
+      {
+        "file": "knowledge-a.json",
+        "id": "global-exception",
+        "name": "全局异常处理：@ControllerAdvice 怎么用",
+        "category": "web"
+      },
+      {
+        "file": "knowledge-a.json",
+        "id": "mvc-request-flow",
+        "name": "一个请求在 Spring MVC 里经历了什么",
+        "category": "web"
+      },
+      {
+        "file": "knowledge-a.json",
+        "id": "transaction-failure",
+        "name": "@Transactional 失效的六种情况",
+        "category": "data"
+      },
+      {
+        "file": "knowledge-b.json",
+        "id": "actuator-monitoring",
+        "name": "Actuator：线上怎么看应用是否健康",
+        "category": "boot"
+      },
+      {
+        "file": "knowledge-b.json",
+        "id": "config-priority",
+        "name": "配置优先级：properties、环境变量、命令行谁说了算",
+        "category": "boot"
+      },
+      {
+        "file": "knowledge-b.json",
+        "id": "interceptor-filter-aop",
+        "name": "过滤器、拦截器、AOP 到底该用哪个",
+        "category": "web"
+      },
+      {
+        "file": "knowledge-b.json",
+        "id": "packaging-deploy",
+        "name": "打包部署：可执行 jar 和 war 怎么选",
+        "category": "engineering"
+      },
+      {
+        "file": "knowledge-b.json",
+        "id": "logging-config",
+        "name": "日志配置：从 logging.level 到 logback-spring.xml",
+        "category": "engineering"
+      },
+      {
+        "file": "knowledge-b.json",
+        "id": "version-migration",
+        "name": "Spring Boot 2→3→4 升级要过哪三关",
+        "category": "migration"
+      }
+    ]
+  },
+  "manualFocus": {
+    "highRisk": [
+      {
+        "file": "annotations-boot.json",
+        "id": "spring-boot-application",
+        "name": "@SpringBootApplication",
+        "package": "org.springframework.boot.autoconfigure.SpringBootApplication"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "enable-auto-configuration",
+        "name": "@EnableAutoConfiguration",
+        "package": "org.springframework.boot.autoconfigure.EnableAutoConfiguration"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "configuration-properties",
+        "name": "@ConfigurationProperties",
+        "package": "org.springframework.boot.context.properties.ConfigurationProperties"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "spring-boot-test",
+        "name": "@SpringBootTest",
+        "package": "org.springframework.boot.test.context.SpringBootTest"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "mock-bean",
+        "name": "@MockBean",
+        "package": "org.springframework.boot.test.mock.mockito.MockBean"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "mockito-bean",
+        "name": "@MockitoBean",
+        "package": "org.springframework.test.context.bean.override.mockito.MockitoBean"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "bean",
+        "name": "@Bean",
+        "package": "org.springframework.context.annotation.Bean"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "component-scan",
+        "name": "@ComponentScan",
+        "package": "org.springframework.context.annotation.ComponentScan"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "autowired",
+        "name": "@Autowired",
+        "package": "org.springframework.beans.factory.annotation.Autowired"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "order",
+        "name": "@Order",
+        "package": "org.springframework.core.annotation.Order"
+      },
+      {
+        "file": "annotations-core.json",
+        "id": "event-listener",
+        "name": "@EventListener",
+        "package": "org.springframework.context.event.EventListener"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "transactional",
+        "name": "@Transactional",
+        "package": "org.springframework.transaction.annotation.Transactional"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "entity",
+        "name": "@Entity",
+        "package": "jakarta.persistence.Entity"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "id",
+        "name": "@Id",
+        "package": "jakarta.persistence.Id"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "generated-value",
+        "name": "@GeneratedValue",
+        "package": "jakarta.persistence.GeneratedValue"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "query",
+        "name": "@Query",
+        "package": "org.springframework.data.jpa.repository.Query"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "param-spring-data",
+        "name": "@Param",
+        "package": "org.springframework.data.repository.query.Param"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "mapper",
+        "name": "@Mapper",
+        "package": "org.apache.ibatis.annotations.Mapper"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "param-mybatis",
+        "name": "@Param",
+        "package": "org.apache.ibatis.annotations.Param"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "cacheable",
+        "name": "@Cacheable",
+        "package": "org.springframework.cache.annotation.Cacheable"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "async",
+        "name": "@Async",
+        "package": "org.springframework.scheduling.annotation.Async"
+      },
+      {
+        "file": "annotations-data.json",
+        "id": "scheduled",
+        "name": "@Scheduled",
+        "package": "org.springframework.scheduling.annotation.Scheduled"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "controller-advice",
+        "name": "@ControllerAdvice",
+        "package": "org.springframework.web.bind.annotation.ControllerAdvice"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "rest-controller-advice",
+        "name": "@RestControllerAdvice",
+        "package": "org.springframework.web.bind.annotation.RestControllerAdvice"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "valid",
+        "name": "@Valid",
+        "package": "jakarta.validation.Valid"
+      },
+      {
+        "file": "annotations-web.json",
+        "id": "validated",
+        "name": "@Validated",
+        "package": "org.springframework.validation.annotation.Validated"
+      }
+    ],
+    "deprecationClaims": [
+      {
+        "file": "annotations-boot.json",
+        "id": "auto-configuration",
+        "note": "@AutoConfiguration 是 Boot 2.7 新增的写法；官方迁移指南说明 Boot 3.0 起自动配置只能登记在 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports，spring.factories 的注册方式已移除。"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "mockito-bean",
+        "note": "@MockitoBean 是 Spring Framework 6.2 引入的 bean 覆盖注解；Boot 3.4 起官方把 @MockBean 标记为废弃并指向它（替代普通 mock）。"
+      },
+      {
+        "file": "annotations-boot.json",
+        "id": "mockito-spy-bean",
+        "note": "@MockitoSpyBean 与 @MockitoBean 同为 Spring Framework 6.2 引入的 bean 覆盖注解，用于替代已废弃的 @MockBean（spy 场景）。"
+      }
+    ]
+  }
+}

@@ -1,0 +1,118 @@
+SOURCE: https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/servlet/AutoConfigureMockMvc.html
+FETCHED: 2026-11-26T06:46:10.330Z
+
+AutoConfigureMockMvc (Spring Boot 3.5.16 API) 
+
+ JavaScript is disabled on your browser. 
+
+ Package org.springframework.boot.test.autoconfigure.web.servlet 
+ Annotation Interface AutoConfigureMockMvc 
+
+ @Target ({ TYPE , METHOD })
+ @Retention ( RUNTIME )
+ @Documented 
+ @Inherited 
+ @ImportAutoConfiguration 
+ @PropertyMapping ("spring.test.mockmvc")
+ public @interface AutoConfigureMockMvc 
+ Annotation that can be applied to a test class to enable and configure
+ auto-configuration of MockMvc . If AssertJ is available a MockMvcTester 
+ is auto-configured as well. 
+ 
+ Since: 
+ 1.4.0 
+ Author: 
+ Phillip Webb 
+ See Also: 
+
+ MockMvcAutoConfiguration 
+ SpringBootMockMvcBuilderCustomizer 
+
+ Optional Element Summary 
+ Optional Elements 
+ 
+ Modifier and Type 
+ Optional Element 
+ Description 
+ boolean 
+ addFilters 
+ 
+ If filters from the application context should be registered with MockMVC. 
+ 
+ MockMvcPrint 
+ print 
+ 
+ How MvcResult information should be printed after each MockMVC invocation. 
+ 
+ boolean 
+ printOnlyOnFailure 
+ 
+ If MvcResult information should be printed only if the test fails. 
+ 
+ boolean 
+ webClientEnabled 
+ 
+ If a WebClient should be auto-configured when HtmlUnit is on the classpath. 
+ 
+ boolean 
+ webDriverEnabled 
+ 
+ If a WebDriver should be auto-configured when Selenium is on the classpath. 
+
+ Element Details 
+
+ addFilters 
+ boolean addFilters 
+ If filters from the application context should be registered with MockMVC. Defaults
+ to true . 
+ 
+ Returns: 
+ if filters should be added 
+
+ Default: 
+ true 
+
+ print 
+ @PropertyMapping ( skip = ON_DEFAULT_VALUE )
+ MockMvcPrint print 
+ How MvcResult information should be printed after each MockMVC invocation. 
+ 
+ Returns: 
+ how information is printed 
+
+ Default: 
+ DEFAULT 
+
+ printOnlyOnFailure 
+ boolean printOnlyOnFailure 
+ If MvcResult information should be printed only if the test fails. 
+ 
+ Returns: 
+ true if printing only occurs on failure 
+
+ Default: 
+ true 
+
+ webClientEnabled 
+ @PropertyMapping ("webclient.enabled")
+ boolean webClientEnabled 
+ If a WebClient should be auto-configured when HtmlUnit is on the classpath.
+ Defaults to true . 
+ 
+ Returns: 
+ if a WebClient is auto-configured 
+
+ Default: 
+ true 
+
+ webDriverEnabled 
+ @PropertyMapping ("webdriver.enabled")
+ boolean webDriverEnabled 
+ If a WebDriver should be auto-configured when Selenium is on the classpath.
+ Defaults to true . 
+ 
+ Returns: 
+ if a WebDriver is auto-configured 
+
+ Default: 
+ true

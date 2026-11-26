@@ -1,0 +1,2513 @@
+{
+  "generatedBy": "content-web",
+  "items": [
+    {
+      "id": "rest-controller",
+      "name": "@RestController",
+      "category": "web",
+      "subcategory": "控制器",
+      "package": "org.springframework.web.bind.annotation.RestController",
+      "level": "入门",
+      "tagline": "返回 JSON 的控制器",
+      "plain": "在类上写 @RestController，这个类的每个处理方法都默认把返回值直接写进响应体，而不是去找页面模板。它等于 @Controller 加 @ResponseBody，是写前后端分离接口最常用的组合。以前要两个注解叠着用，现在一个就够；如果你还在返回 JSP/Thymeleaf 视图名，就别用它。",
+      "keyPoints": [
+        "是 @Controller 与 @ResponseBody 的组合注解，类上写一次，所有方法都按数据而不是视图处理。",
+        "返回值交给 HttpMessageConverter 序列化，classpath 有 Jackson 时默认输出 JSON。",
+        "类上的 value 用来指定 Bean 名称，等价于 @Controller 的 value，一般不用写。",
+        "单独写它不会注册任何 URL，还要配合 @GetMapping/@PostMapping 等方法级映射注解。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "Bean 名称，等价于 @Controller 的 value，一般保持默认。"
+        }
+      ],
+      "exampleTitle": "写一个返回 JSON 的 REST 控制器",
+      "example": "import org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n// 类上标 @RestController：所有方法返回值都直接写响应体\n@RestController\npublic class UserController {\n\n    @GetMapping(\"/api/users/1\")\n    public User currentUser() {\n        return new User(1L, \"小明\");\n    }\n\n    // 普通记录类也能直接返回，会被转成 JSON\n    public record User(Long id, String name) {\n    }\n}",
+      "notes": [
+        "和 @Controller 的唯一区别是类级 @ResponseBody：前者走视图解析，后者把返回值序列化进响应体。",
+        "返回 204、下载文件、自定义响应头等场景，仍建议用 ResponseEntity 精确控制。",
+        "它只能标在类型上，贴到方法或字段上会编译不过。"
+      ],
+      "related": [
+        "@ResponseBody",
+        "@RequestMapping",
+        "@GetMapping"
+      ],
+      "tags": [
+        "REST",
+        "JSON接口",
+        "控制器"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：RestController",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RestController.html"
+        },
+        {
+          "label": "Spring Boot 3.5：Spring MVC",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/web/servlet.html"
+        }
+      ],
+      "since": "Spring 4.0"
+    },
+    {
+      "id": "request-mapping",
+      "name": "@RequestMapping",
+      "category": "web",
+      "subcategory": "请求映射",
+      "package": "org.springframework.web.bind.annotation.RequestMapping",
+      "level": "入门",
+      "tagline": "一个注解搞定路由",
+      "plain": "@RequestMapping 把 URL、HTTP 方法、请求参数、请求头等条件映射到处理方法上，是 Spring MVC 所有路由的底座，@GetMapping 这些只是它的快捷写法。类上写公共前缀，方法上写具体路径。注意不写 method 就等于接受所有请求方法，容易把写操作暴露成 GET，实际项目里建议明确限制。",
+      "keyPoints": [
+        "value 和 path 互为别名，支持 /users/**、{id} 占位符和 ${api.prefix} 属性占位符。",
+        "method 留空表示不限制 HTTP 方法；只想接 GET 就写 @GetMapping，别靠不带 method 的它。",
+        "params、headers、consumes、produces 同样是匹配条件，例如 params=version=1。",
+        "类级和方法级路径会拼接，方法级可写相对路径，类级也能挂多个路径。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "映射名称；类上有名字时方法级名字会拼成 类#方法。"
+        },
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "映射路径，path 的别名。"
+        },
+        {
+          "name": "path",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "映射路径，value 的别名，支持占位符与 Ant 风格。"
+        },
+        {
+          "name": "method",
+          "type": "RequestMethod[]",
+          "default": "{}",
+          "desc": "限制 HTTP 方法，空表示不限制。"
+        },
+        {
+          "name": "params",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求请求参数满足的条件，如 version=1。"
+        },
+        {
+          "name": "headers",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求请求头满足的条件。"
+        },
+        {
+          "name": "consumes",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限制请求的 Content-Type。"
+        },
+        {
+          "name": "produces",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限制响应的 Content-Type。"
+        }
+      ],
+      "exampleTitle": "类级前缀 + 方法级条件映射",
+      "example": "import org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RequestMethod;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\n@RequestMapping(\"/api/orders\")            // 类级公共前缀\npublic class OrderController {\n\n    // 只接受 GET /api/orders\n    @RequestMapping(method = RequestMethod.GET)\n    public String list() {\n        return \"order-list\";\n    }\n\n    // 只接受 POST /api/orders/create，且必须带 X-Tenant 头\n    @RequestMapping(path = \"/create\",\n                    method = RequestMethod.POST,\n                    headers = \"X-Tenant\")\n    public String create() {\n        return \"created\";\n    }\n}",
+      "notes": [
+        "只写 @RequestMapping 不写 method，等于所有 HTTP 方法都接，写接口时容易埋下越权隐患。",
+        "value 与 path 是别名，同时写两个会冲突报错。",
+        "params 只做匹配条件，不绑定参数；取值请用 @RequestParam。"
+      ],
+      "related": [
+        "@GetMapping",
+        "@PostMapping",
+        "@RestController",
+        "@PathVariable"
+      ],
+      "tags": [
+        "路由",
+        "HTTP方法",
+        "URL映射"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：RequestMapping",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html"
+        },
+        {
+          "label": "Spring 参考：请求映射",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html"
+        }
+      ],
+      "since": "Spring 2.5"
+    },
+    {
+      "id": "get-mapping",
+      "name": "@GetMapping",
+      "category": "web",
+      "subcategory": "请求映射",
+      "package": "org.springframework.web.bind.annotation.GetMapping",
+      "level": "入门",
+      "tagline": "GET 请求的快捷映射",
+      "plain": "@GetMapping 是 @RequestMapping(method = GET) 的简写，只处理查询类请求：列表、详情、搜索都不改变服务端数据，用它最合适。同一个 URL 如果还写 POST 处理提交，两者可以共存，Spring 按 HTTP 方法区分。但别让 GET 产生副作用，否则用户刷新页面就可能重复提交。列表页如果做缓存，GET 也是最容易接 CDN 的一类接口。",
+      "keyPoints": [
+        "等价于 @RequestMapping(method = RequestMethod.GET)，只匹配 GET（HEAD 也会命中）。",
+        "value 与 path 是同一个属性；方法级路径会拼在类级 @RequestMapping 后面。",
+        "路径里的 {id} 占位符要配合 @PathVariable 才能拿到值，它不做参数绑定。",
+        "查询参数用 @RequestParam 或直接声明参数接收，别用 GET 传敏感数据。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "映射名称，便于日志与拼装。"
+        },
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "映射路径，path 的别名。"
+        },
+        {
+          "name": "path",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "映射路径，可以是多个。"
+        },
+        {
+          "name": "params",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求请求参数满足的条件。"
+        },
+        {
+          "name": "headers",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求请求头满足的条件。"
+        },
+        {
+          "name": "consumes",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限制请求的 Content-Type。"
+        },
+        {
+          "name": "produces",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限制响应的 Content-Type。"
+        }
+      ],
+      "exampleTitle": "查询书籍列表和详情",
+      "example": "import org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.RequestParam;\nimport org.springframework.web.bind.annotation.RestController;\n\nimport java.util.List;\n\n@RestController\npublic class BookController {\n\n    // GET /books?page=2&size=10\n    @GetMapping(\"/books\")\n    public List<String> list(@RequestParam(defaultValue = \"0\") int page,\n                             @RequestParam(defaultValue = \"10\") int size) {\n        return List.of(\"page=\" + page, \"size=\" + size);\n    }\n\n    // GET /books/42\n    @GetMapping(\"/books/{id}\")\n    public String detail(@PathVariable Long id) {\n        return \"book-\" + id;\n    }\n}",
+      "notes": [
+        "用 GET 做删除、下单这类写操作，刷新或预加载就会重复执行。",
+        "路径占位符不写 @PathVariable 拿不到值，别指望它按参数名自动绑定。",
+        "一个方法可以映射多个路径：@GetMapping({\"/a\", \"/b\"})。"
+      ],
+      "related": [
+        "@PostMapping",
+        "@RequestMapping",
+        "@PathVariable",
+        "@RequestParam"
+      ],
+      "tags": [
+        "查询",
+        "HTTP方法",
+        "REST"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：GetMapping",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html"
+        },
+        {
+          "label": "Spring 参考：请求映射",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html"
+        }
+      ],
+      "since": "Spring 4.3"
+    },
+    {
+      "id": "post-mapping",
+      "name": "@PostMapping",
+      "category": "web",
+      "subcategory": "请求映射",
+      "package": "org.springframework.web.bind.annotation.PostMapping",
+      "level": "入门",
+      "tagline": "POST 提交的快捷映射",
+      "plain": "@PostMapping 是 @RequestMapping(method = POST) 的简写，用来处理创建资源、提交表单这类会改变服务端状态的请求。请求体通常配合 @RequestBody 解析 JSON。它本身不校验数据，记得再加 @Valid 和约束注解，否则脏数据会直接写进数据库。表单重复提交很常见，靠令牌或幂等键在服务端拦住。",
+      "keyPoints": [
+        "等价于 @RequestMapping(method = RequestMethod.POST)，只匹配 POST。",
+        "表单和 JSON 都能收，但接收方式不同：表单用对象参数或 @ModelAttribute，JSON 用 @RequestBody。",
+        "创建资源想返回 201 + Location 时，用 ResponseEntity 或 @ResponseStatus(HttpStatus.CREATED)。",
+        "同一个路径可以和 GET 方法共存，Spring 按 HTTP 方法区分。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "映射名称。"
+        },
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "映射路径，path 的别名。"
+        },
+        {
+          "name": "path",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "映射路径，可以是多个。"
+        },
+        {
+          "name": "params",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求请求参数满足的条件。"
+        },
+        {
+          "name": "headers",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求请求头满足的条件。"
+        },
+        {
+          "name": "consumes",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限制请求的 Content-Type。"
+        },
+        {
+          "name": "produces",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限制响应的 Content-Type。"
+        }
+      ],
+      "exampleTitle": "创建订单并返回 201",
+      "example": "import org.springframework.http.HttpStatus;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.ResponseStatus;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class OrderController {\n\n    // POST /orders，请求体是 JSON\n    @PostMapping(\"/orders\")\n    @ResponseStatus(HttpStatus.CREATED)\n    public Order create(@RequestBody CreateOrder cmd) {\n        return new Order(1001L, cmd.productId(), cmd.qty());\n    }\n\n    public record CreateOrder(Long productId, int qty) {\n    }\n\n    public record Order(Long id, Long productId, int qty) {\n    }\n}",
+      "notes": [
+        "POST 不幂等，客户端重试要靠幂等键或去重表，别指望框架兜底。",
+        "GET 也能带请求体，但浏览器和多数代理会丢弃，别靠 GET 传数据。",
+        "表单提交（application/x-www-form-urlencoded）用 @RequestBody 收不到，要用对象参数绑定。"
+      ],
+      "related": [
+        "@GetMapping",
+        "@RequestBody",
+        "@ResponseStatus",
+        "@RequestMapping"
+      ],
+      "tags": [
+        "提交",
+        "HTTP方法",
+        "创建资源"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：PostMapping",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PostMapping.html"
+        },
+        {
+          "label": "Spring 参考：请求映射",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html"
+        }
+      ],
+      "since": "Spring 4.3"
+    },
+    {
+      "id": "put-mapping",
+      "name": "@PutMapping",
+      "category": "web",
+      "subcategory": "请求映射",
+      "package": "org.springframework.web.bind.annotation.PutMapping",
+      "level": "入门",
+      "tagline": "整体更新用 PUT 映射",
+      "plain": "@PutMapping 对应 HTTP PUT，语义是整体替换一个资源：客户端要把完整对象传上来，服务端按 id 覆盖。它适合编辑表单的提交。相比 PATCH，PUT 要求字段全量，缺失字段会被当成要清空，所以只想改一两个字段时别硬套 PUT。编辑表单回填时，先把详情查出来再整体提交即可。",
+      "keyPoints": [
+        "等价于 @RequestMapping(method = RequestMethod.PUT)，只匹配 PUT。",
+        "PUT 按规范是幂等的：同一个请求重复发送，结果应保持一致。",
+        "更新成功通常返回 200 或 204（无内容），不要默认依赖 302。",
+        "路径里的 id 用 @PathVariable 取，请求体用 @RequestBody 接。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "映射名称。"
+        },
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "映射路径，path 的别名。"
+        },
+        {
+          "name": "path",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "映射路径，可以是多个。"
+        },
+        {
+          "name": "params",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求请求参数满足的条件。"
+        },
+        {
+          "name": "headers",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求请求头满足的条件。"
+        },
+        {
+          "name": "consumes",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限制请求的 Content-Type。"
+        },
+        {
+          "name": "produces",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限制响应的 Content-Type。"
+        }
+      ],
+      "exampleTitle": "整体替换用户信息",
+      "example": "import org.springframework.http.ResponseEntity;\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.PutMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class UserController {\n\n    // PUT /users/7，整体替换\n    @PutMapping(\"/users/{id}\")\n    public ResponseEntity<User> replace(@PathVariable Long id,\n                                        @RequestBody User form) {\n        return ResponseEntity.ok(new User(id, form.name(), form.email()));\n    }\n\n    public record User(Long id, String name, String email) {\n    }\n}",
+      "notes": [
+        "PUT 是整体替换：请求体没带的字段应当被清空，不想清空就改用 PATCH。",
+        "路径 id 与请求体 id 可能不一致，以路径为准并显式校验。",
+        "更新不存在的资源要返回 404，不要悄悄新建一条。"
+      ],
+      "related": [
+        "@PatchMapping",
+        "@DeleteMapping",
+        "@PathVariable",
+        "@RequestBody"
+      ],
+      "tags": [
+        "更新",
+        "HTTP方法",
+        "幂等"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：PutMapping",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html"
+        },
+        {
+          "label": "Spring 参考：请求映射",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html"
+        }
+      ],
+      "since": "Spring 4.3"
+    },
+    {
+      "id": "delete-mapping",
+      "name": "@DeleteMapping",
+      "category": "web",
+      "subcategory": "请求映射",
+      "package": "org.springframework.web.bind.annotation.DeleteMapping",
+      "level": "入门",
+      "tagline": "删除资源用 DELETE",
+      "plain": "@DeleteMapping 对应 HTTP DELETE，标准语义是删除路径指定的资源。实际项目里很多团队改成逻辑删除（置 deleted 标记）后再用它。删除成功通常返回 204，不返回内容；批量删除时不要把大量 id 拼进查询串，超过长度限制会直接失败。删除接口要做好鉴权，别让普通用户删掉别人的数据。",
+      "keyPoints": [
+        "等价于 @RequestMapping(method = RequestMethod.DELETE)，只匹配 DELETE。",
+        "成功且无响应体时返回 204 No Content，用 ResponseEntity.noContent() 最直接。",
+        "DELETE 也是幂等的：删不存在的资源返回 404 或 204 都行，但团队内要统一。",
+        "浏览器表单只支持 GET/POST，前端删除要用 fetch 或 axios 发 DELETE。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "映射名称。"
+        },
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "映射路径，path 的别名。"
+        },
+        {
+          "name": "path",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "映射路径，可以是多个。"
+        },
+        {
+          "name": "params",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求请求参数满足的条件。"
+        },
+        {
+          "name": "headers",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求请求头满足的条件。"
+        },
+        {
+          "name": "consumes",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限制请求的 Content-Type。"
+        },
+        {
+          "name": "produces",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限制响应的 Content-Type。"
+        }
+      ],
+      "exampleTitle": "删除文件并返回 204",
+      "example": "import org.springframework.http.ResponseEntity;\nimport org.springframework.web.bind.annotation.DeleteMapping;\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.RequestParam;\nimport org.springframework.web.bind.annotation.RestController;\n\nimport java.util.List;\n\n@RestController\npublic class FileController {\n\n    // DELETE /files/99\n    @DeleteMapping(\"/files/{id}\")\n    public ResponseEntity<Void> remove(@PathVariable Long id) {\n        return ResponseEntity.noContent().build();\n    }\n\n    // 批量删除：DELETE /files?ids=1,2,3\n    @DeleteMapping(\"/files\")\n    public ResponseEntity<Void> removeBatch(@RequestParam List<Long> ids) {\n        return ResponseEntity.noContent().build();\n    }\n}",
+      "notes": [
+        "路径变量类型不匹配（比如 id 传字母）时，Spring 直接返回 400，不是 404。",
+        "删除前要校验权限与数据归属，别仅凭 URL 里的 id 就删。",
+        "DELETE 带请求体不是普遍约定，部分代理会丢弃，尽量用路径或查询参数。"
+      ],
+      "related": [
+        "@PutMapping",
+        "@PatchMapping",
+        "@PathVariable",
+        "@ResponseStatus"
+      ],
+      "tags": [
+        "删除",
+        "HTTP方法",
+        "REST"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：DeleteMapping",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/DeleteMapping.html"
+        },
+        {
+          "label": "Spring 参考：请求映射",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html"
+        }
+      ],
+      "since": "Spring 4.3"
+    },
+    {
+      "id": "patch-mapping",
+      "name": "@PatchMapping",
+      "category": "web",
+      "subcategory": "请求映射",
+      "package": "org.springframework.web.bind.annotation.PatchMapping",
+      "level": "入门",
+      "tagline": "局部更新的 PATCH 映射",
+      "plain": "@PatchMapping 对应 HTTP PATCH，用来只更新部分字段，比如只改昵称。它不像 PUT 要求全量提交，所以服务端要自己判断哪些字段传了、哪些没传。实现上常见两种：用 Map 判断字段是否存在，或者定义专门的 Patch DTO 再把 null 当成不修改。补丁字段很多时，用专门的 DTO 加字段存在标记更清晰。",
+      "keyPoints": [
+        "等价于 @RequestMapping(method = RequestMethod.PATCH)，只匹配 PATCH。",
+        "PATCH 不要求幂等（规范允许非幂等），重复提交要小心。",
+        "部分更新要能区分字段没传和字段传了 null，简单 DTO 两者都是 null。",
+        "并发更新建议加版本号或 updatedAt 做乐观锁，避免覆盖别人的修改。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "映射名称。"
+        },
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "映射路径，path 的别名。"
+        },
+        {
+          "name": "path",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "映射路径，可以是多个。"
+        },
+        {
+          "name": "params",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求请求参数满足的条件。"
+        },
+        {
+          "name": "headers",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求请求头满足的条件。"
+        },
+        {
+          "name": "consumes",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限制请求的 Content-Type。"
+        },
+        {
+          "name": "produces",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限制响应的 Content-Type。"
+        }
+      ],
+      "exampleTitle": "只更新昵称字段",
+      "example": "import org.springframework.web.bind.annotation.PatchMapping;\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\nimport java.util.Map;\n\n@RestController\npublic class ProfileController {\n\n    // PATCH /profiles/3，只传需要修改的字段\n    @PatchMapping(\"/profiles/{id}\")\n    public Profile patch(@PathVariable Long id, @RequestBody Map<String, Object> patch) {\n        Profile old = new Profile(id, \"小明\", \"xiaoming@example.com\");\n        if (patch.containsKey(\"nickname\")) {\n            old = old.withNickname((String) patch.get(\"nickname\"));\n        }\n        return old;\n    }\n\n    public record Profile(Long id, String nickname, String email) {\n        public Profile withNickname(String nickname) {\n            return new Profile(id, nickname, email);\n        }\n    }\n}",
+      "notes": [
+        "用 Map 收补丁类型不安全，生产环境建议定义专门的 Patch DTO。",
+        "application/json-patch+json 之类的专门补丁格式 Spring 不会自动解析，要自己处理。",
+        "部分网关默认支持 PUT 却不支持 PATCH，接入前确认。"
+      ],
+      "related": [
+        "@PutMapping",
+        "@RequestBody",
+        "@PathVariable"
+      ],
+      "tags": [
+        "局部更新",
+        "HTTP方法",
+        "REST"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：PatchMapping",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PatchMapping.html"
+        },
+        {
+          "label": "Spring 参考：请求映射",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html"
+        }
+      ],
+      "since": "Spring 4.3"
+    },
+    {
+      "id": "request-param",
+      "name": "@RequestParam",
+      "category": "web",
+      "subcategory": "参数绑定",
+      "package": "org.springframework.web.bind.annotation.RequestParam",
+      "level": "入门",
+      "tagline": "绑定查询参数和表单字段",
+      "plain": "@RequestParam 把 URL 查询串（?page=2）或表单字段绑到方法参数上。查询参数是可选的，所以要么给 defaultValue，要么把 required 设成 false，否则参数一缺就返回 400。它不负责 JSON 请求体，JSON 请用 @RequestBody。名字对不上时用 name 或 value 指定。分页、排序、筛选这类查询条件都放在查询串里，不要塞进请求体。",
+      "keyPoints": [
+        "name 和 value 互为别名；不写时按编译期参数名推断，需 -parameters 或显式指定。",
+        "required 默认 true，缺参数抛 MissingServletRequestParameterException 变成 400；设了 defaultValue 会自动变成 false。",
+        "defaultValue 是字符串，Spring 会按目标类型做类型转换。",
+        "它绑定查询参数与表单数据，不是 JSON 请求体。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "参数名，value 的别名。"
+        },
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "参数名，name 的别名。"
+        },
+        {
+          "name": "defaultValue",
+          "type": "String",
+          "default": "ValueConstants.DEFAULT_NONE",
+          "desc": "缺省值哨兵；一旦设置 required 自动变 false。"
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "true",
+          "desc": "参数是否必填，默认必填。"
+        }
+      ],
+      "exampleTitle": "搜索接口接收分页参数",
+      "example": "import org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RequestParam;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class SearchController {\n\n    // GET /search?keyword=spring&page=1&size=20\n    @GetMapping(\"/search\")\n    public String search(@RequestParam(name = \"keyword\") String keyword,\n                         @RequestParam(defaultValue = \"1\") int page,\n                         @RequestParam(defaultValue = \"20\") int size) {\n        return \"keyword=\" + keyword + \", page=\" + page + \", size=\" + size;\n    }\n\n    // 可选参数：不传也能进方法\n    @GetMapping(\"/filter\")\n    public String filter(@RequestParam(required = false) String category) {\n        return \"category=\" + category;\n    }\n}",
+      "notes": [
+        "参数名依赖编译期 -parameters，没有该选项时请显式写 name，否则可能取到 arg0。",
+        "defaultValue 写字符串也一样会做类型转换，比如 defaultValue = \"1\"。",
+        "用 @RequestParam 收 JSON 一定拿不到值，那是 @RequestBody 的活。"
+      ],
+      "related": [
+        "@PathVariable",
+        "@RequestBody",
+        "@ModelAttribute"
+      ],
+      "tags": [
+        "查询参数",
+        "表单",
+        "参数绑定"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：RequestParam",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html"
+        },
+        {
+          "label": "Spring 参考：@RequestParam",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestparam.html"
+        }
+      ],
+      "since": "Spring 2.5"
+    },
+    {
+      "id": "path-variable",
+      "name": "@PathVariable",
+      "category": "web",
+      "subcategory": "参数绑定",
+      "package": "org.springframework.web.bind.annotation.PathVariable",
+      "level": "入门",
+      "tagline": "取 URL 路径里的占位值",
+      "plain": "@PathVariable 把 /users/{id} 这种 URL 模板中的值取出来。和查询参数不同，它是路径的一部分，默认不能省略，也没有 defaultValue，只能通过 required=false 变成可选（Spring 6.2 支持）。RESTful 风格的资源 id 几乎都用它，配合 @GetMapping 的路径占位符使用。资源 id 放路径更符合 REST 习惯，也方便网关按路径做限流。",
+      "keyPoints": [
+        "name/value 指定占位符名称；Spring 4.3.3 起支持 required=false，可选时建议显式写 name。",
+        "占位符名和方法参数名一致时可以不写注解值，但仍建议显式写。",
+        "路径变量只做类型转换，资源不存在要自己返回 404。",
+        "占位符里可以写正则约束，例如 {id:\\d+} 限定只匹配数字。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "占位符名称，value 的别名。"
+        },
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "占位符名称，name 的别名。"
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否必填，默认必填。"
+        }
+      ],
+      "exampleTitle": "从路径里取文章 id",
+      "example": "import org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class ArticleController {\n\n    // GET /articles/100\n    @GetMapping(\"/articles/{id}\")\n    public String article(@PathVariable(\"id\") Long id) {\n        return \"article-\" + id;\n    }\n\n    // 正则约束：只匹配数字，/articles/abc 直接 404\n    @GetMapping(\"/articles/{id:[0-9]+}/comments\")\n    public String comments(@PathVariable Long id) {\n        return \"comments of \" + id;\n    }\n\n    // 可选路径变量（Spring 4.3.3+）\n    @GetMapping({\"/tags\", \"/tags/{name}\"})\n    public String tags(@PathVariable(required = false) String name) {\n        return \"tag=\" + name;\n    }\n}",
+      "notes": [
+        "缺必填路径变量不会进方法，Spring 直接返回 404，想自定义提示要配全局异常处理。",
+        "路径变量名和参数名不一致时忘了写 name，会报参数缺失。",
+        "路径模板里的花括号是语法，真实 URL 想带花括号要另做设计。"
+      ],
+      "related": [
+        "@RequestParam",
+        "@GetMapping",
+        "@RequestMapping"
+      ],
+      "tags": [
+        "路径参数",
+        "REST",
+        "占位符"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：PathVariable",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html"
+        },
+        {
+          "label": "Spring 参考：方法参数",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/arguments.html"
+        }
+      ],
+      "since": "Spring 3.0"
+    },
+    {
+      "id": "request-body",
+      "name": "@RequestBody",
+      "category": "web",
+      "subcategory": "参数绑定",
+      "package": "org.springframework.web.bind.annotation.RequestBody",
+      "level": "进阶",
+      "tagline": "把 JSON 请求体变成对象",
+      "plain": "@RequestBody 告诉 Spring：把整个请求体按 Content-Type（通常是 application/json）反序列化成方法参数对象。它和 @RequestParam 绑定的查询串互不影响，一个请求里两者可以同时用。不带该注解时，对象参数会被当成表单模型走 @ModelAttribute，JSON 内容不会生效。签名、加密这类需要原始报文的逻辑，要在读请求体之前完成。",
+      "keyPoints": [
+        "一个方法只能有一个 @RequestBody 参数，请求体流只能读一次。",
+        "依赖 HttpMessageConverter，JSON 需要 Jackson，Boot 默认已带。",
+        "required 默认 true，空请求体会 400；允许空体可设为 false。",
+        "请求体读完后流就没了，别指望再通过 HttpServletRequest.getInputStream() 读一遍。"
+      ],
+      "attributes": [
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "true",
+          "desc": "请求体是否必须有内容，默认必须有。"
+        }
+      ],
+      "exampleTitle": "接收 JSON 支付请求",
+      "example": "import org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\nimport java.math.BigDecimal;\n\n@RestController\npublic class PayController {\n\n    // POST /pay，Content-Type: application/json\n    // {\"orderNo\":\"A001\",\"amount\":99.50}\n    @PostMapping(\"/pay\")\n    public String pay(@RequestBody PayRequest request) {\n        return \"pay \" + request.orderNo() + \" amount \" + request.amount();\n    }\n\n    public record PayRequest(String orderNo, BigDecimal amount) {\n    }\n}",
+      "notes": [
+        "Content-Type 不是 application/json 时返回 415，别误判成参数问题。",
+        "缺字段或类型不对会 400（HttpMessageNotReadableException），想友好提示要全局处理。",
+        "给 record 组件加约束注解时，要配合 @Valid 才会级联校验。"
+      ],
+      "related": [
+        "@ResponseBody",
+        "@RequestParam",
+        "@ModelAttribute",
+        "@Valid"
+      ],
+      "tags": [
+        "JSON",
+        "请求体",
+        "反序列化"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：RequestBody",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html"
+        },
+        {
+          "label": "Spring 参考：@RequestBody",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestbody.html"
+        }
+      ],
+      "since": "Spring 3.0"
+    },
+    {
+      "id": "response-body",
+      "name": "@ResponseBody",
+      "category": "web",
+      "subcategory": "响应处理",
+      "package": "org.springframework.web.bind.annotation.ResponseBody",
+      "level": "入门",
+      "tagline": "直接把返回值写进响应体",
+      "plain": "@ResponseBody 放在方法或类上，表示返回值不再当视图名，而是由 HttpMessageConverter 序列化后写进 HTTP 响应体。@RestController 就是 @Controller 加类级 @ResponseBody。返回对象默认变 JSON；返回 String 时直接是文本，不会去找 JSP/Thymeleaf 模板。接口同时提供页面和 JSON 时，按方法分别控制返回值格式即可。",
+      "keyPoints": [
+        "方法级优先，类级对该类所有方法生效。",
+        "序列化格式由 produces 和消息转换器决定，默认 JSON（有 Jackson 时）。",
+        "返回 String 时默认 text/plain，不是 HTML；要返回 HTML 得显式配 produces。",
+        "与 @ResponseStatus、ResponseEntity 搭配可以控制状态码和响应头。"
+      ],
+      "attributes": [],
+      "exampleTitle": "普通 Controller 里直接返回数据",
+      "example": "import org.springframework.stereotype.Controller;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.ResponseBody;\n\nimport java.util.Map;\n\n@Controller\npublic class LegacyController {\n\n    // 方法级 @ResponseBody：返回 Map 序列化成 JSON\n    @GetMapping(\"/legacy/ping\")\n    @ResponseBody\n    public Map<String, Object> ping() {\n        return Map.of(\"ok\", true, \"msg\", \"pong\");\n    }\n\n    // 同一个类里仍可返回视图名，走模板解析\n    @GetMapping(\"/legacy/page\")\n    public String page() {\n        return \"legacy/page\";\n    }\n}",
+      "notes": [
+        "在 @RestController 类里再写 @ResponseBody 是多余的。",
+        "String 返回值容易被误认为页面名：想返回 HTML 要设置 produces 为 text/html。",
+        "返回值是 null 时默认 200 且响应体为空，不是 404。"
+      ],
+      "related": [
+        "@RestController",
+        "@RequestBody",
+        "@ResponseStatus"
+      ],
+      "tags": [
+        "响应体",
+        "JSON",
+        "序列化"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：ResponseBody",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html"
+        },
+        {
+          "label": "Spring 参考：@ResponseBody",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/responsebody.html"
+        }
+      ],
+      "since": "Spring 3.0"
+    },
+    {
+      "id": "request-header",
+      "name": "@RequestHeader",
+      "category": "web",
+      "subcategory": "参数绑定",
+      "package": "org.springframework.web.bind.annotation.RequestHeader",
+      "level": "入门",
+      "tagline": "读取请求头里的值",
+      "plain": "@RequestHeader 把 HTTP 请求头（比如 Authorization、User-Agent）绑到方法参数。请求头并不都是必传的，默认 required=true 时缺失会 400，所以通常要配 defaultValue 或 required=false。做鉴权、幂等键、多租户标识时经常用它。网关转发的头可能被改写，关键信息最好在服务端重新获取。自定义头忘了配网关，线上就会被悄悄丢掉。",
+      "keyPoints": [
+        "name/value 指定请求头名；required 默认 true；设了 defaultValue 会自动变成 false。",
+        "请求头名大小写不敏感（HTTP 规范），代码里建议统一写法。",
+        "参数类型也可以是 Map<String, String> 或 HttpHeaders，一次拿到全部请求头。",
+        "多值头请用 List 或 HttpHeaders 接收，别硬塞进单个 String。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "请求头名，value 的别名。"
+        },
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "请求头名，name 的别名。"
+        },
+        {
+          "name": "defaultValue",
+          "type": "String",
+          "default": "ValueConstants.DEFAULT_NONE",
+          "desc": "缺省值哨兵；一旦设置 required 自动变 false。"
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "true",
+          "desc": "请求头是否必填。"
+        }
+      ],
+      "exampleTitle": "读取租户和语言请求头",
+      "example": "import org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RequestHeader;\nimport org.springframework.web.bind.annotation.RestController;\n\nimport java.util.Map;\n\n@RestController\npublic class HeaderController {\n\n    // 必填头缺失 → 400\n    @GetMapping(\"/tenant\")\n    public String tenant(@RequestHeader(\"X-Tenant-Id\") String tenantId) {\n        return \"tenant=\" + tenantId;\n    }\n\n    // 可选头，带默认值\n    @GetMapping(\"/lang\")\n    public String lang(@RequestHeader(name = \"Accept-Language\", defaultValue = \"zh-CN\") String lang) {\n        return \"lang=\" + lang;\n    }\n\n    // 一次拿全部请求头\n    @GetMapping(\"/headers\")\n    public Map<String, String> all(@RequestHeader Map<String, String> headers) {\n        return headers;\n    }\n}",
+      "notes": [
+        "请求头名写错不会报找不到方法，而是 400 参数缺失，排查时容易懵。",
+        "自定义头要进网关和 CORS 白名单，否则浏览器端可能带不过来。",
+        "Authorization 头别直接打进日志，注意脱敏。"
+      ],
+      "related": [
+        "@CookieValue",
+        "@RequestParam",
+        "@ResponseStatus"
+      ],
+      "tags": [
+        "请求头",
+        "鉴权",
+        "参数绑定"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：RequestHeader",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestHeader.html"
+        },
+        {
+          "label": "Spring 参考：@RequestHeader",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestheader.html"
+        }
+      ],
+      "since": "Spring 3.0"
+    },
+    {
+      "id": "cookie-value",
+      "name": "@CookieValue",
+      "category": "web",
+      "subcategory": "参数绑定",
+      "package": "org.springframework.web.bind.annotation.CookieValue",
+      "level": "入门",
+      "tagline": "读取 Cookie 的值",
+      "plain": "@CookieValue 从请求的 Cookie 里取出指定名字的值。会话 id、记住我 token 这类信息常用它读。Cookie 缺失时默认 400，所以一般要设 required=false 或 defaultValue。注意 Cookie 保存在用户浏览器里、可被篡改，别把它当可信凭证直接用。Cookie 有大小和数量限制，别把大对象塞进去。",
+      "keyPoints": [
+        "name/value 指定 Cookie 名；required 默认 true；设了 defaultValue 会自动变成 false。",
+        "中文/特殊字符由容器按 Cookie 规范解码，复杂值建议自己编码后再存。",
+        "想一次拿所有 Cookie，可以注入 HttpServletRequest 后调用 getCookies()。",
+        "HttpOnly 的 Cookie 前端 JS 读不到，但服务端仍能通过它读到。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "Cookie 名，value 的别名。"
+        },
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "Cookie 名，name 的别名。"
+        },
+        {
+          "name": "defaultValue",
+          "type": "String",
+          "default": "ValueConstants.DEFAULT_NONE",
+          "desc": "缺省值哨兵；一旦设置 required 自动变 false。"
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "true",
+          "desc": "Cookie 是否必填。"
+        }
+      ],
+      "exampleTitle": "从 Cookie 读取会话和主题",
+      "example": "import org.springframework.web.bind.annotation.CookieValue;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class SessionController {\n\n    // 浏览器带 Cookie: SESSION=abc123\n    @GetMapping(\"/profile\")\n    public String profile(@CookieValue(\"SESSION\") String sessionId) {\n        return \"session=\" + sessionId;\n    }\n\n    // Cookie 不存在时给默认值，避免 400\n    @GetMapping(\"/theme\")\n    public String theme(@CookieValue(name = \"theme\", defaultValue = \"light\") String theme) {\n        return \"theme=\" + theme;\n    }\n}",
+      "notes": [
+        "Cookie 不存在又没设 defaultValue 时返回 400，这是最常见的坑。",
+        "前端 fetch 默认不带跨域 Cookie，需要 credentials 且后端 CORS 允许。",
+        "读到的值要校验，Cookie 内容用户可以随便改。"
+      ],
+      "related": [
+        "@RequestHeader",
+        "@RequestParam",
+        "@CrossOrigin"
+      ],
+      "tags": [
+        "Cookie",
+        "会话",
+        "参数绑定"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：CookieValue",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/CookieValue.html"
+        },
+        {
+          "label": "Spring 参考：@CookieValue",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/cookievalue.html"
+        }
+      ],
+      "since": "Spring 3.0"
+    },
+    {
+      "id": "model-attribute",
+      "name": "@ModelAttribute",
+      "category": "web",
+      "subcategory": "参数绑定",
+      "package": "org.springframework.web.bind.annotation.ModelAttribute",
+      "level": "进阶",
+      "tagline": "绑定表单数据到对象",
+      "plain": "@ModelAttribute 把请求参数（表单、查询串）按名字填进一个对象，是 Spring MVC 表单绑定的核心。写在参数上时从模型里取对象，没有就新建；写在方法上则是往模型里预放公共数据。它不处理 JSON 请求体，JSON 请用 @RequestBody。表单校验失败时，用它把用户输入原样回显到页面。",
+      "keyPoints": [
+        "参数位置上用它时，对象从模型里取，没有就 new 一个再按参数名绑定字段。",
+        "方法级 @ModelAttribute 会在每个请求处理方法之前执行，适合准备下拉选项等公共数据。",
+        "name 指定模型属性名；binding=false 表示只放进模型、不参与数据绑定。",
+        "绑定失败会写入 BindingResult，紧跟被绑定参数声明 BindingResult 才能拿到错误。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "模型属性名，value 的别名；不写时由类型推断。"
+        },
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "模型属性名，name 的别名。"
+        },
+        {
+          "name": "binding",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否参与数据绑定。"
+        }
+      ],
+      "exampleTitle": "表单提交绑定到 UserForm",
+      "example": "import org.springframework.stereotype.Controller;\nimport org.springframework.ui.Model;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.ModelAttribute;\nimport org.springframework.web.bind.annotation.PostMapping;\n\n@Controller\npublic class RegisterController {\n\n    // 每个请求前执行：预置城市下拉选项\n    @ModelAttribute(\"cities\")\n    public String[] cities() {\n        return new String[]{\"北京\", \"上海\", \"广州\"};\n    }\n\n    // GET /register 显示表单，user 是新对象\n    @GetMapping(\"/register\")\n    public String form(@ModelAttribute(\"user\") UserForm user, Model model) {\n        model.addAttribute(\"user\", user);\n        return \"register\";\n    }\n\n    // POST /register 表单提交，字段按参数名绑定到 user\n    @PostMapping(\"/register\")\n    public String submit(@ModelAttribute(\"user\") UserForm user) {\n        return \"redirect:/register?ok\";\n    }\n\n    public static class UserForm {\n        private String username;\n        private String city;\n        public String getUsername() { return username; }\n        public void setUsername(String username) { this.username = username; }\n        public String getCity() { return city; }\n        public void setCity(String city) { this.city = city; }\n    }\n}",
+      "notes": [
+        "用 @RequestBody 收表单是拿不到的，表单要用 @ModelAttribute 或直接参数绑定。",
+        "对象字段需要 setter 或构造器绑定，只有 getter 会绑不上。",
+        "BindingResult 必须紧跟在被绑定参数后面，否则绑定失败直接抛异常。"
+      ],
+      "related": [
+        "@RequestBody",
+        "@RequestParam",
+        "@Valid",
+        "@SessionAttributes"
+      ],
+      "tags": [
+        "表单绑定",
+        "模型",
+        "数据绑定"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：ModelAttribute",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ModelAttribute.html"
+        },
+        {
+          "label": "Spring 参考：@ModelAttribute",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/modelattrib-method-args.html"
+        }
+      ],
+      "since": "Spring 2.5"
+    },
+    {
+      "id": "request-attribute",
+      "name": "@RequestAttribute",
+      "category": "web",
+      "subcategory": "参数绑定",
+      "package": "org.springframework.web.bind.annotation.RequestAttribute",
+      "level": "进阶",
+      "tagline": "取 request 域里的属性",
+      "plain": "@RequestAttribute 把 request.setAttribute 放进去的值注入到方法参数。它常用于拦截器或过滤器里解析完用户身份后，把结果挂到 request 域，再在 Controller 里取出来。注意它读的是 request 属性，不是请求参数，也不是请求头。跨线程异步处理时，属性不会自动传递，需要显式拷贝。",
+      "keyPoints": [
+        "name/value 指属性名；required 默认 true，缺失抛 ServletRequestBindingException 变成 400。",
+        "它不是 @RequestParam：参数在查询串里，属性在 request 域里。",
+        "过滤器、拦截器的 preHandle 里 setAttribute 的值都能被它读到。",
+        "属性名建议用常量，避免手写字符串出错。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "request 属性名，value 的别名。"
+        },
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "request 属性名，name 的别名。"
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "true",
+          "desc": "属性是否必填。"
+        }
+      ],
+      "exampleTitle": "拦截器放值、控制器取用",
+      "example": "import jakarta.servlet.http.HttpServletRequest;\nimport jakarta.servlet.http.HttpServletResponse;\nimport org.springframework.stereotype.Component;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RequestAttribute;\nimport org.springframework.web.bind.annotation.RestController;\nimport org.springframework.web.servlet.HandlerInterceptor;\n\n@RestController\npublic class MeController {\n\n    // 拦截器已经往 request 域里放了 currentUser\n    @GetMapping(\"/me\")\n    public String me(@RequestAttribute(\"currentUser\") String user) {\n        return \"hello \" + user;\n    }\n\n    @Component\n    public static class UserInterceptor implements HandlerInterceptor {\n        @Override\n        public boolean preHandle(HttpServletRequest request,\n                                 HttpServletResponse response,\n                                 Object handler) {\n            request.setAttribute(\"currentUser\", \"小明\");\n            return true;\n        }\n    }\n}",
+      "notes": [
+        "从查询参数里取不到它，别和 @RequestParam 混用。",
+        "异步请求或转发后 request 域可能变化，跨线程时属性不一定还在。",
+        "缺失且 required=true 时返回 400，不是 404。"
+      ],
+      "related": [
+        "@SessionAttribute",
+        "@RequestParam",
+        "@RequestHeader"
+      ],
+      "tags": [
+        "request域",
+        "拦截器",
+        "参数绑定"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：RequestAttribute",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestAttribute.html"
+        },
+        {
+          "label": "Spring 参考：@RequestAttribute",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestattrib.html"
+        }
+      ],
+      "since": "Spring 4.3"
+    },
+    {
+      "id": "session-attribute",
+      "name": "@SessionAttribute",
+      "category": "web",
+      "subcategory": "参数绑定",
+      "package": "org.springframework.web.bind.annotation.SessionAttribute",
+      "level": "进阶",
+      "tagline": "取 session 域里的属性",
+      "plain": "@SessionAttribute 从 HttpSession 里取指定名字的属性注入方法参数，适合登录用户这类跨请求保存的数据。它只读不写：往 session 里放数据要在登录逻辑里手动 setAttribute，或者用 @SessionAttributes 把模型属性同步进 session。用户退出登录时要清掉对应属性，否则旧会话还能读到。",
+      "keyPoints": [
+        "name/value 指 session 属性名；required 默认 true，缺失返回 400。",
+        "只负责读取，不会创建 session 属性。",
+        "与 @SessionAttributes 不同：前者读原生 HttpSession，后者管理模型属性。",
+        "属性名写错时取不到值，建议集中定义常量。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "session 属性名，value 的别名。"
+        },
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "session 属性名，name 的别名。"
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "true",
+          "desc": "属性是否必填。"
+        }
+      ],
+      "exampleTitle": "读取登录用户 session 属性",
+      "example": "import jakarta.servlet.http.HttpSession;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.SessionAttribute;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\n@RequestMapping(\"/account\")\npublic class AccountController {\n\n    // 登录接口：手动把用户放进 session\n    @GetMapping(\"/login\")\n    public String login(HttpSession session) {\n        session.setAttribute(\"loginUser\", \"小明\");\n        return \"logged-in\";\n    }\n\n    // 后续请求直接取 session 属性\n    @GetMapping(\"/info\")\n    public String info(@SessionAttribute(\"loginUser\") String user) {\n        return \"user=\" + user;\n    }\n\n    // 未登录也能访问：required=false 时取到 null\n    @GetMapping(\"/optional\")\n    public String optional(@SessionAttribute(name = \"loginUser\", required = false) String user) {\n        return \"user=\" + user;\n    }\n}",
+      "notes": [
+        "没登录（session 里没这个属性）访问 /info 会 400，要配合 required=false。",
+        "分布式部署时 session 要么粘性要么共享（如 Redis），否则另一个实例取不到。",
+        "session 属性名写错排查困难，建议集中定义常量。"
+      ],
+      "related": [
+        "@SessionAttributes",
+        "@RequestAttribute",
+        "@ModelAttribute"
+      ],
+      "tags": [
+        "session",
+        "登录态",
+        "参数绑定"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：SessionAttribute",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/SessionAttribute.html"
+        },
+        {
+          "label": "Spring 参考：@SessionAttribute",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/sessionattribute.html"
+        }
+      ],
+      "since": "Spring 4.3"
+    },
+    {
+      "id": "session-attributes",
+      "name": "@SessionAttributes",
+      "category": "web",
+      "subcategory": "会话模型",
+      "package": "org.springframework.web.bind.annotation.SessionAttributes",
+      "level": "进阶",
+      "tagline": "把模型属性暂存到 session",
+      "plain": "@SessionAttributes 写在类上，列出若干模型属性名，Spring 会在请求之间把它们存进 HttpSession，下次请求再放回模型。典型用途是多步表单、购物车这种会话级对象。它不是 @SessionAttribute 的复数版：一个管模型属性，一个读原生 session。向导流程通常三步一组，每步只把草稿放进模型即可。",
+      "keyPoints": [
+        "value 与 names 互为别名，填模型属性名；types 按类型匹配模型属性。",
+        "配合 @ModelAttribute 方法初始化会话对象，请求结束时同步到 session。",
+        "需要清空时调用 SessionStatus.setComplete()。",
+        "只在当前 Controller 类内生效，换个 Controller 读不到。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要存入 session 的模型属性名，names 的别名。"
+        },
+        {
+          "name": "names",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要存入 session 的模型属性名，value 的别名。"
+        },
+        {
+          "name": "types",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "按类型匹配要存入 session 的模型属性。"
+        }
+      ],
+      "exampleTitle": "购物车跨请求暂存在 session",
+      "example": "import org.springframework.stereotype.Controller;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.ModelAttribute;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.SessionAttributes;\nimport org.springframework.web.bind.support.SessionStatus;\n\n@Controller\n@SessionAttributes(\"cart\")   // 模型里的 cart 会存进 session\npublic class CartController {\n\n    @ModelAttribute(\"cart\")\n    public Cart cart() {\n        return new Cart();       // 首次创建，之后从 session 取回\n    }\n\n    @PostMapping(\"/cart/add\")\n    public String add(@ModelAttribute(\"cart\") Cart cart, String item) {\n        cart.add(item);\n        return \"redirect:/cart\";\n    }\n\n    @GetMapping(\"/cart/clear\")\n    public String clear(SessionStatus status) {\n        status.setComplete();    // 请求结束后从 session 移除\n        return \"redirect:/cart\";\n    }\n\n    public static class Cart {\n        private final java.util.List<String> items = new java.util.ArrayList<>();\n        public void add(String item) { items.add(item); }\n        public java.util.List<String> getItems() { return items; }\n    }\n}",
+      "notes": [
+        "@SessionAttributes 只对当前 Controller 生效，别的 Controller 读不到。",
+        "模型对象会一直留在会话里，注意内存占用与安全，别塞大对象或敏感信息。",
+        "别和 @SessionAttribute 混用：前者按模型属性名存取，后者按 HttpSession 属性名读。"
+      ],
+      "related": [
+        "@SessionAttribute",
+        "@ModelAttribute",
+        "@InitBinder"
+      ],
+      "tags": [
+        "session",
+        "多步表单",
+        "会话模型"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：SessionAttributes",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/SessionAttributes.html"
+        },
+        {
+          "label": "Spring 参考：@SessionAttributes",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/sessionattributes.html"
+        }
+      ],
+      "since": "Spring 2.5"
+    },
+    {
+      "id": "init-binder",
+      "name": "@InitBinder",
+      "category": "web",
+      "subcategory": "数据绑定",
+      "package": "org.springframework.web.bind.annotation.InitBinder",
+      "level": "进阶",
+      "tagline": "定制参数绑定规则",
+      "plain": "@InitBinder 标注的方法会在该 Controller 每次绑定请求参数之前执行，让你拿到 WebDataBinder，用来注册类型转换器、自定义编辑器、限制可绑定字段（防批量赋值漏洞）。它只作用于当前 Controller；要全局生效，就把它放进 @ControllerAdvice 里。它和参数解析顺序有关，配置错了会表现为绑定失败。",
+      "keyPoints": [
+        "方法参数通常是 WebDataBinder，返回值 void，每次参数绑定前执行。",
+        "setDisallowedFields 能挡住前端偷偷提交 id、role 这类不该绑的字段。",
+        "registerCustomEditor 或 addCustomFormatter 可处理日期等特殊格式。",
+        "放进 @ControllerAdvice 类里即可全局生效，value 可限定作用的字段名。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限定该初始化方法作用的参数名，空表示全部。"
+        }
+      ],
+      "exampleTitle": "禁用敏感字段并注册日期编辑器",
+      "example": "import org.springframework.beans.propertyeditors.CustomDateEditor;\nimport org.springframework.stereotype.Controller;\nimport org.springframework.web.bind.WebDataBinder;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.InitBinder;\nimport org.springframework.web.bind.annotation.ModelAttribute;\n\nimport java.text.SimpleDateFormat;\nimport java.util.Date;\n\n@Controller\npublic class ProfileController {\n\n    @InitBinder\n    public void initBinder(WebDataBinder binder) {\n        // 禁止前端通过表单直接修改 id、role\n        binder.setDisallowedFields(\"id\", \"role\");\n        // yyyy-MM-dd 字符串转 Date\n        SimpleDateFormat sdf = new SimpleDateFormat(\"yyyy-MM-dd\");\n        sdf.setLenient(false);\n        binder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, true));\n    }\n\n    @GetMapping(\"/profile/edit\")\n    public String edit(@ModelAttribute(\"profile\") ProfileForm form) {\n        return \"profile/edit\";\n    }\n\n    public static class ProfileForm {\n        private Long id;\n        private String role;\n        private Date birthday;\n        public Long getId() { return id; }\n        public void setId(Long id) { this.id = id; }\n        public String getRole() { return role; }\n        public void setRole(String role) { this.role = role; }\n        public Date getBirthday() { return birthday; }\n        public void setBirthday(Date birthday) { this.birthday = birthday; }\n    }\n}",
+      "notes": [
+        "写在方法参数上是无效的，@InitBinder 只认方法级注解。",
+        "setDisallowedFields 只在 WebDataBinder 绑定路径上生效，@RequestBody 反序列化不过它。",
+        "日期格式全局统一更省心，全局配置可用 @ControllerAdvice + @InitBinder。"
+      ],
+      "related": [
+        "@ModelAttribute",
+        "@ControllerAdvice",
+        "@RequestParam"
+      ],
+      "tags": [
+        "数据绑定",
+        "类型转换",
+        "安全"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：InitBinder",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/InitBinder.html"
+        },
+        {
+          "label": "Spring 参考：@InitBinder",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-initbinder.html"
+        }
+      ],
+      "since": "Spring 2.5"
+    },
+    {
+      "id": "controller-advice",
+      "name": "@ControllerAdvice",
+      "category": "web",
+      "subcategory": "全局增强",
+      "package": "org.springframework.web.bind.annotation.ControllerAdvice",
+      "level": "进阶",
+      "tagline": "全局增强所有控制器",
+      "plain": "@ControllerAdvice 标在类上，让这个类里的 @ExceptionHandler、@ModelAttribute、@InitBinder 方法对多个控制器生效，避免每个 Controller 重复写异常处理和公共数据。默认作用于所有控制器，也能按包、类型或注解缩小范围。它本身不返回数据。多个增强类同时存在时，用 @Order 明确谁先处理。",
+      "keyPoints": [
+        "默认对所有控制器生效；用 basePackages、basePackageClasses、assignableTypes、annotations 精确限定范围。",
+        "name 是 Bean 名称别名（Spring 6.1+），value 是 basePackages 的别名，一般不用写。",
+        "里面的 @ExceptionHandler 优先级低于控制器本地的异常处理方法。",
+        "返回视图的全局处理用它；返回 JSON 用 @RestControllerAdvice 更省事。"
+      ],
+      "attributes": [
+        {
+          "name": "annotations",
+          "type": "Class<? extends Annotation>[]",
+          "default": "{}",
+          "desc": "只增强标注了这些注解的控制器。"
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "Bean 名称，Spring 6.1 起支持，别名 @Component.value。"
+        },
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要增强的包名，basePackages 的别名。"
+        },
+        {
+          "name": "basePackages",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要增强的包名。"
+        },
+        {
+          "name": "assignableTypes",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "只增强指定类型的控制器。"
+        },
+        {
+          "name": "basePackageClasses",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "以类所在包作为增强范围。"
+        }
+      ],
+      "exampleTitle": "全局错误页加公共模型数据",
+      "example": "import org.springframework.stereotype.Controller;\nimport org.springframework.web.bind.annotation.ControllerAdvice;\nimport org.springframework.web.bind.annotation.ExceptionHandler;\nimport org.springframework.web.bind.annotation.ModelAttribute;\nimport org.springframework.web.servlet.ModelAndView;\n\n// 对所有 @Controller 生效\n@ControllerAdvice\npublic class GlobalControllerAdvice {\n\n    // 每个控制器方法执行前都往模型里放站点信息\n    @ModelAttribute(\"siteName\")\n    public String siteName() {\n        return \"小明的技术站\";\n    }\n\n    // 未捕获的 IllegalStateException 统一渲染错误页\n    @ExceptionHandler(IllegalStateException.class)\n    public ModelAndView handleState(IllegalStateException ex) {\n        ModelAndView mav = new ModelAndView(\"error/500\");\n        mav.addObject(\"message\", ex.getMessage());\n        return mav;\n    }\n}",
+      "notes": [
+        "它不会自动处理异常，必须配合 @ExceptionHandler 才有行为。",
+        "本地控制器已有同类型 @ExceptionHandler 时，advice 里的不会生效。",
+        "范围写错（比如 basePackages 拼错）会导致完全不生效，启动日志里也不会报错。"
+      ],
+      "related": [
+        "@RestControllerAdvice",
+        "@ExceptionHandler",
+        "@ModelAttribute"
+      ],
+      "tags": [
+        "全局异常",
+        "增强",
+        "advice"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：ControllerAdvice",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ControllerAdvice.html"
+        },
+        {
+          "label": "Spring 参考：控制器增强",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-advice.html"
+        }
+      ],
+      "since": "Spring 3.2"
+    },
+    {
+      "id": "rest-controller-advice",
+      "name": "@RestControllerAdvice",
+      "category": "web",
+      "subcategory": "全局增强",
+      "package": "org.springframework.web.bind.annotation.RestControllerAdvice",
+      "level": "进阶",
+      "tagline": "返回 JSON 的全局异常处理",
+      "plain": "@RestControllerAdvice 等于 @ControllerAdvice 加 @ResponseBody，用它里面的 @ExceptionHandler 返回的对象会被序列化成 JSON，是前后端分离项目统一错误响应的标准写法。比起每个接口 try/catch，它能把异常处理集中到一处，客户端拿到的错误结构也统一。错误码和提示语集中管理，前端就不用为每个接口写一套。",
+      "keyPoints": [
+        "是 @ControllerAdvice 与 @ResponseBody 的组合，方法返回值直接写响应体。",
+        "异常处理方法可以返回 ResponseEntity，精确控制状态码和响应体。",
+        "它是兜底而不是替代：业务异常最好自定义异常类型并映射成明确的状态码。",
+        "可以配 @Order 或实现 Ordered 控制多个 advice 的优先级。"
+      ],
+      "attributes": [
+        {
+          "name": "annotations",
+          "type": "Class<? extends Annotation>[]",
+          "default": "{}",
+          "desc": "只增强标注了这些注解的控制器。"
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "Bean 名称，别名 @Component.value。"
+        },
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要增强的包名，basePackages 的别名。"
+        },
+        {
+          "name": "basePackages",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要增强的包名。"
+        },
+        {
+          "name": "assignableTypes",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "只增强指定类型的控制器。"
+        },
+        {
+          "name": "basePackageClasses",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "以类所在包作为增强范围。"
+        }
+      ],
+      "exampleTitle": "统一返回 JSON 格式的错误响应",
+      "example": "import org.springframework.http.HttpStatus;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.web.bind.annotation.ExceptionHandler;\nimport org.springframework.web.bind.annotation.RestControllerAdvice;\n\n@RestControllerAdvice\npublic class ApiExceptionAdvice {\n\n    // 参数非法 → 400，返回统一 JSON 结构\n    @ExceptionHandler(IllegalArgumentException.class)\n    public ResponseEntity<ApiError> handleBadRequest(IllegalArgumentException ex) {\n        return ResponseEntity.badRequest()\n                .body(new ApiError(400, ex.getMessage()));\n    }\n\n    // 兜底 → 500，别把堆栈信息返回给前端\n    @ExceptionHandler(Exception.class)\n    public ResponseEntity<ApiError> handleAll(Exception ex) {\n        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)\n                .body(new ApiError(500, \"服务器开小差了\"));\n    }\n\n    public record ApiError(int code, String message) {\n    }\n}",
+      "notes": [
+        "兜底的 Exception 处理会连框架异常一起接住，拿到 500 前先确认没被它掩盖。",
+        "返回的 record 需要能被消息转换器序列化，字段要有 getter 或本身就是 record 组件。",
+        "全局异常处理里再抛异常，会导致错误信息丢失，只留一句通用提示。"
+      ],
+      "related": [
+        "@ControllerAdvice",
+        "@ExceptionHandler",
+        "@ResponseStatus"
+      ],
+      "tags": [
+        "全局异常",
+        "JSON",
+        "统一响应"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：RestControllerAdvice",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RestControllerAdvice.html"
+        },
+        {
+          "label": "Spring 参考：控制器增强",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-advice.html"
+        }
+      ],
+      "since": "Spring 4.3"
+    },
+    {
+      "id": "exception-handler",
+      "name": "@ExceptionHandler",
+      "category": "web",
+      "subcategory": "全局增强",
+      "package": "org.springframework.web.bind.annotation.ExceptionHandler",
+      "level": "进阶",
+      "tagline": "把异常转成友好响应",
+      "plain": "@ExceptionHandler 标在方法上，声明这个方法负责处理某类异常，可以写在 Controller 里只处理本控制器，也可以写在 @ControllerAdvice 里全局处理。它把异常从堆栈变成你设计的响应结构，避免客户端看到默认错误页。value 可以一次列多个异常类型，但一个方法只处理一种更清晰。",
+      "keyPoints": [
+        "value 与 exception 互为别名（exception 为 Spring 6.2 新增），列出要处理的异常类型。",
+        "方法参数可注入异常对象、WebRequest、HttpServletRequest 等，返回值走正常的消息转换。",
+        "produces 可限制响应的 Content-Type（Spring 6.2 新增）。",
+        "按异常类型的精确程度匹配：先找最具体的类型，父类处理方法兜底。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Class<? extends Throwable>[]",
+          "default": "{}",
+          "desc": "要处理的异常类型，exception 的别名。"
+        },
+        {
+          "name": "exception",
+          "type": "Class<? extends Throwable>[]",
+          "default": "{}",
+          "desc": "要处理的异常类型，Spring 6.2 新增。"
+        },
+        {
+          "name": "produces",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "限制响应 Content-Type，Spring 6.2 新增。"
+        }
+      ],
+      "exampleTitle": "在控制器里处理自定义异常",
+      "example": "import org.springframework.http.HttpStatus;\nimport org.springframework.web.bind.annotation.ExceptionHandler;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.ResponseStatus;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class ItemController {\n\n    @GetMapping(\"/items/{id}\")\n    public String item(@PathVariable Long id) {\n        if (id > 100) {\n            throw new ItemNotFoundException(id);\n        }\n        return \"item-\" + id;\n    }\n\n    // 只处理本控制器的 ItemNotFoundException\n    @ExceptionHandler(ItemNotFoundException.class)\n    @ResponseStatus(HttpStatus.NOT_FOUND)\n    public String notFound(ItemNotFoundException ex) {\n        return \"找不到商品：\" + ex.getId();\n    }\n\n    public static class ItemNotFoundException extends RuntimeException {\n        private final Long id;\n        public ItemNotFoundException(Long id) {\n            super(\"item \" + id);\n            this.id = id;\n        }\n        public Long getId() { return id; }\n    }\n}",
+      "notes": [
+        "处理方法的返回类型若和 @ResponseStatus 冲突，状态码可能不符合预期，要测。",
+        "同一异常类型在本地和全局都有处理时，本地优先。",
+        "别捕获 Throwable 或 Exception 后返回 200，要给出对应状态码。"
+      ],
+      "related": [
+        "@ControllerAdvice",
+        "@RestControllerAdvice",
+        "@ResponseStatus"
+      ],
+      "tags": [
+        "异常处理",
+        "错误响应",
+        "REST"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：ExceptionHandler",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ExceptionHandler.html"
+        },
+        {
+          "label": "Spring 参考：@ExceptionHandler",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html"
+        }
+      ],
+      "since": "Spring 3.0"
+    },
+    {
+      "id": "response-status",
+      "name": "@ResponseStatus",
+      "category": "web",
+      "subcategory": "响应处理",
+      "package": "org.springframework.web.bind.annotation.ResponseStatus",
+      "level": "入门",
+      "tagline": "声明响应状态码",
+      "plain": "@ResponseStatus 用来固定一个方法或异常的 HTTP 状态码：方法上用它指定成功状态（比如创建资源返回 201），异常类上用它指定抛错时的状态（比如自定义 NotFoundException 返回 404）。code 和 value 互为别名，reason 会变成错误原因，但一旦写了 reason，返回值就不再被序列化。",
+      "keyPoints": [
+        "标在方法上：成功时用该状态码；标在异常类上：该异常抛出时用该状态码。",
+        "value 与 code 互为别名，默认 INTERNAL_SERVER_ERROR。",
+        "reason 非空时容器直接渲染错误页，方法返回值被忽略，前后端分离项目通常不用它。",
+        "要动态决定状态码时用 ResponseEntity 代替它。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "HttpStatus",
+          "default": "500 INTERNAL_SERVER_ERROR",
+          "desc": "响应状态码，默认 HttpStatus.INTERNAL_SERVER_ERROR（500）。"
+        },
+        {
+          "name": "code",
+          "type": "HttpStatus",
+          "default": "500 INTERNAL_SERVER_ERROR",
+          "desc": "响应状态码，默认 HttpStatus.INTERNAL_SERVER_ERROR（500）。"
+        },
+        {
+          "name": "reason",
+          "type": "String",
+          "default": "",
+          "desc": "错误原因说明；非空时返回值被忽略。"
+        }
+      ],
+      "exampleTitle": "创建返回 201，找不到抛 404",
+      "example": "import org.springframework.http.HttpStatus;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.ResponseStatus;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class ArticleController {\n\n    // 创建成功返回 201 Created\n    @PostMapping(\"/articles\")\n    @ResponseStatus(HttpStatus.CREATED)\n    public String create() {\n        return \"created\";\n    }\n\n    // GET /articles/999 抛异常后返回 404\n    @GetMapping(\"/articles/{id}\")\n    public String detail(@PathVariable Long id) {\n        if (id > 500) {\n            throw new ArticleNotFoundException();\n        }\n        return \"article-\" + id;\n    }\n\n    // 异常类上声明状态码，抛出即生效\n    @ResponseStatus(HttpStatus.NOT_FOUND)\n    public static class ArticleNotFoundException extends RuntimeException {\n    }\n}",
+      "notes": [
+        "reason 一写，前端收到的就是容器错误页，JSON 返回值全没了。",
+        "方法上的 @ResponseStatus 和 ResponseEntity 同时存在时，以 ResponseEntity 为准。",
+        "404/500 这类语义状态不要乱标在业务成功方法上。"
+      ],
+      "related": [
+        "@ExceptionHandler",
+        "@RestController",
+        "@ResponseBody"
+      ],
+      "tags": [
+        "状态码",
+        "HTTP",
+        "响应"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：ResponseStatus",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ResponseStatus.html"
+        },
+        {
+          "label": "Spring 参考：@ResponseStatus",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html"
+        }
+      ],
+      "since": "Spring 3.0"
+    },
+    {
+      "id": "cross-origin",
+      "name": "@CrossOrigin",
+      "category": "web",
+      "subcategory": "跨域",
+      "package": "org.springframework.web.bind.annotation.CrossOrigin",
+      "level": "进阶",
+      "tagline": "声明允许哪些跨域来源",
+      "plain": "浏览器同源策略会拦下不同域名的 AJAX 请求。@CrossOrigin 让 Spring 在响应里补上 Access-Control-Allow-* 头，告诉浏览器这次跨域被放行。可以标在类上对所有方法生效，也可以标在方法上单独覆盖。默认放行全部来源、全部请求头，生产环境必须收紧成具体域名。",
+      "keyPoints": [
+        "不写 origins 时默认允许所有来源（*）；带 Cookie 的请求不能用 *，必须写具体域名。",
+        "allowCredentials 是 String 类型（可为空），写 \"true\" 才开启，不是布尔值。",
+        "类级注解会被方法级注解覆盖：方法上写了就以方法上的为准。",
+        "预检请求 OPTIONS 由 Spring 自动处理，不用担心方法没写 OPTIONS 映射。"
+      ],
+      "attributes": [
+        {
+          "name": "origins",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "允许的来源，空表示全部；带凭证时必须写具体域名。"
+        },
+        {
+          "name": "originPatterns",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "支持通配符的来源模式，如 https://*.example.com。"
+        },
+        {
+          "name": "allowedHeaders",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "允许的请求头，空表示全部。"
+        },
+        {
+          "name": "exposedHeaders",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "允许前端 JS 读取的响应头。"
+        },
+        {
+          "name": "methods",
+          "type": "RequestMethod[]",
+          "default": "{}",
+          "desc": "允许的 HTTP 方法，空表示跟随映射。"
+        },
+        {
+          "name": "allowCredentials",
+          "type": "String",
+          "default": "",
+          "desc": "是否允许携带 Cookie，\"true\" 才开启。"
+        },
+        {
+          "name": "allowPrivateNetwork",
+          "type": "String",
+          "default": "",
+          "desc": "是否允许私有网络访问，Spring 5.3.32 新增。"
+        },
+        {
+          "name": "maxAge",
+          "type": "long",
+          "default": "-1",
+          "desc": "预检结果缓存秒数，默认由全局配置决定。"
+        }
+      ],
+      "exampleTitle": "只允许指定域名跨域访问",
+      "example": "import org.springframework.web.bind.annotation.CrossOrigin;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestMethod;\nimport org.springframework.web.bind.annotation.RestController;\n\n// 类级：只放行 https://app.example.com\n@CrossOrigin(origins = \"https://app.example.com\",\n             allowedHeaders = {\"Content-Type\", \"X-Tenant\"},\n             maxAge = 3600)\n@RestController\npublic class ReportController {\n\n    @GetMapping(\"/reports/summary\")\n    public String summary() {\n        return \"ok\";\n    }\n\n    // 方法级覆盖：单独放开另一个域名，并允许带 Cookie\n    @CrossOrigin(origins = \"https://admin.example.com\",\n                 allowCredentials = \"true\",\n                 methods = {RequestMethod.POST})\n    @PostMapping(\"/reports/export\")\n    public String export() {\n        return \"exported\";\n    }\n}",
+      "notes": [
+        "allowCredentials 是字符串不是布尔，写 allowCredentials = true 会编译不过。",
+        "origins 配 * 又开 allowCredentials，浏览器会直接拒绝响应。",
+        "生产环境用网关/全局 CORS 配置时，注解里的设置会叠加，别两处都放开。"
+      ],
+      "related": [
+        "@RestController",
+        "@RequestMapping",
+        "@RequestHeader"
+      ],
+      "tags": [
+        "跨域",
+        "CORS",
+        "浏览器安全"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：CrossOrigin",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html"
+        },
+        {
+          "label": "Spring 参考：CORS 支持",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html"
+        }
+      ],
+      "since": "Spring 4.2"
+    },
+    {
+      "id": "valid",
+      "name": "@Valid",
+      "category": "validation",
+      "subcategory": "校验入口",
+      "package": "jakarta.validation.Valid",
+      "level": "入门",
+      "tagline": "触发级联校验的标记",
+      "plain": "@Valid 来自 Bean Validation 标准，本身不是约束注解，作用是告诉校验器：这个对象要级联校验，把里面字段上的 @NotNull、@Email 等约束一起检查。Controller 方法参数加了它，Spring MVC 才会在进方法前校验并抛出参数异常。嵌套对象上也必须加，否则内层规则不生效。",
+      "keyPoints": [
+        "它是级联标记，不是约束；单独写它不会校验任何东西。",
+        "可标在参数、字段、方法、构造器和类型使用处；集合元素上写 @Valid 可逐个校验。",
+        "Spring MVC 中配合 @RequestBody、@ModelAttribute 使用，失败抛 MethodArgumentNotValidException。",
+        "默认只校验默认分组，需要分组校验时改用 Spring 的 @Validated。"
+      ],
+      "attributes": [],
+      "exampleTitle": "请求体校验自动生效",
+      "example": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.Email;\nimport jakarta.validation.constraints.Min;\nimport jakarta.validation.constraints.NotBlank;\n\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class UserController {\n\n    // @Valid 让请求体里的约束生效；不通过时返回 400\n    @PostMapping(\"/users\")\n    public String create(@Valid @RequestBody CreateUser form) {\n        return \"created \" + form.name();\n    }\n\n    public record CreateUser(\n            @NotBlank(message = \"名字不能为空\") String name,\n            @Email(message = \"邮箱格式不对\") String email,\n            @Min(value = 18, message = \"年龄至少 18\") int age) {\n    }\n}",
+      "notes": [
+        "忘了加 @Valid，请求体里的约束一个都不会执行，脏数据会直接进业务层。",
+        "嵌套对象的字段要再校验，内层属性上也要标 @Valid。",
+        "@Valid 不能用在分组校验上，需要分组时用 @Validated。"
+      ],
+      "related": [
+        "@Validated",
+        "@NotNull",
+        "@RequestBody"
+      ],
+      "tags": [
+        "校验",
+        "BeanValidation",
+        "级联"
+      ],
+      "docs": [
+        {
+          "label": "Jakarta API：Valid",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/Valid.html"
+        },
+        {
+          "label": "Spring 参考：校验",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html"
+        }
+      ],
+      "since": "Jakarta Bean Validation 3.0",
+      "versionNote": "自 Bean Validation 1.0 引入；jakarta.* 命名空间自 3.0 起。"
+    },
+    {
+      "id": "validated",
+      "name": "@Validated",
+      "category": "validation",
+      "subcategory": "校验入口",
+      "package": "org.springframework.validation.annotation.Validated",
+      "level": "进阶",
+      "tagline": "Spring 的分组校验注解",
+      "plain": "@Validated 是 Spring 对 @Valid 的增强：它多了 value 属性，可以指定校验分组，从而让同一个 DTO 在不同场景下校验不同规则。标在类上时，Spring 会对这个类的方法参数和返回值做校验。它属于 org.springframework.validation.annotation 包，别和 jakarta 的 @Valid 搞混。分组接口通常定义成空接口，只作为标记使用。",
+      "keyPoints": [
+        "value 声明校验分组，如 @Validated(CreateGroup.class)；不写就是默认组。",
+        "类级 @Validated 会启用方法校验（基于 AOP 代理），方法参数上加约束注解才会被检查。",
+        "控制器方法参数上用它时，MVC 会按指定分组做数据绑定校验。",
+        "它是 Spring 专有注解，脱离 Spring 环境不生效；纯 Bean Validation 用 @Valid。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "校验分组，可指定多个；空表示默认分组。"
+        }
+      ],
+      "exampleTitle": "同一个 DTO 按场景分组校验",
+      "example": "import jakarta.validation.constraints.NotBlank;\n\nimport org.springframework.stereotype.Service;\nimport org.springframework.validation.annotation.Validated;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class SignupController {\n\n    // 只校验 CreateGroup 分组里的规则\n    @PostMapping(\"/signup\")\n    public String signup(@Validated(CreateGroup.class) @RequestBody SignupForm form) {\n        return \"ok \" + form.username();\n    }\n\n    public interface CreateGroup {\n    }\n\n    public record SignupForm(\n            @NotBlank(groups = CreateGroup.class) String username,\n            String inviteCode) {\n    }\n\n    // 类级 @Validated：Spring 对方法参数做校验\n    @Service\n    @Validated\n    public static class NameService {\n        public String hello(@NotBlank String name) {\n            return \"hello \" + name;\n        }\n    }\n}",
+      "notes": [
+        "@Validated 不写分组时等价于默认组，和 @Valid 效果接近，但包名完全不同。",
+        "类级 @Validated 依赖 AOP 代理，同类内部自调用不会触发校验。",
+        "方法校验失败抛 ConstraintViolationException，不是 MethodArgumentNotValidException，异常处理要分开写。"
+      ],
+      "related": [
+        "@Valid",
+        "@NotNull",
+        "@ControllerAdvice"
+      ],
+      "tags": [
+        "校验分组",
+        "BeanValidation",
+        "Spring"
+      ],
+      "docs": [
+        {
+          "label": "Javadoc：Validated",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/validation/annotation/Validated.html"
+        },
+        {
+          "label": "Spring 参考：Bean Validation",
+          "url": "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html"
+        }
+      ],
+      "since": "Spring 3.1"
+    },
+    {
+      "id": "not-null",
+      "name": "@NotNull",
+      "category": "validation",
+      "subcategory": "约束注解",
+      "package": "jakarta.validation.constraints.NotNull",
+      "level": "入门",
+      "tagline": "值不能是 null",
+      "plain": "@NotNull 只检查对象引用不为 null，不检查空字符串、空集合或零。它常用于必填的外键 id、日期、包装类型字段。注意 String 字段想同时拒绝空串，得再叠加 @NotBlank，否则传一个空字符串它照样通过。null 通过校验时说明注解根本没生效，先查 @Valid 有没有加。",
+      "keyPoints": [
+        "校验的是 null，不是空串：\"\" 对 @NotNull 来说是完全合法的。",
+        "基本类型 int/long 永远不为 null，写在上面没有意义，要用包装类型。",
+        "字段被 @NotNull 校验前，对象本身必须已被 @Valid 级联进入校验。"
+      ],
+      "attributes": [
+        {
+          "name": "message",
+          "type": "String",
+          "default": "{jakarta.validation.constraints.NotNull.message}",
+          "desc": "校验失败时的提示消息。"
+        },
+        {
+          "name": "groups",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "该约束所属的校验分组。"
+        },
+        {
+          "name": "payload",
+          "type": "Class<? extends Payload>[]",
+          "default": "{}",
+          "desc": "携带的元数据负载，很少使用。"
+        }
+      ],
+      "exampleTitle": "下单接口校验必填字段",
+      "example": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.NotNull;\n\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\nimport java.math.BigDecimal;\n\n@RestController\npublic class OrderController {\n\n    @PostMapping(\"/orders\")\n    public String create(@Valid @RequestBody CreateOrder cmd) {\n        return \"order for \" + cmd.userId();\n    }\n\n    public record CreateOrder(\n            @NotNull(message = \"用户不能为空\") Long userId,\n            @NotNull(message = \"金额不能为空\") BigDecimal amount) {\n    }\n}",
+      "notes": [
+        "String 用 @NotNull 挡不住空串，想非空要配 @NotBlank。",
+        "包装类型才可能为 null，int 上写它等于没写。",
+        "嵌套对象漏了 @Valid，内层字段的 @NotNull 不会执行。"
+      ],
+      "related": [
+        "@NotBlank",
+        "@NotEmpty",
+        "@Valid"
+      ],
+      "tags": [
+        "非空校验",
+        "BeanValidation",
+        "必填"
+      ],
+      "docs": [
+        {
+          "label": "Jakarta API：NotNull",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotNull.html"
+        },
+        {
+          "label": "Jakarta Bean Validation 3.0 规范",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html"
+        }
+      ],
+      "since": "Jakarta Bean Validation 3.0",
+      "versionNote": "自 Bean Validation 1.0 引入；jakarta.* 命名空间自 3.0 起。"
+    },
+    {
+      "id": "not-blank",
+      "name": "@NotBlank",
+      "category": "validation",
+      "subcategory": "约束注解",
+      "package": "jakarta.validation.constraints.NotBlank",
+      "level": "入门",
+      "tagline": "字符串不能是空白",
+      "plain": "@NotBlank 要求字符串去掉首尾空白后长度大于零：null、空串、只含空格的串都会被拒绝。表单里的用户名、标题这类文本字段用它最合适，比 @NotNull 更贴近实际需求。它只能用在字符序列上，标在数字或集合上会抛校验异常。",
+      "keyPoints": [
+        "null、\"\" 和 \"   \" 都不通过，会先 trim 再判断是否为空。",
+        "只能用于 CharSequence 类型（String、StringBuilder 等），用错类型会抛 UnexpectedTypeException。",
+        "默认不处理 Unicode 空白之外的不可见字符，极端场景要自己清洗。"
+      ],
+      "attributes": [
+        {
+          "name": "message",
+          "type": "String",
+          "default": "{jakarta.validation.constraints.NotBlank.message}",
+          "desc": "校验失败时的提示消息。"
+        },
+        {
+          "name": "groups",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "该约束所属的校验分组。"
+        },
+        {
+          "name": "payload",
+          "type": "Class<? extends Payload>[]",
+          "default": "{}",
+          "desc": "携带的元数据负载，很少使用。"
+        }
+      ],
+      "exampleTitle": "评论内容不能为空或全空格",
+      "example": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.NotBlank;\nimport jakarta.validation.constraints.Size;\n\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class CommentController {\n\n    @PostMapping(\"/comments\")\n    public String add(@Valid @RequestBody CommentForm form) {\n        return \"comment: \" + form.content().trim();\n    }\n\n    public record CommentForm(\n            @NotBlank(message = \"评论内容不能为空\")\n            @Size(max = 200, message = \"最多 200 个字符\")\n            String content) {\n    }\n}",
+      "notes": [
+        "@NotBlank 只对字符串有效，用在 Integer 上会直接报校验配置错误。",
+        "它不负责长度上限，配合 @Size 才能拦住超长文本。",
+        "前端只拦一次不够，服务端必须再校验，接口可以被直接调用。"
+      ],
+      "related": [
+        "@NotNull",
+        "@NotEmpty",
+        "@Size"
+      ],
+      "tags": [
+        "非空白",
+        "字符串校验",
+        "BeanValidation"
+      ],
+      "docs": [
+        {
+          "label": "Jakarta API：NotBlank",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotBlank.html"
+        },
+        {
+          "label": "Jakarta Bean Validation 3.0 规范",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html"
+        }
+      ],
+      "since": "Jakarta Bean Validation 3.0",
+      "versionNote": "约束自 Bean Validation 2.0 引入；jakarta.* 命名空间自 3.0 起。"
+    },
+    {
+      "id": "not-empty",
+      "name": "@NotEmpty",
+      "category": "validation",
+      "subcategory": "约束注解",
+      "package": "jakarta.validation.constraints.NotEmpty",
+      "level": "入门",
+      "tagline": "集合/字符串不能为空",
+      "plain": "@NotEmpty 要求字符串、集合、Map 或数组的 size 大于零：null 和空集合都会被拒。它和 @NotBlank 的区别是：@NotEmpty 只看长度，纯空格的字符串长度不为零依然通过；@NotBlank 会去空白再判断。想同时拒绝空白要两个一起用，或者对文本直接用 @NotBlank。批量接口尤其要防住空集合直接进循环。",
+      "keyPoints": [
+        "适用于 CharSequence、Collection、Map 和数组，其他类型会抛 UnexpectedTypeException。",
+        "空集合不通过，但只含空白字符的字符串能通过（长度不为零）。",
+        "它不限制上限，想卡最大长度用 @Size。"
+      ],
+      "attributes": [
+        {
+          "name": "message",
+          "type": "String",
+          "default": "{jakarta.validation.constraints.NotEmpty.message}",
+          "desc": "校验失败时的提示消息。"
+        },
+        {
+          "name": "groups",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "该约束所属的校验分组。"
+        },
+        {
+          "name": "payload",
+          "type": "Class<? extends Payload>[]",
+          "default": "{}",
+          "desc": "携带的元数据负载，很少使用。"
+        }
+      ],
+      "exampleTitle": "批量接口校验 id 列表",
+      "example": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.NotEmpty;\n\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\nimport java.util.List;\n\n@RestController\npublic class BatchController {\n\n    @PostMapping(\"/batch/delete\")\n    public String delete(@Valid @RequestBody BatchCmd cmd) {\n        return \"delete \" + cmd.ids().size() + \" rows\";\n    }\n\n    public record BatchCmd(\n            // 空列表会被拒绝，null 也会被拒绝\n            @NotEmpty(message = \"至少选择一条记录\") List<Long> ids) {\n    }\n}",
+      "notes": [
+        "@NotEmpty 不检查元素内容，ids 里放 null 它也不管。",
+        "给 String 用它挡不住全空格，文本场景应改用 @NotBlank。",
+        "集合元素自身的约束要用 List<@Valid Item> 这种方式级联。"
+      ],
+      "related": [
+        "@NotBlank",
+        "@NotNull",
+        "@Size"
+      ],
+      "tags": [
+        "集合校验",
+        "非空",
+        "BeanValidation"
+      ],
+      "docs": [
+        {
+          "label": "Jakarta API：NotEmpty",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotEmpty.html"
+        },
+        {
+          "label": "Jakarta Bean Validation 3.0 规范",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html"
+        }
+      ],
+      "since": "Jakarta Bean Validation 3.0",
+      "versionNote": "约束自 Bean Validation 2.0 引入；jakarta.* 命名空间自 3.0 起。"
+    },
+    {
+      "id": "size",
+      "name": "@Size",
+      "category": "validation",
+      "subcategory": "约束注解",
+      "package": "jakarta.validation.constraints.Size",
+      "level": "入门",
+      "tagline": "限制长度或数量范围",
+      "plain": "@Size 同时限制最小值与最大值，适用于字符串长度、集合元素个数、Map 大小和数组长度。默认 min 是 0、max 是整数最大值，等于只写一个方向也合法。最常见的用法是卡标题 1 到 100 个字符、批量操作最多 500 条。注意它数的是长度，不是去空白后的字符数。",
+      "keyPoints": [
+        "min 默认 0，max 默认 Integer.MAX_VALUE，可以只限制一端。",
+        "对 String 数的是字符数（按 String.length()），对集合数的是元素个数。",
+        "不支持基本类型和任意 POJO，用错类型会抛校验异常。"
+      ],
+      "attributes": [
+        {
+          "name": "min",
+          "type": "int",
+          "default": "0",
+          "desc": "最小长度/数量。"
+        },
+        {
+          "name": "max",
+          "type": "int",
+          "default": "2147483647",
+          "desc": "最大长度/数量。"
+        },
+        {
+          "name": "message",
+          "type": "String",
+          "default": "{jakarta.validation.constraints.Size.message}",
+          "desc": "校验失败时的提示消息。"
+        },
+        {
+          "name": "groups",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "该约束所属的校验分组。"
+        },
+        {
+          "name": "payload",
+          "type": "Class<? extends Payload>[]",
+          "default": "{}",
+          "desc": "携带的元数据负载，很少使用。"
+        }
+      ],
+      "exampleTitle": "标题长度与批量条数限制",
+      "example": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.Size;\n\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\nimport java.util.List;\n\n@RestController\npublic class PostController {\n\n    @PostMapping(\"/posts\")\n    public String create(@Valid @RequestBody PostForm form) {\n        return \"title len \" + form.title().length();\n    }\n\n    public record PostForm(\n            @Size(min = 1, max = 100, message = \"标题 1 到 100 个字\") String title,\n            @Size(max = 500, message = \"一次最多 500 条\") List<Long> tagIds) {\n    }\n}",
+      "notes": [
+        "@Size 在 String 上是 null 也算通过，必填要另加 @NotBlank。",
+        "emoji 等补充字符按 UTF-16 会计两个长度，需要精确按码点要自己实现。",
+        "只写 max 不写 min 时，空串也能通过，别误以为等于必填。"
+      ],
+      "related": [
+        "@NotBlank",
+        "@NotEmpty",
+        "@Pattern"
+      ],
+      "tags": [
+        "长度校验",
+        "范围",
+        "BeanValidation"
+      ],
+      "docs": [
+        {
+          "label": "Jakarta API：Size",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Size.html"
+        },
+        {
+          "label": "Jakarta Bean Validation 3.0 规范",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html"
+        }
+      ],
+      "since": "Jakarta Bean Validation 3.0",
+      "versionNote": "自 Bean Validation 1.0 引入；jakarta.* 命名空间自 3.0 起。"
+    },
+    {
+      "id": "min",
+      "name": "@Min",
+      "category": "validation",
+      "subcategory": "约束注解",
+      "package": "jakarta.validation.constraints.Min",
+      "level": "入门",
+      "tagline": "数值不能小于下限",
+      "plain": "@Min 规定数值必须大于等于给定下限，value 是 long 类型的必填参数，没写 value 会编译不过。它支持整数、BigDecimal、BigInteger 以及 CharSequence（会按数值解析）。做年龄、库存、数量的下限校验很常用；null 时不校验，必填要配 @NotNull。库存、年龄这类下限值最好做成常量，别散落在各处。",
+      "keyPoints": [
+        "value 必填且为 long：@Min(18)。不写 value 编译报错。",
+        "支持 byte/short/int/long 及其包装类、BigDecimal、BigInteger，以及可解析为数字的 CharSequence。",
+        "null 视为合法，不做校验；必填要叠加 @NotNull。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "long",
+          "default": "—",
+          "desc": "下限值，必填，没有默认值。"
+        },
+        {
+          "name": "message",
+          "type": "String",
+          "default": "{jakarta.validation.constraints.Min.message}",
+          "desc": "校验失败时的提示消息。"
+        },
+        {
+          "name": "groups",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "该约束所属的校验分组。"
+        },
+        {
+          "name": "payload",
+          "type": "Class<? extends Payload>[]",
+          "default": "{}",
+          "desc": "携带的元数据负载，很少使用。"
+        }
+      ],
+      "exampleTitle": "年龄和库存的下限校验",
+      "example": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.Min;\n\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class ProfileController {\n\n    @PostMapping(\"/profiles\")\n    public String save(@Valid @RequestBody ProfileForm form) {\n        return \"age \" + form.age() + \", stock \" + form.stock();\n    }\n\n    public record ProfileForm(\n            @Min(value = 18, message = \"年龄不能小于 18 岁\") int age,\n            // 包装类型为 null 时 @Min 直接放行，需配合 @NotNull\n            @Min(value = 1, message = \"库存至少为 1\") Integer stock) {\n    }\n}",
+      "notes": [
+        "value 没写会编译失败，它不是可选项。",
+        "int 字段永远不会是 null，但 Integer 为 null 时不会触发下限校验。",
+        "Double/Float 也能用，但浮点比较有精度问题，金额建议用 BigDecimal。"
+      ],
+      "related": [
+        "@Max",
+        "@Positive",
+        "@Size"
+      ],
+      "tags": [
+        "数值校验",
+        "下限",
+        "BeanValidation"
+      ],
+      "docs": [
+        {
+          "label": "Jakarta API：Min",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Min.html"
+        },
+        {
+          "label": "Jakarta Bean Validation 3.0 规范",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html"
+        }
+      ],
+      "since": "Jakarta Bean Validation 3.0",
+      "versionNote": "自 Bean Validation 1.0 引入；jakarta.* 命名空间自 3.0 起。"
+    },
+    {
+      "id": "max",
+      "name": "@Max",
+      "category": "validation",
+      "subcategory": "约束注解",
+      "package": "jakarta.validation.constraints.Max",
+      "level": "入门",
+      "tagline": "数值不能超过上限",
+      "plain": "@Max 规定数值必须小于等于给定上限，value 是必填的 long 参数。和 @Min 搭配可以锁死一个区间，比如分页 size 限定 1 到 100。它同样放行 null，所以包装类型字段记得加 @NotNull。传进来的值超出上限时抛校验异常，由统一异常处理转成 400。上限值写死前先和产品确认，改起来要发版。",
+      "keyPoints": [
+        "value 必填且为 long：@Max(100)，不写无法通过编译。",
+        "支持整型、BigDecimal、BigInteger 和可解析为数字的 CharSequence。",
+        "null 不触发校验；需要必填时与 @NotNull 组合使用。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "long",
+          "default": "—",
+          "desc": "上限值，必填，没有默认值。"
+        },
+        {
+          "name": "message",
+          "type": "String",
+          "default": "{jakarta.validation.constraints.Max.message}",
+          "desc": "校验失败时的提示消息。"
+        },
+        {
+          "name": "groups",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "该约束所属的校验分组。"
+        },
+        {
+          "name": "payload",
+          "type": "Class<? extends Payload>[]",
+          "default": "{}",
+          "desc": "携带的元数据负载，很少使用。"
+        }
+      ],
+      "exampleTitle": "分页大小和评分上限",
+      "example": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.Max;\nimport jakarta.validation.constraints.Min;\n\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class PageController {\n\n    @PostMapping(\"/pages\")\n    public String query(@Valid @RequestBody PageForm form) {\n        return \"page \" + form.page() + \", size \" + form.size();\n    }\n\n    public record PageForm(\n            @Min(1) int page,\n            @Min(1) @Max(value = 100, message = \"每页最多 100 条\") int size,\n            @Max(value = 5, message = \"评分最高 5 分\") Integer score) {\n    }\n}",
+      "notes": [
+        "默认分页 size 没有上限时，用户传 100000 就可能拖垮数据库。",
+        "long 上限可以很长，超过 JavaScript 安全整数的 id 别用数字类型返回给前端。",
+        "对 String 用 @Max 是按数字解析，非数字串会抛异常，不如用 @Size 或 @Pattern。"
+      ],
+      "related": [
+        "@Min",
+        "@Positive",
+        "@Size"
+      ],
+      "tags": [
+        "数值校验",
+        "上限",
+        "BeanValidation"
+      ],
+      "docs": [
+        {
+          "label": "Jakarta API：Max",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Max.html"
+        },
+        {
+          "label": "Jakarta Bean Validation 3.0 规范",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html"
+        }
+      ],
+      "since": "Jakarta Bean Validation 3.0",
+      "versionNote": "自 Bean Validation 1.0 引入；jakarta.* 命名空间自 3.0 起。"
+    },
+    {
+      "id": "pattern",
+      "name": "@Pattern",
+      "category": "validation",
+      "subcategory": "约束注解",
+      "package": "jakarta.validation.constraints.Pattern",
+      "level": "进阶",
+      "tagline": "用正则约束字符串格式",
+      "plain": "@Pattern 用正则表达式限制字符串格式，比如手机号、邮编、编码规则。regexp 是必填项，flags 可以加不区分大小写等选项。它只判断能否匹配，不负责长度和去空白；null 会直接放行。写正则时注意 Java 字符串要把反斜杠转义成两个，不然编译期就报错。",
+      "keyPoints": [
+        "regexp 必填；flags 可加 CASE_INSENSITIVE、MULTILINE 等 Pattern.Flag 选项。",
+        "只对 CharSequence 有效；null 不校验，必填要配 @NotBlank。",
+        "Java 字符串里的 \\d 要写成 \\d，注解属性同理。"
+      ],
+      "attributes": [
+        {
+          "name": "regexp",
+          "type": "String",
+          "default": "—",
+          "desc": "正则表达式，必填，没有默认值。"
+        },
+        {
+          "name": "flags",
+          "type": "Pattern.Flag[]",
+          "default": "{}",
+          "desc": "正则匹配选项。"
+        },
+        {
+          "name": "message",
+          "type": "String",
+          "default": "{jakarta.validation.constraints.Pattern.message}",
+          "desc": "校验失败时的提示消息。"
+        },
+        {
+          "name": "groups",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "该约束所属的校验分组。"
+        },
+        {
+          "name": "payload",
+          "type": "Class<? extends Payload>[]",
+          "default": "{}",
+          "desc": "携带的元数据负载，很少使用。"
+        }
+      ],
+      "exampleTitle": "手机号与邮编格式校验",
+      "example": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.Pattern;\n\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class ContactController {\n\n    @PostMapping(\"/contacts\")\n    public String save(@Valid @RequestBody ContactForm form) {\n        return \"phone \" + form.phone();\n    }\n\n    public record ContactForm(\n            @Pattern(regexp = \"^1[3-9]\\d{9}$\", message = \"手机号格式不对\") String phone,\n            @Pattern(regexp = \"^[0-9]{6}$\", message = \"邮编必须是 6 位数字\") String zipCode) {\n    }\n}",
+      "notes": [
+        "Java 字符串里写正则要双反斜杠：\"^\\d+$\" 才表示 ^\\d+$。",
+        "正则只匹配整串时才加 ^ 和 $，不加会变成部分匹配，\"abc\" 也可能通过。",
+        "null 通过校验，必填别忘了 @NotBlank。"
+      ],
+      "related": [
+        "@Email",
+        "@Size",
+        "@NotBlank"
+      ],
+      "tags": [
+        "正则",
+        "格式校验",
+        "BeanValidation"
+      ],
+      "docs": [
+        {
+          "label": "Jakarta API：Pattern",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Pattern.html"
+        },
+        {
+          "label": "Jakarta Bean Validation 3.0 规范",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html"
+        }
+      ],
+      "since": "Jakarta Bean Validation 3.0",
+      "versionNote": "自 Bean Validation 1.0 引入；jakarta.* 命名空间自 3.0 起。"
+    },
+    {
+      "id": "email",
+      "name": "@Email",
+      "category": "validation",
+      "subcategory": "约束注解",
+      "package": "jakarta.validation.constraints.Email",
+      "level": "入门",
+      "tagline": "邮箱格式的基础校验",
+      "plain": "@Email 用内置的宽松正则检查字符串是否像邮箱：必须有本地部分、@ 和域名。regexp 默认是 .* 表示不额外限制，也可以换成更严格的正则。它不验证邮箱是否存在、域名能不能收信，真要确认还得发验证邮件。null 会放行，必填要加 @NotBlank。",
+      "keyPoints": [
+        "默认正则宽松（.*），只做基本结构判断，不校验真实可达性。",
+        "regexp 可覆盖默认规则；flags 可调整匹配选项。",
+        "null 不触发校验，所以 @Email 本身不等于必填。"
+      ],
+      "attributes": [
+        {
+          "name": "regexp",
+          "type": "String",
+          "default": ".*",
+          "desc": "额外正则；默认 .* 表示不附加限制。"
+        },
+        {
+          "name": "flags",
+          "type": "Pattern.Flag[]",
+          "default": "{}",
+          "desc": "正则匹配选项。"
+        },
+        {
+          "name": "message",
+          "type": "String",
+          "default": "{jakarta.validation.constraints.Email.message}",
+          "desc": "校验失败时的提示消息。"
+        },
+        {
+          "name": "groups",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "该约束所属的校验分组。"
+        },
+        {
+          "name": "payload",
+          "type": "Class<? extends Payload>[]",
+          "default": "{}",
+          "desc": "携带的元数据负载，很少使用。"
+        }
+      ],
+      "exampleTitle": "注册接口校验邮箱格式",
+      "example": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.Email;\nimport jakarta.validation.constraints.NotBlank;\n\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class RegisterController {\n\n    @PostMapping(\"/register\")\n    public String register(@Valid @RequestBody RegisterForm form) {\n        return \"mail to \" + form.email();\n    }\n\n    public record RegisterForm(\n            @NotBlank(message = \"邮箱不能为空\")\n            @Email(message = \"邮箱格式不正确\") String email) {\n    }\n}",
+      "notes": [
+        "@Email 允许 null，漏了 @NotBlank 就会出现空邮箱注册成功。",
+        "它不检查域名是否存在，a@b 这种也可能通过，业务域再补规则。",
+        "有些老邮箱含特殊字符，正则收得太紧会误杀，建议保持宽松。"
+      ],
+      "related": [
+        "@Pattern",
+        "@NotBlank",
+        "@Valid"
+      ],
+      "tags": [
+        "邮箱",
+        "格式校验",
+        "BeanValidation"
+      ],
+      "docs": [
+        {
+          "label": "Jakarta API：Email",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Email.html"
+        },
+        {
+          "label": "Jakarta Bean Validation 3.0 规范",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html"
+        }
+      ],
+      "since": "Jakarta Bean Validation 3.0",
+      "versionNote": "约束自 Bean Validation 2.0 引入；jakarta.* 命名空间自 3.0 起。"
+    },
+    {
+      "id": "past",
+      "name": "@Past",
+      "category": "validation",
+      "subcategory": "约束注解",
+      "package": "jakarta.validation.constraints.Past",
+      "level": "入门",
+      "tagline": "时间必须在过去",
+      "plain": "@Past 要求日期或时间严格早于当前时刻，常用于生日、入职日期这类历史时间。它支持 java.util.Date、Calendar、java.time 里的 LocalDate、LocalDateTime、Instant 等类型。null 会直接放行，必填要配 @NotNull；今天当天是否算过去取决于具体类型和时区比较，边界要自己测。生日这类字段还要校验合理范围，别让 1800 年也通过。",
+      "keyPoints": [
+        "支持 Date、Calendar、LocalDate、LocalDateTime、Instant 等时间类型。",
+        "较新版本支持以 ClockProvider 注入的时钟为基准判断，便于测试。",
+        "null 不校验，必填请叠加 @NotNull。"
+      ],
+      "attributes": [
+        {
+          "name": "message",
+          "type": "String",
+          "default": "{jakarta.validation.constraints.Past.message}",
+          "desc": "校验失败时的提示消息。"
+        },
+        {
+          "name": "groups",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "该约束所属的校验分组。"
+        },
+        {
+          "name": "payload",
+          "type": "Class<? extends Payload>[]",
+          "default": "{}",
+          "desc": "携带的元数据负载，很少使用。"
+        }
+      ],
+      "exampleTitle": "生日不能填未来时间",
+      "example": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.Past;\n\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\nimport java.time.LocalDate;\n\n@RestController\npublic class BirthController {\n\n    @PostMapping(\"/birthdays\")\n    public String save(@Valid @RequestBody BirthForm form) {\n        return \"birthday \" + form.birthday();\n    }\n\n    public record BirthForm(\n            // 必须是今天之前的日期\n            @Past(message = \"生日不能是未来时间\") LocalDate birthday) {\n    }\n}",
+      "notes": [
+        "LocalDate 的“今天”与服务器时区有关，跨时区业务要统一时区。",
+        "null 会通过校验，不填生日时它不会报错。",
+        "需要“今天及以前”时用 @PastOrPresent，@Past 不含今天。"
+      ],
+      "related": [
+        "@Future",
+        "@NotNull",
+        "@Valid"
+      ],
+      "tags": [
+        "日期校验",
+        "过去时间",
+        "BeanValidation"
+      ],
+      "docs": [
+        {
+          "label": "Jakarta API：Past",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Past.html"
+        },
+        {
+          "label": "Jakarta Bean Validation 3.0 规范",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html"
+        }
+      ],
+      "since": "Jakarta Bean Validation 3.0",
+      "versionNote": "自 Bean Validation 1.0 引入；jakarta.* 命名空间自 3.0 起。"
+    },
+    {
+      "id": "future",
+      "name": "@Future",
+      "category": "validation",
+      "subcategory": "约束注解",
+      "package": "jakarta.validation.constraints.Future",
+      "level": "入门",
+      "tagline": "时间必须在未来",
+      "plain": "@Future 要求日期或时间严格晚于当前时刻，用到货时间、预约时间、活动开始时间这类场景。它支持 java.util.Date、Calendar 和 java.time 系列类型，null 会放行。和 @Past 一样，比较基准受服务器时区影响，测试时最好用固定时钟，避免跨天跑出不稳定用例。",
+      "keyPoints": [
+        "支持 Date、Calendar、LocalDate、LocalDateTime、Instant 等时间类型。",
+        "判断基准来自 ClockProvider，可注入固定时钟做单元测试。",
+        "null 不校验，必填要配 @NotNull。"
+      ],
+      "attributes": [
+        {
+          "name": "message",
+          "type": "String",
+          "default": "{jakarta.validation.constraints.Future.message}",
+          "desc": "校验失败时的提示消息。"
+        },
+        {
+          "name": "groups",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "该约束所属的校验分组。"
+        },
+        {
+          "name": "payload",
+          "type": "Class<? extends Payload>[]",
+          "default": "{}",
+          "desc": "携带的元数据负载，很少使用。"
+        }
+      ],
+      "exampleTitle": "预约时间必须是未来时间",
+      "example": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.Future;\nimport jakarta.validation.constraints.NotNull;\n\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\nimport java.time.LocalDateTime;\n\n@RestController\npublic class BookingController {\n\n    @PostMapping(\"/bookings\")\n    public String book(@Valid @RequestBody BookingForm form) {\n        return \"booked at \" + form.startAt();\n    }\n\n    public record BookingForm(\n            @NotNull(message = \"预约时间不能为空\")\n            @Future(message = \"预约时间必须在未来\") LocalDateTime startAt) {\n    }\n}",
+      "notes": [
+        "@Future 不含当前时刻，要求“现在起”需要用 @FutureOrPresent。",
+        "客户端与服务器时区不同时，用户以为的“明天”可能已经是过去。",
+        "定时任务补偿时，历史数据再走同一个接口会被 @Future 拦下。"
+      ],
+      "related": [
+        "@Past",
+        "@NotNull",
+        "@Valid"
+      ],
+      "tags": [
+        "日期校验",
+        "未来时间",
+        "BeanValidation"
+      ],
+      "docs": [
+        {
+          "label": "Jakarta API：Future",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Future.html"
+        },
+        {
+          "label": "Jakarta Bean Validation 3.0 规范",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html"
+        }
+      ],
+      "since": "Jakarta Bean Validation 3.0",
+      "versionNote": "自 Bean Validation 1.0 引入；jakarta.* 命名空间自 3.0 起。"
+    },
+    {
+      "id": "positive",
+      "name": "@Positive",
+      "category": "validation",
+      "subcategory": "约束注解",
+      "package": "jakarta.validation.constraints.Positive",
+      "level": "入门",
+      "tagline": "数值必须大于零",
+      "plain": "@Positive 要求数值严格大于零，注意零不算：转账金额、购买数量这类必须为正的业务字段用它，能顺手挡掉 0 和负数。它适用于整数、BigDecimal、BigInteger，null 会放行。如果业务允许 0 但要拒绝负数，应该用 @PositiveOrZero 而不是它。退款金额为负的场景要单独建模，别复用同一个字段。",
+      "keyPoints": [
+        "严格大于 0：0 也不通过；允许 0 请用 @PositiveOrZero。",
+        "支持整型、BigDecimal、BigInteger，以及可解析为数字的 CharSequence。",
+        "null 不校验，必填对象字段要配 @NotNull。"
+      ],
+      "attributes": [
+        {
+          "name": "message",
+          "type": "String",
+          "default": "{jakarta.validation.constraints.Positive.message}",
+          "desc": "校验失败时的提示消息。"
+        },
+        {
+          "name": "groups",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "该约束所属的校验分组。"
+        },
+        {
+          "name": "payload",
+          "type": "Class<? extends Payload>[]",
+          "default": "{}",
+          "desc": "携带的元数据负载，很少使用。"
+        }
+      ],
+      "exampleTitle": "转账金额必须为正",
+      "example": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.NotNull;\nimport jakarta.validation.constraints.Positive;\n\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\n\nimport java.math.BigDecimal;\n\n@RestController\npublic class TransferController {\n\n    @PostMapping(\"/transfers\")\n    public String transfer(@Valid @RequestBody TransferForm form) {\n        return \"transfer \" + form.amount();\n    }\n\n    public record TransferForm(\n            @NotNull(message = \"金额不能为空\")\n            @Positive(message = \"转账金额必须大于 0\")\n            BigDecimal amount,\n\n            // 允许 0 的场景用 @PositiveOrZero\n            @Positive(message = \"数量必须大于 0\") int quantity) {\n    }\n}",
+      "notes": [
+        "0 不算正数，免运费金额为 0 时会被它拦下，注意业务语义。",
+        "BigDecimal 空对象（new BigDecimal(\"0\")）同样不通过。",
+        "float/double 的精度问题可能让极小正数判断异常，金额用 BigDecimal。"
+      ],
+      "related": [
+        "@Min",
+        "@Max",
+        "@NotNull"
+      ],
+      "tags": [
+        "数值校验",
+        "正数",
+        "BeanValidation"
+      ],
+      "docs": [
+        {
+          "label": "Jakarta API：Positive",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Positive.html"
+        },
+        {
+          "label": "Jakarta Bean Validation 3.0 规范",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html"
+        }
+      ],
+      "since": "Jakarta Bean Validation 3.0",
+      "versionNote": "约束自 Bean Validation 2.0 引入；jakarta.* 命名空间自 3.0 起。"
+    }
+  ]
+}

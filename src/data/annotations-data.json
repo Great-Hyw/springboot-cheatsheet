@@ -1,0 +1,2267 @@
+{
+  "generatedBy": "content-data",
+  "items": [
+    {
+      "id": "transactional",
+      "name": "@Transactional",
+      "category": "data",
+      "subcategory": "事务管理",
+      "package": "org.springframework.transaction.annotation.Transactional",
+      "level": "进阶",
+      "tagline": "给一段数据库操作整体套上事务",
+      "plain": "@Transactional 给方法或类套上一层事务边界：方法正常返回就提交，抛异常就按规则回滚。默认只对 RuntimeException 和 Error 回滚，碰到受检异常（比如 IOException）照样提交，所以常常要自己写 rollbackFor。它靠 Spring 代理生效，同一个类里 A 方法直接调 B 方法，B 上的注解不会起作用，必须从外部调用才会进事务。",
+      "keyPoints": [
+        "默认只对 RuntimeException 和 Error 回滚，受检异常默认提交。",
+        "同类自调用不经过代理，@Transactional 会失效，需要拆到别的 Bean。",
+        "代理模式下只对 public 方法生效，protected 和 private 上的注解不生效。",
+        "传播行为默认 REQUIRED：已有事务就加入，没有就新建一个。",
+        "只读查询加 readOnly = true，能跳过脏检查、提示数据库走只读优化。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "事务管理器 Bean 名，不写就用默认的"
+        },
+        {
+          "name": "propagation",
+          "type": "Propagation",
+          "default": "REQUIRED",
+          "desc": "传播行为，默认加入当前事务"
+        },
+        {
+          "name": "isolation",
+          "type": "Isolation",
+          "default": "DEFAULT",
+          "desc": "隔离级别，默认跟随数据库"
+        },
+        {
+          "name": "timeout",
+          "type": "int",
+          "default": "-1",
+          "desc": "超时秒数，-1 表示不限制"
+        },
+        {
+          "name": "readOnly",
+          "type": "boolean",
+          "default": "false",
+          "desc": "只读事务提示"
+        },
+        {
+          "name": "rollbackFor",
+          "type": "Class<? extends Throwable>[]",
+          "default": "{}",
+          "desc": "需要回滚的异常类型"
+        },
+        {
+          "name": "noRollbackFor",
+          "type": "Class<? extends Throwable>[]",
+          "default": "{}",
+          "desc": "需要排除、不回滚的异常"
+        },
+        {
+          "name": "transactionManager",
+          "type": "String",
+          "default": "",
+          "desc": "显式指定事务管理器，和 value 二选一"
+        }
+      ],
+      "exampleTitle": "下单服务：运行异常回滚，受检异常也回滚",
+      "example": "import org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\n\n@Service\npublic class OrderService {\n\n    private final OrderRepository orderRepository;\n\n    public OrderService(OrderRepository orderRepository) {\n        this.orderRepository = orderRepository;\n    }\n\n    // 默认只回滚 RuntimeException；受检异常要显式声明\n    @Transactional(rollbackFor = Exception.class)\n    public void createOrder(Order order) throws Exception {\n        orderRepository.save(order);\n        deductStock(order);\n    }\n\n    private void deductStock(Order order) {\n        // 扣库存：这个方法不是 public，上面的注解对它无效\n    }\n}",
+      "notes": [
+        "事务生效需要容器里有一个 PlatformTransactionManager；Boot 的 jdbc/jpa starter 会自动配好。",
+        "rollbackFor 写 Exception.class 会把受检异常也回滚，排查“抛异常但数据没回滚”时先看这个配置。",
+        "方法里把异常 catch 住没有再抛出去，事务管理器看不到异常，照样提交。"
+      ],
+      "related": [
+        "@EnableTransactionManagement",
+        "@Modifying",
+        "@Version"
+      ],
+      "since": "Spring 2.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：声明式事务注解语义、回滚规则与自调用说明",
+          "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html"
+        },
+        {
+          "label": "Spring 6.2 API：@Transactional 全部属性与默认值",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/transaction/annotation/Transactional.html"
+        }
+      ],
+      "tags": [
+        "事务",
+        "回滚",
+        "数据一致性"
+      ]
+    },
+    {
+      "id": "enable-transaction-management",
+      "name": "@EnableTransactionManagement",
+      "category": "data",
+      "subcategory": "事务管理",
+      "package": "org.springframework.transaction.annotation.EnableTransactionManagement",
+      "level": "进阶",
+      "tagline": "打开注解式事务的总开关",
+      "plain": "在配置类上加它，Spring 才会解析 @Transactional 并给对应 Bean 织入事务代理。Spring Boot 的 jdbc / jpa starter 已经自动开启，一般不用手写；只有在纯 Spring、多个事务管理器或要改代理模式时才需要显式声明。它默认用 JDK 动态代理，proxyTargetClass = true 时改用 CGLIB。开启后每个带注解的 Bean 都会被包一层，但同类自调用仍然绕不过代理。",
+      "keyPoints": [
+        "开启之后 @Transactional 才生效，Boot 的自动配置里已默认开启。",
+        "多个事务管理器时，默认那个由 @Primary 决定，或者用 @Transactional 的属性指名道姓。",
+        "默认 PROXY 模式：同类自调用不拦截；mode = ASPECTJ 可绕过但要额外织入。",
+        "order 控制事务增强器的顺序，数值越小优先级越高。"
+      ],
+      "attributes": [
+        {
+          "name": "mode",
+          "type": "AdviceMode",
+          "default": "PROXY",
+          "desc": "代理模式，默认基于代理"
+        },
+        {
+          "name": "proxyTargetClass",
+          "type": "boolean",
+          "default": "false",
+          "desc": "true 时强制使用 CGLIB 代理"
+        },
+        {
+          "name": "order",
+          "type": "int",
+          "default": "2147483647",
+          "desc": "事务增强器的顺序，值越小越优先"
+        },
+        {
+          "name": "rollbackOn",
+          "type": "RollbackOn",
+          "default": "RUNTIME_EXCEPTIONS",
+          "desc": "默认回滚策略：只回滚非受检异常"
+        }
+      ],
+      "exampleTitle": "纯 Spring 配置：注册事务管理器并开启注解事务",
+      "example": "import javax.sql.DataSource;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.jdbc.datasource.DataSourceTransactionManager;\nimport org.springframework.transaction.PlatformTransactionManager;\nimport org.springframework.transaction.annotation.EnableTransactionManagement;\n\n@Configuration\n@EnableTransactionManagement\npublic class TxConfig {\n\n    @Bean\n    public PlatformTransactionManager transactionManager(DataSource dataSource) {\n        return new DataSourceTransactionManager(dataSource);\n    }\n}",
+      "notes": [
+        "一个应用里有多个事务管理器时，@EnableTransactionManagement 使用由 @Primary 标记的那个。",
+        "rollbackOn 是 Spring Framework 6.2 新增的属性，默认 RUNTIME_EXCEPTIONS 等价于“只回滚非受检异常”。",
+        "Boot 项目里重复写这个注解通常无害，但会覆盖自动配置里的 order 等设置。"
+      ],
+      "related": [
+        "@Transactional",
+        "@EnableJpaRepositories",
+        "@EnableAsync"
+      ],
+      "since": "Spring 3.1",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 6.2 API：开启注解式事务及其 4 个属性",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/transaction/annotation/EnableTransactionManagement.html"
+        },
+        {
+          "label": "Spring 官方：注解式事务的工作机制",
+          "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html"
+        }
+      ],
+      "tags": [
+        "事务",
+        "自动配置",
+        "代理"
+      ]
+    },
+    {
+      "id": "entity",
+      "name": "@Entity",
+      "category": "data",
+      "subcategory": "实体映射",
+      "package": "jakarta.persistence.Entity",
+      "level": "入门",
+      "tagline": "把一个 Java 类标记成数据库表",
+      "plain": "加上 @Entity，JPA 就认为这个类的实例对应表里的一行，类名默认当表名，字段默认当列。类必须有 public 或 protected 的无参构造器，不能是 final，也不能是内部类；主键字段还要单独用 @Id 标出来。想改表名就在旁边加 @Table，想改 JPQL 里用的实体名就用它的 name 属性。",
+      "keyPoints": [
+        "必须有 public 或 protected 的无参构造器，实体类不能是 final，也不能是内部类。",
+        "每个实体都要有一个 @Id 主键，否则启动时直接报错。",
+        "类名默认同时作为实体名和表名；JPQL 里写实体名，不写表名。",
+        "字段默认全部持久化，不想入库的用 @Transient 排除。",
+        "实体类要放在 Spring Boot 主类的同包或子包下，否则要手动指定扫描路径。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "JPQL 里使用的实体名，默认就是类名"
+        }
+      ],
+      "exampleTitle": "用 User 实体映射 t_user 表",
+      "example": "import jakarta.persistence.Entity;\nimport jakarta.persistence.GeneratedValue;\nimport jakarta.persistence.GenerationType;\nimport jakarta.persistence.Id;\nimport jakarta.persistence.Table;\n\n@Entity\n@Table(name = \"t_user\")\npublic class User {\n\n    @Id\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\n    private Long id;\n\n    private String username;\n\n    // JPA 需要无参构造器，protected 也可以\n    protected User() {\n    }\n\n    public User(String username) {\n        this.username = username;\n    }\n\n    public Long getId() { return id; }\n    public String getUsername() { return username; }\n}",
+      "notes": [
+        "无参构造器可以是 protected，Hibernate 靠反射创建实例，日常代码照样用带参构造器。",
+        "实体类别用 Lombok 的 @Data 生成 equals/hashCode，代理对象会出问题，要用就把 id 排除掉。",
+        "不能把实体写成 record：record 是 final 而且没有无参构造器。"
+      ],
+      "related": [
+        "@Table",
+        "@Id",
+        "@Column",
+        "@GeneratedValue"
+      ],
+      "since": "JPA 1.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Jakarta Persistence 3.1 规范：实体类必须满足的约束（2.1 节）",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html"
+        },
+        {
+          "label": "Jakarta Persistence 3.1 API：@Entity 定义与 name 属性",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Entity.html"
+        }
+      ],
+      "tags": [
+        "JPA",
+        "实体",
+        "ORM"
+      ]
+    },
+    {
+      "id": "table",
+      "name": "@Table",
+      "category": "data",
+      "subcategory": "实体映射",
+      "package": "jakarta.persistence.Table",
+      "level": "入门",
+      "tagline": "自定义表名、schema、索引和唯一约束",
+      "plain": "不写 @Table 时表名就按类名来，写 @Table(name = \"t_user\") 可以换成真实表名。它还能声明 schema、catalog，以及建表时用的唯一约束和索引。注意这些约束只在 Hibernate 帮你建表时生效，生产库的表结构一般由 Flyway 或 Liquibase 管理，这里写了也不会去改已有的表。所以它更像给自动建表用的说明书，不是数据库变更工具。",
+      "keyPoints": [
+        "name 不写默认用实体名；分库分 schema 时用 schema 属性指定。",
+        "uniqueConstraints 定义联合唯一约束，indexes 定义普通索引。",
+        "只影响自动建表，已有表不会被它修改。",
+        "表名撞上数据库保留字（order、user 等）时必须显式改名。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "表名，默认取实体名"
+        },
+        {
+          "name": "schema",
+          "type": "String",
+          "default": "",
+          "desc": "所属 schema，不写用默认的"
+        },
+        {
+          "name": "catalog",
+          "type": "String",
+          "default": "",
+          "desc": "所属 catalog，多数数据库用不到"
+        },
+        {
+          "name": "uniqueConstraints",
+          "type": "UniqueConstraint[]",
+          "default": "{}",
+          "desc": "建表时生成的唯一约束"
+        },
+        {
+          "name": "indexes",
+          "type": "Index[]",
+          "default": "{}",
+          "desc": "建表时生成的索引"
+        }
+      ],
+      "exampleTitle": "给用户表加表名和邮箱唯一约束",
+      "example": "import jakarta.persistence.Column;\nimport jakarta.persistence.Entity;\nimport jakarta.persistence.Id;\nimport jakarta.persistence.Table;\nimport jakarta.persistence.UniqueConstraint;\n\n@Entity\n@Table(\n    name = \"sys_user\",\n    uniqueConstraints = @UniqueConstraint(name = \"uk_user_email\", columnNames = \"email\")\n)\npublic class SysUser {\n\n    @Id\n    private Long id;\n\n    @Column(name = \"email\", nullable = false, length = 128)\n    private String email;\n}",
+      "notes": [
+        "MySQL 里 order、user 这类词是保留字，直接当表名会报错，最好统一加前缀。",
+        "@Table 的 name 是表名，@Entity 的 name 是 JPQL 里的实体名，两个概念别混。"
+      ],
+      "related": [
+        "@Entity",
+        "@Column",
+        "@Id"
+      ],
+      "since": "JPA 1.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Jakarta Persistence 3.1 API：@Table 的属性说明",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Table.html"
+        },
+        {
+          "label": "Jakarta Persistence 3.1 规范：表映射与 DDL 生成",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html"
+        }
+      ],
+      "tags": [
+        "JPA",
+        "表映射",
+        "索引"
+      ]
+    },
+    {
+      "id": "id",
+      "name": "@Id",
+      "category": "data",
+      "subcategory": "实体映射",
+      "package": "jakarta.persistence.Id",
+      "level": "入门",
+      "tagline": "声明实体的主键字段",
+      "plain": "@Id 标在哪个字段上，哪个字段就是这张表的主键，JPA 靠它区分不同行。主键值可以自己赋值，比如业务单号；也可以交给 @GeneratedValue 让数据库或 JPA 生成。每个实体必须有且只有一个 @Id，复合主键要用 @IdClass 或 @EmbeddedId，而不是标两个 @Id。没有主键的实体在启动时就会直接报错。",
+      "keyPoints": [
+        "每个实体必须有主键，没有 @Id 启动就报错。",
+        "可以标在字段上，也可以标在 getter 上，整个项目最好统一一种。",
+        "主键类型建议用包装类型 Long 而不是 long，方便区分“还没保存”。",
+        "复合主键用 @IdClass 或 @EmbeddedId，不能标多个 @Id。"
+      ],
+      "attributes": [],
+      "exampleTitle": "手工指定主键的 Book 实体",
+      "example": "import jakarta.persistence.Entity;\nimport jakarta.persistence.Id;\nimport jakarta.persistence.Table;\n\n@Entity\n@Table(name = \"t_book\")\npublic class Book {\n\n    // 主键由应用赋值，比如 ISBN\n    @Id\n    private Long id;\n\n    private String title;\n\n    protected Book() {\n    }\n\n    public Book(Long id, String title) {\n        this.id = id;\n        this.title = title;\n    }\n\n    public Long getId() { return id; }\n}",
+      "notes": [
+        "用 long 做 id 时默认值是 0，判断“是不是新对象”会出错，用 Long 更稳。",
+        "主键一旦确定就不要改，很多 JPA 操作靠它定位某一行。"
+      ],
+      "related": [
+        "@GeneratedValue",
+        "@Entity",
+        "@Column"
+      ],
+      "since": "JPA 1.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Jakarta Persistence 3.1 API：@Id 主键注解",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Id.html"
+        },
+        {
+          "label": "Jakarta Persistence 3.1 规范：主键与标识符",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html"
+        }
+      ],
+      "tags": [
+        "JPA",
+        "主键",
+        "实体"
+      ]
+    },
+    {
+      "id": "generated-value",
+      "name": "@GeneratedValue",
+      "category": "data",
+      "subcategory": "实体映射",
+      "package": "jakarta.persistence.GeneratedValue",
+      "level": "入门",
+      "tagline": "让数据库或 JPA 自动生成主键",
+      "plain": "配合 @Id 用，告诉 JPA 主键不用你赋值，交给数据库或 JPA 生成。strategy 决定生成方式：AUTO 交给厂商挑，IDENTITY 用数据库自增列，SEQUENCE 用序列，TABLE 用表模拟序列，UUID 直接生成 UUID。默认策略是 AUTO，不同数据库行为可能不一样。generator 用来引用 @SequenceGenerator 或 @TableGenerator 声明的生成器名字。",
+      "keyPoints": [
+        "IDENTITY 依赖数据库自增，批量插入时性能一般。",
+        "SEQUENCE 可以先取号再批量插入，适合高并发写入。",
+        "AUTO 由厂商决定，Hibernate 6 对 MySQL 的选择和 IDENTITY 不同，生产环境建议写明。",
+        "generator 只对 SEQUENCE 和 TABLE 有意义，名字要和生成器声明一致。"
+      ],
+      "attributes": [
+        {
+          "name": "strategy",
+          "type": "GenerationType",
+          "default": "AUTO",
+          "desc": "主键生成策略，默认交给厂商选择"
+        },
+        {
+          "name": "generator",
+          "type": "String",
+          "default": "",
+          "desc": "引用已声明的生成器名字，默认空"
+        }
+      ],
+      "exampleTitle": "自增主键与 UUID 主键各一个实体",
+      "example": "import jakarta.persistence.Entity;\nimport jakarta.persistence.GeneratedValue;\nimport jakarta.persistence.GenerationType;\nimport jakarta.persistence.Id;\nimport java.util.UUID;\n\n@Entity\npublic class Article {\n\n    // MySQL 自增列：交给数据库生成\n    @Id\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\n    private Long id;\n\n    private String title;\n}\n\n@Entity\npublic class Ticket {\n\n    // JPA 3.1 起支持直接生成 UUID\n    @Id\n    @GeneratedValue(strategy = GenerationType.UUID)\n    private UUID id;\n\n    private String subject;\n}",
+      "notes": [
+        "用 IDENTITY 时 Hibernate 拿不到插入前的主键，JDBC 批量插入会被关掉。",
+        "UUID 主键不用查库就能生成，分布式场景友好，但索引比自增整数大。"
+      ],
+      "related": [
+        "@Id",
+        "@Entity",
+        "@Column"
+      ],
+      "since": "JPA 1.0",
+      "versionNote": "JPA 3.1 新增 GenerationType.UUID，生成符合 RFC 4122 的 UUID。",
+      "docs": [
+        {
+          "label": "Jakarta Persistence 3.1 API：@GeneratedValue 与 strategy/generator",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/GeneratedValue.html"
+        },
+        {
+          "label": "Jakarta Persistence 3.1 API：5 种主键生成策略",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/GenerationType.html"
+        }
+      ],
+      "tags": [
+        "JPA",
+        "主键",
+        "自增"
+      ]
+    },
+    {
+      "id": "column",
+      "name": "@Column",
+      "category": "data",
+      "subcategory": "实体映射",
+      "package": "jakarta.persistence.Column",
+      "level": "入门",
+      "tagline": "把字段的列名、长度、是否可空对上",
+      "plain": "字段名和列名不一致，或者要限制长度和非空时用它。name 改列名，nullable = false 生成 not null，length 管字符串列长度，precision 和 scale 管小数位数，columnDefinition 直接写死列类型。insertable 或 updatable 设为 false 后，这一列会在插入或更新时被跳过，常用来保护创建时间。这些信息主要服务于自动建表，已有表以数据库实际结构为准。",
+      "keyPoints": [
+        "name 不写时按命名策略把驼峰转下划线。",
+        "length 默认 255，只对字符串列生效。",
+        "nullable = false 只管建表，不会替你校验参数。",
+        "insertable = false / updatable = false 用来保护审计字段。",
+        "columnDefinition 写死 DDL，换数据库时容易踩坑。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "列名，默认按命名策略生成"
+        },
+        {
+          "name": "nullable",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否允许为 null，影响建表"
+        },
+        {
+          "name": "length",
+          "type": "int",
+          "default": "255",
+          "desc": "字符串列长度"
+        },
+        {
+          "name": "precision",
+          "type": "int",
+          "default": "0",
+          "desc": "小数总位数"
+        },
+        {
+          "name": "scale",
+          "type": "int",
+          "default": "0",
+          "desc": "小数位数"
+        },
+        {
+          "name": "unique",
+          "type": "boolean",
+          "default": "false",
+          "desc": "是否唯一"
+        },
+        {
+          "name": "insertable",
+          "type": "boolean",
+          "default": "true",
+          "desc": "插入时是否写入这一列"
+        },
+        {
+          "name": "updatable",
+          "type": "boolean",
+          "default": "true",
+          "desc": "更新时是否写入这一列"
+        }
+      ],
+      "exampleTitle": "商品表的列名、精度和只读创建时间",
+      "example": "import jakarta.persistence.Column;\nimport jakarta.persistence.Entity;\nimport jakarta.persistence.Id;\nimport jakarta.persistence.Table;\nimport java.math.BigDecimal;\nimport java.time.LocalDateTime;\n\n@Entity\n@Table(name = \"t_product\")\npublic class Product {\n\n    @Id\n    private Long id;\n\n    @Column(name = \"product_name\", nullable = false, length = 64)\n    private String name;\n\n    @Column(precision = 10, scale = 2)\n    private BigDecimal price;\n\n    // 创建时间只写一次，之后不再更新\n    @Column(name = \"created_at\", updatable = false)\n    private LocalDateTime createdAt;\n}",
+      "notes": [
+        "校验非空别只靠 nullable，配上 @NotBlank 才会在保存前就被拦住。",
+        "字段 userName 映射到列 user_name 由命名策略决定，团队里要统一规则。"
+      ],
+      "related": [
+        "@Entity",
+        "@Table",
+        "@Transient"
+      ],
+      "since": "JPA 1.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Jakarta Persistence 3.1 API：@Column 全部属性与默认值",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Column.html"
+        }
+      ],
+      "tags": [
+        "JPA",
+        "列映射",
+        "建表"
+      ]
+    },
+    {
+      "id": "transient",
+      "name": "@Transient",
+      "category": "data",
+      "subcategory": "实体映射",
+      "package": "jakarta.persistence.Transient",
+      "level": "入门",
+      "tagline": "这个字段不要存进数据库",
+      "plain": "实体里有些字段只是临时算出来的，比如拼接后的全名、页面上的选中状态，不想让它们变成表的一列，就加 @Transient。JPA 会跳过它，既不建列，也不参与查询赋值。注意它和 Java 的 transient 关键字不是一回事，后者只管序列化，JPA 只认这个注解。",
+      "keyPoints": [
+        "标了就不会建列，也不会读写数据库。",
+        "可以放在字段上，也可以放在 getter 上。",
+        "和 Java 的 transient 关键字不同，别混用。",
+        "适合放计算属性、前端临时状态这类数据。"
+      ],
+      "attributes": [],
+      "exampleTitle": "Employee 里计算出来的全名",
+      "example": "import jakarta.persistence.Entity;\nimport jakarta.persistence.Id;\nimport jakarta.persistence.Transient;\n\n@Entity\npublic class Employee {\n\n    @Id\n    private Long id;\n\n    private String firstName;\n    private String lastName;\n\n    // 不入库，只在内存里拼出来\n    @Transient\n    private String fullName;\n\n    public String getFullName() {\n        return firstName + \" \" + lastName;\n    }\n}",
+      "notes": [
+        "如果实体实现了 Serializable，Java 的 transient 关键字只影响序列化，JPA 仍然会持久化该字段。",
+        "Lombok 生成的 getter 上不会自动带注解，加在字段上就够。"
+      ],
+      "related": [
+        "@Entity",
+        "@Column",
+        "@Version"
+      ],
+      "since": "JPA 1.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Jakarta Persistence 3.1 API：@Transient 忽略字段",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Transient.html"
+        }
+      ],
+      "tags": [
+        "JPA",
+        "实体",
+        "忽略字段"
+      ]
+    },
+    {
+      "id": "enumerated",
+      "name": "@Enumerated",
+      "category": "data",
+      "subcategory": "实体映射",
+      "package": "jakarta.persistence.Enumerated",
+      "level": "入门",
+      "tagline": "枚举字段存名字还是存序号",
+      "plain": "实体里放枚举字段时，JPA 默认按 ordinal 存整数，也就是枚举的下标 0、1、2。以后在枚举中间插一个值，旧数据的含义全乱，所以生产上建议一律写 @Enumerated(EnumType.STRING)，直接存枚举名。代价是占空间稍大、需要留够列长度，并且重命名枚举常量等于改数据。",
+      "keyPoints": [
+        "不写 @Enumerated 时默认是 ORDINAL，存的是下标。",
+        "STRING 存枚举名，可读性好，插入新值也安全。",
+        "枚举中间插值会让 ORDINAL 数据错位，这是最常见的坑。",
+        "STRING 列默认长度 255，建议用 @Column(length = 16) 收窄。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "EnumType",
+          "default": "ORDINAL",
+          "desc": "存储方式，默认按序号存"
+        }
+      ],
+      "exampleTitle": "账户状态用字符串存库",
+      "example": "import jakarta.persistence.Column;\nimport jakarta.persistence.Entity;\nimport jakarta.persistence.EnumType;\nimport jakarta.persistence.Enumerated;\nimport jakarta.persistence.Id;\n\n@Entity\npublic class Account {\n\n    public enum Status { ACTIVE, LOCKED, CLOSED }\n\n    @Id\n    private Long id;\n\n    // 存字符串名：新增枚举值不会让旧数据错位\n    @Enumerated(EnumType.STRING)\n    @Column(length = 16)\n    private Status status;\n}",
+      "notes": [
+        "枚举常量改名等于迁移数据，必须同时改数据库里已经存下的值。",
+        "老项目已经是 ORDINAL 的，不要贸然改成 STRING，先做数据迁移。"
+      ],
+      "related": [
+        "@Column",
+        "@Entity"
+      ],
+      "since": "JPA 1.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Jakarta Persistence 3.1 API：@Enumerated 与 EnumType",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Enumerated.html"
+        },
+        {
+          "label": "Jakarta Persistence 3.1 规范：枚举类型映射",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html"
+        }
+      ],
+      "tags": [
+        "JPA",
+        "枚举",
+        "字段映射"
+      ]
+    },
+    {
+      "id": "many-to-one",
+      "name": "@ManyToOne",
+      "category": "data",
+      "subcategory": "关联映射",
+      "package": "jakarta.persistence.ManyToOne",
+      "level": "入门",
+      "tagline": "多个本表行对应一条外部记录",
+      "plain": "比如订单属于一个用户，就在 Order 里放一个 User 字段并加 @ManyToOne，数据库会多出一个 user_id 外键列。它的 fetch 默认是 EAGER，查订单会把用户一起查出来，列表查询时容易拖慢性能，通常改成 LAZY。optional = false 表示这个关联不能为空，建表时会生成 not null。外键列名默认按“字段名加主键名”的规则生成。",
+      "keyPoints": [
+        "默认 EAGER，列表查询容易引发大量额外 SQL，建议显式改 LAZY。",
+        "LAZY 之后要在事务内访问关联对象，否则可能抛 LazyInitializationException。",
+        "optional = false 表示关联不可为空，等价于外键 not null。",
+        "cascade 默认不级联，保存订单不会自动保存用户。"
+      ],
+      "attributes": [
+        {
+          "name": "optional",
+          "type": "boolean",
+          "default": "true",
+          "desc": "关联是否可空，false 生成 not null 外键"
+        },
+        {
+          "name": "fetch",
+          "type": "FetchType",
+          "default": "EAGER",
+          "desc": "加载方式，默认立刻加载"
+        },
+        {
+          "name": "cascade",
+          "type": "CascadeType[]",
+          "default": "{}",
+          "desc": "级联操作，默认不级联"
+        }
+      ],
+      "exampleTitle": "订单关联用户，改成按需加载",
+      "example": "import jakarta.persistence.Entity;\nimport jakarta.persistence.FetchType;\nimport jakarta.persistence.Id;\nimport jakarta.persistence.JoinColumn;\nimport jakarta.persistence.ManyToOne;\n\n@Entity\npublic class Order {\n\n    @Id\n    private Long id;\n\n    // 多个订单属于一个用户；默认 EAGER，这里改成按需加载\n    @ManyToOne(fetch = FetchType.LAZY, optional = false)\n    @JoinColumn(name = \"user_id\", nullable = false)\n    private User user;\n}",
+      "notes": [
+        "N+1 问题常用 @EntityGraph 或 join fetch 解决，别在循环里查关联。",
+        "双向关联时，多的一方写 @ManyToOne，一的一方写 @OneToMany(mappedBy = ...)。"
+      ],
+      "related": [
+        "@OneToMany",
+        "@JoinColumn",
+        "@Entity"
+      ],
+      "since": "JPA 1.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Jakarta Persistence 3.1 API：@ManyToOne 与 fetch/optional",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/ManyToOne.html"
+        }
+      ],
+      "tags": [
+        "JPA",
+        "关联映射",
+        "外键"
+      ]
+    },
+    {
+      "id": "one-to-many",
+      "name": "@OneToMany",
+      "category": "data",
+      "subcategory": "关联映射",
+      "package": "jakarta.persistence.OneToMany",
+      "level": "入门",
+      "tagline": "一条记录对应多行子表数据",
+      "plain": "用户有多个订单，就在 User 里放一个 List<Order> 并加 @OneToMany。双向关联时一定要用 mappedBy 指向多方的那个字段，否则 Hibernate 会以为这是两个独立关联，多建一张中间表。fetch 默认 LAZY，orphanRemoval = true 时把子对象从集合里移除，数据库里那行也会被删掉。删除父对象时子对象是否跟着删，由 cascade 和 orphanRemoval 一起决定。",
+      "keyPoints": [
+        "双向关联必须写 mappedBy，指向 @ManyToOne 那一端的字段名。",
+        "默认 LAZY，遍历集合要在事务内完成。",
+        "cascade = ALL 时保存父对象会级联保存子对象。",
+        "orphanRemoval 与 cascade = REMOVE 不同：前者管从集合移除，后者管父对象删除。"
+      ],
+      "attributes": [
+        {
+          "name": "mappedBy",
+          "type": "String",
+          "default": "",
+          "desc": "指向多方关联字段的名字，双向关联必填"
+        },
+        {
+          "name": "fetch",
+          "type": "FetchType",
+          "default": "LAZY",
+          "desc": "加载方式，默认懒加载"
+        },
+        {
+          "name": "cascade",
+          "type": "CascadeType[]",
+          "default": "{}",
+          "desc": "级联操作，默认不级联"
+        },
+        {
+          "name": "orphanRemoval",
+          "type": "boolean",
+          "default": "false",
+          "desc": "从集合移除时是否删除子记录"
+        }
+      ],
+      "exampleTitle": "用户与订单的一对多双向关联",
+      "example": "import jakarta.persistence.CascadeType;\nimport jakarta.persistence.Entity;\nimport jakarta.persistence.Id;\nimport jakarta.persistence.OneToMany;\nimport java.util.ArrayList;\nimport java.util.List;\n\n@Entity\npublic class User {\n\n    @Id\n    private Long id;\n\n    // mappedBy 指向 Order 里的 user 字段；不写会多出一张中间表\n    @OneToMany(mappedBy = \"user\", cascade = CascadeType.ALL, orphanRemoval = true)\n    private List<Order> orders = new ArrayList<>();\n}",
+      "notes": [
+        "集合要初始化成 new ArrayList<>()，别留 null，否则 add 时报空指针。",
+        "一对多列表很大时不要一次查全，分页或单独查询更稳。"
+      ],
+      "related": [
+        "@ManyToOne",
+        "@JoinColumn",
+        "@Entity"
+      ],
+      "since": "JPA 1.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Jakarta Persistence 3.1 API：@OneToMany 与 mappedBy/orphanRemoval",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/OneToMany.html"
+        }
+      ],
+      "tags": [
+        "JPA",
+        "关联映射",
+        "集合"
+      ]
+    },
+    {
+      "id": "join-column",
+      "name": "@JoinColumn",
+      "category": "data",
+      "subcategory": "关联映射",
+      "package": "jakarta.persistence.JoinColumn",
+      "level": "入门",
+      "tagline": "指定外键列的名字和约束",
+      "plain": "它写在关联字段旁边，用来控制外键列：name 是子表里的列名，referencedColumnName 是父表被引用的列，nullable 和 unique 决定外键是否可空、是否唯一。不写 @JoinColumn 也能跑，但列名会按默认策略生成，和 DBA 约定不一致时就很难对上。即使数据库里没有物理外键，它仍然决定 SQL 关联条件用哪一列。",
+      "keyPoints": [
+        "name 指定外键列名，不写时按默认命名策略生成。",
+        "referencedColumnName 指向父表列，默认是父表主键。",
+        "nullable = false 生成 not null 外键，避免脏数据。",
+        "外键约束名用 foreignKey = @ForeignKey(name = ...) 指定。",
+        "只写在拥有外键的一方，通常就是 @ManyToOne 那一端。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "外键列名"
+        },
+        {
+          "name": "referencedColumnName",
+          "type": "String",
+          "default": "",
+          "desc": "被引用的父表列名，默认父表主键"
+        },
+        {
+          "name": "nullable",
+          "type": "boolean",
+          "default": "true",
+          "desc": "外键列是否允许为 null"
+        },
+        {
+          "name": "unique",
+          "type": "boolean",
+          "default": "false",
+          "desc": "外键列是否唯一"
+        },
+        {
+          "name": "insertable",
+          "type": "boolean",
+          "default": "true",
+          "desc": "插入时是否写入外键"
+        },
+        {
+          "name": "updatable",
+          "type": "boolean",
+          "default": "true",
+          "desc": "更新时是否写入外键"
+        }
+      ],
+      "exampleTitle": "订单表的外键列 user_id",
+      "example": "import jakarta.persistence.Entity;\nimport jakarta.persistence.Id;\nimport jakarta.persistence.JoinColumn;\nimport jakarta.persistence.ManyToOne;\nimport jakarta.persistence.Table;\n\n@Entity\n@Table(name = \"t_order\")\npublic class Order {\n\n    @Id\n    private Long id;\n\n    // 外键列 user_id，引用 t_user 的主键，且不允许为空\n    @ManyToOne\n    @JoinColumn(name = \"user_id\", referencedColumnName = \"id\", nullable = false)\n    private User user;\n}",
+      "notes": [
+        "只有 @ManyToOne / @OneToOne 这一端拥有外键，@OneToMany 的 mappedBy 端不写 @JoinColumn。",
+        "跨库或分表时通常不建物理外键，但 @JoinColumn 仍然用来指定列名。"
+      ],
+      "related": [
+        "@ManyToOne",
+        "@OneToMany",
+        "@Column"
+      ],
+      "since": "JPA 1.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Jakarta Persistence 3.1 API：@JoinColumn 与外键映射",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/JoinColumn.html"
+        }
+      ],
+      "tags": [
+        "JPA",
+        "外键",
+        "关联映射"
+      ]
+    },
+    {
+      "id": "version",
+      "name": "@Version",
+      "category": "data",
+      "subcategory": "实体映射",
+      "package": "jakarta.persistence.Version",
+      "level": "进阶",
+      "tagline": "乐观锁：改之前先核对版本号",
+      "plain": "在实体里加一个 @Version 字段，每次更新 JPA 都会自动加一，并在 where 条件里带上旧版本号。两个请求同时改同一行时，后提交的那个影响行数是 0，Hibernate 抛 OptimisticLockException，你就能提示“数据已被别人修改”。适合读多写少、冲突不频繁的场景，比数据库行锁轻量。",
+      "keyPoints": [
+        "一个实体只能有一个 @Version 字段，类型用 int/long 或对应包装类。",
+        "更新时自动带 WHERE version = 旧值，冲突时抛 OptimisticLockException。",
+        "只对 update 生效，insert 时从 0 开始。",
+        "高冲突场景用它重试成本高，应该考虑悲观锁。"
+      ],
+      "attributes": [],
+      "exampleTitle": "文档实体的版本号字段",
+      "example": "import jakarta.persistence.Entity;\nimport jakarta.persistence.Id;\nimport jakarta.persistence.Version;\n\n@Entity\npublic class Document {\n\n    @Id\n    private Long id;\n\n    private String content;\n\n    // 每次更新 JPA 自动加一，并带上 where version = ?\n    @Version\n    private Long version;\n}",
+      "notes": [
+        "乐观锁异常要自己捕获，再决定重试还是提示用户。",
+        "带 @Version 的字段不要手动 set，交给 JPA 维护。"
+      ],
+      "related": [
+        "@Entity",
+        "@Transactional",
+        "@Column"
+      ],
+      "since": "JPA 1.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Jakarta Persistence 3.1 API：@Version 与乐观锁",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Version.html"
+        },
+        {
+          "label": "Jakarta Persistence 3.1 规范：乐观锁与版本列",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html"
+        }
+      ],
+      "tags": [
+        "JPA",
+        "乐观锁",
+        "并发"
+      ]
+    },
+    {
+      "id": "query",
+      "name": "@Query",
+      "category": "data",
+      "subcategory": "查询与仓库",
+      "package": "org.springframework.data.jpa.repository.Query",
+      "level": "入门",
+      "tagline": "自己写 JPQL 或原生 SQL 查询",
+      "plain": "方法名查询表达不了复杂条件时，用 @Query 直接把 JPQL 写在方法上，比如多表关联、or 条件、子查询。默认按 JPQL 解析，写的是实体名和属性名；要写数据库方言的 SQL 就加 nativeQuery = true。分页查询可以再给一个 countQuery，让 Spring Data 用你写的语句算总数。写 JPQL 时把表名当实体名用，是新手最容易出错的地方。",
+      "keyPoints": [
+        "默认 JPQL，写实体名和属性名，不写表名和列名。",
+        "nativeQuery = true 才按原生 SQL 解析，返回类型要自己对上。",
+        "用 :name 占位，方法参数加 @Param(\"name\") 绑定。",
+        "更新和删除语句必须同时加 @Modifying。",
+        "分页时可用 countQuery 自定义总数统计语句。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "JPQL 或原生 SQL 语句"
+        },
+        {
+          "name": "nativeQuery",
+          "type": "boolean",
+          "default": "false",
+          "desc": "true 表示按原生 SQL 解析"
+        },
+        {
+          "name": "countQuery",
+          "type": "String",
+          "default": "",
+          "desc": "分页时自定义 count 语句"
+        },
+        {
+          "name": "countName",
+          "type": "String",
+          "default": "",
+          "desc": "分页时引用的 named count 查询名"
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "给查询起名，供 named query 引用"
+        }
+      ],
+      "exampleTitle": "按状态查询与原生 SQL 查询",
+      "example": "import java.util.List;\nimport org.springframework.data.jpa.repository.JpaRepository;\nimport org.springframework.data.jpa.repository.Query;\nimport org.springframework.data.repository.query.Param;\n\npublic interface UserRepository extends JpaRepository<User, Long> {\n\n    // 默认 JPQL：写实体名和属性名，不是表名\n    @Query(\"select u from User u where u.status = :status\")\n    List<User> findByStatus(@Param(\"status\") String status);\n\n    // 原生 SQL 必须显式声明 nativeQuery = true\n    @Query(value = \"select * from t_user where age > :age\", nativeQuery = true)\n    List<User> findOlderThan(@Param(\"age\") int age);\n}",
+      "notes": [
+        "JPQL 里写表名不会报错，但查不到数据，这是新手最常踩的坑。",
+        "原生 SQL 分页时 countQuery 也要用原生 SQL，否则语法对不上。"
+      ],
+      "related": [
+        "@Param",
+        "@Modifying",
+        "@EnableJpaRepositories"
+      ],
+      "since": "Spring Data JPA 1.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring Data JPA 官方：@Query 与查询方法",
+          "url": "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html"
+        },
+        {
+          "label": "Spring Data JPA 3.5 API：@Query 属性说明",
+          "url": "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/Query.html"
+        }
+      ],
+      "tags": [
+        "Spring Data",
+        "查询",
+        "JPQL"
+      ]
+    },
+    {
+      "id": "modifying",
+      "name": "@Modifying",
+      "category": "data",
+      "subcategory": "查询与仓库",
+      "package": "org.springframework.data.jpa.repository.Modifying",
+      "level": "进阶",
+      "tagline": "让 @Query 能执行 update 和 delete",
+      "plain": "@Query 默认只当查询用，写 update 或 delete 会报错，必须加上 @Modifying。加上后返回值用 int 表示影响行数。它不会自动开事务，通常再给 Repository 方法加 @Transactional。flushAutomatically 会先刷掉待提交的改动，clearAutomatically 会清一级缓存，避免读到旧对象；方法里还操作了别的持久化对象时，执行后最好再清一次。",
+      "keyPoints": [
+        "只用于 update 和 delete，select 不需要。",
+        "返回值建议用 int 接收影响行数。",
+        "需要在事务中调用，否则抛 TransactionRequiredException。",
+        "clearAutomatically = true 清一级缓存，防止后续读到过期实体。",
+        "flushAutomatically = true 执行前先 flush，保证前面改的数据可见。"
+      ],
+      "attributes": [
+        {
+          "name": "flushAutomatically",
+          "type": "boolean",
+          "default": "false",
+          "desc": "执行前是否先 flush 持久化上下文"
+        },
+        {
+          "name": "clearAutomatically",
+          "type": "boolean",
+          "default": "false",
+          "desc": "执行后是否清空持久化上下文"
+        }
+      ],
+      "exampleTitle": "按 id 更新状态并同步清缓存",
+      "example": "import org.springframework.data.jpa.repository.JpaRepository;\nimport org.springframework.data.jpa.repository.Modifying;\nimport org.springframework.data.jpa.repository.Query;\nimport org.springframework.data.repository.query.Param;\nimport org.springframework.transaction.annotation.Transactional;\n\npublic interface UserRepository extends JpaRepository<User, Long> {\n\n    // 更新语句必须加 @Modifying，并且要在事务里调用\n    @Modifying(clearAutomatically = true, flushAutomatically = true)\n    @Transactional\n    @Query(\"update User u set u.status = :status where u.id = :id\")\n    int updateStatus(@Param(\"id\") Long id, @Param(\"status\") String status);\n\n    // 删除也是修改型查询，同样要 @Modifying\n    @Modifying\n    @Transactional\n    @Query(\"delete from User u where u.id = :id\")\n    int deleteById(@Param(\"id\") Long id);\n}",
+      "notes": [
+        "批量更新绕过了一级缓存，更新完最好 clear 一下再重新查。",
+        "大批量更新用 @Modifying 加分页循环，别一次锁住太多行。"
+      ],
+      "related": [
+        "@Query",
+        "@Transactional",
+        "@Param"
+      ],
+      "since": "Spring Data JPA 1.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring Data JPA 3.5 API：@Modifying 与两个 boolean 属性",
+          "url": "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/Modifying.html"
+        },
+        {
+          "label": "Spring Data JPA 官方：修改型查询",
+          "url": "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html"
+        }
+      ],
+      "tags": [
+        "Spring Data",
+        "更新",
+        "事务"
+      ]
+    },
+    {
+      "id": "param-spring-data",
+      "name": "@Param",
+      "category": "data",
+      "subcategory": "查询与仓库",
+      "package": "org.springframework.data.repository.query.Param",
+      "level": "入门",
+      "tagline": "给 Spring Data 的查询参数起名",
+      "plain": "这是 Spring Data 的注解，全限定名是 org.springframework.data.repository.query.Param，用来把方法参数绑定到 JPQL 或原生 SQL 里的 :name 占位符。方法只有一个参数时可以省略，多个参数就建议都加，否则只能用 :param1、:param2 这种按位置的名字，改参数顺序就全乱。注意它和 MyBatis 的 @Param 完全不是一个包。",
+      "keyPoints": [
+        "全限定名是 org.springframework.data.repository.query.Param。",
+        "绑定 JPQL 或原生 SQL 里的 :name 占位符。",
+        "多参数必须起名，单参数可以省略。",
+        "和 MyBatis 的 @Param（org.apache.ibatis.annotations）同名不同包，import 别混。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "—",
+          "desc": "参数名，必须和 :name 占位符一致"
+        }
+      ],
+      "exampleTitle": "同一个参数在 JPQL 里用两次",
+      "example": "import java.util.List;\nimport org.springframework.data.jpa.repository.JpaRepository;\nimport org.springframework.data.jpa.repository.Query;\nimport org.springframework.data.repository.query.Param;\n\npublic interface OrderRepository extends JpaRepository<Order, Long> {\n\n    // 一个参数在 JPQL 里用两次，必须用 @Param 起名才能复用\n    @Query(\"select o from Order o where o.buyer = :username or o.seller = :username\")\n    List<Order> findByEitherSide(@Param(\"username\") String username);\n\n    // 多个参数时每个都要起名，名字和 :buyer、:status 对应\n    @Query(\"select o from Order o where o.buyer = :buyer and o.status = :status\")\n    List<Order> findByBuyerAndStatus(@Param(\"buyer\") String buyer,\n                                     @Param(\"status\") String status);\n}",
+      "notes": [
+        "位置参数 :param1 从 1 开始编号，不是从 0 开始。",
+        "Spring Data 的 @Param 来自 spring-data-commons，不在 spring-data-jpa 包里。"
+      ],
+      "related": [
+        "@Query",
+        "@Modifying",
+        "@EnableJpaRepositories"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring Data Commons 3.5 API：@Param 定义",
+          "url": "https://docs.spring.io/spring-data/commons/docs/3.5.13/api/org/springframework/data/repository/query/Param.html"
+        },
+        {
+          "label": "Spring Data JPA 官方：查询方法参数绑定",
+          "url": "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html"
+        }
+      ],
+      "tags": [
+        "Spring Data",
+        "参数绑定",
+        "JPQL"
+      ]
+    },
+    {
+      "id": "enable-jpa-repositories",
+      "name": "@EnableJpaRepositories",
+      "category": "data",
+      "subcategory": "仓库配置",
+      "package": "org.springframework.data.jpa.repository.config.EnableJpaRepositories",
+      "level": "进阶",
+      "tagline": "手动指定 JPA 仓库的扫描范围",
+      "plain": "Spring Boot 自动配置默认扫描主类所在包及子包下的 Repository 接口。接口放在别的包，或要接多数据源、多套 JPA 工厂时，就得自己加 @EnableJpaRepositories。basePackages 指定包路径，entityManagerFactoryRef 和 transactionManagerRef 指定用哪套工厂和事务管理器。写了它，Boot 的自动配置就退让，每个数据源各配一套。",
+      "keyPoints": [
+        "默认扫描主类同包及子包，放在外面的 Repository 不会被注册。",
+        "多数据源时每个数据源配一个 @EnableJpaRepositories，各用各的工厂和事务管理器。",
+        "entityManagerFactoryRef 默认 entityManagerFactory，transactionManagerRef 默认 transactionManager。",
+        "指定了自定义 EntityManagerFactory 后，事务管理器通常也要一起指定。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要扫描的基础包，和 basePackages 等价"
+        },
+        {
+          "name": "basePackages",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "Repository 所在包"
+        },
+        {
+          "name": "entityManagerFactoryRef",
+          "type": "String",
+          "default": "entityManagerFactory",
+          "desc": "使用的 EntityManagerFactory Bean 名"
+        },
+        {
+          "name": "transactionManagerRef",
+          "type": "String",
+          "default": "transactionManager",
+          "desc": "使用的事务管理器 Bean 名"
+        },
+        {
+          "name": "enableDefaultTransactions",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否给 Repository 方法加默认事务"
+        },
+        {
+          "name": "bootstrapMode",
+          "type": "BootstrapMode",
+          "default": "DEFAULT",
+          "desc": "仓库初始化的时机"
+        }
+      ],
+      "exampleTitle": "订单数据源独立配置",
+      "example": "import javax.sql.DataSource;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.data.jpa.repository.config.EnableJpaRepositories;\nimport org.springframework.orm.jpa.JpaTransactionManager;\nimport org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;\nimport org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;\nimport org.springframework.transaction.PlatformTransactionManager;\n\n@Configuration\n@EnableJpaRepositories(\n    basePackages = \"com.example.order.repository\",\n    entityManagerFactoryRef = \"orderEntityManagerFactory\",\n    transactionManagerRef = \"orderTransactionManager\"\n)\npublic class OrderDataConfig {\n\n    @Bean\n    public LocalContainerEntityManagerFactoryBean orderEntityManagerFactory(DataSource dataSource) {\n        LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();\n        emf.setDataSource(dataSource);\n        emf.setPackagesToScan(\"com.example.order.entity\");\n        emf.setJpaVendorAdapter(new HibernateJpaVendorAdapter());\n        return emf;\n    }\n\n    @Bean\n    public PlatformTransactionManager orderTransactionManager(\n            LocalContainerEntityManagerFactoryBean orderEntityManagerFactory) {\n        return new JpaTransactionManager(orderEntityManagerFactory.getObject());\n    }\n}",
+      "notes": [
+        "多数据源场景下主数据源要加 @Primary，否则按类型注入会有歧义。",
+        "手动配置后 Boot 的自动配置会退让，别两边各配一半。"
+      ],
+      "related": [
+        "@Entity",
+        "@Transactional",
+        "@Query"
+      ],
+      "since": "Spring Data JPA 1.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring Data JPA 3.5 API：@EnableJpaRepositories 全部属性",
+          "url": "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/config/EnableJpaRepositories.html"
+        }
+      ],
+      "tags": [
+        "Spring Data",
+        "配置",
+        "多数据源"
+      ]
+    },
+    {
+      "id": "mapper",
+      "name": "@Mapper",
+      "category": "data",
+      "subcategory": "SQL 映射",
+      "package": "org.apache.ibatis.annotations.Mapper",
+      "level": "入门",
+      "tagline": "标记 MyBatis 的 Mapper 接口",
+      "plain": "在接口上加 @Mapper，MyBatis 启动时就会为它生成代理实现，你只写接口和 SQL，不用写实现类。Spring Boot 的 mybatis starter 会自动扫描主类包下的 @Mapper 接口；如果接口不在这个范围，就在配置类上用 @MapperScan 批量指定包。它本身没有属性，纯粹是个标记。调用接口方法时，代理会找到对应的 SQL 并通过 SqlSession 执行。",
+      "keyPoints": [
+        "只标在接口上，MyBatis 负责生成动态代理实现。",
+        "Boot 默认扫描主类同包及子包的 @Mapper 接口。",
+        "接口不在扫描范围内时，用 @MapperScan 指定包。",
+        "和 @Repository 不同：@Repository 是 Spring 的异常转换标记，不负责生成代理。"
+      ],
+      "attributes": [],
+      "exampleTitle": "用户查询的 Mapper 接口",
+      "example": "import java.util.List;\nimport org.apache.ibatis.annotations.Mapper;\nimport org.apache.ibatis.annotations.Select;\n\n// Boot 的 mybatis starter 会自动扫描 @Mapper 接口\n@Mapper\npublic interface UserMapper {\n\n    @Select(\"select id, username from t_user where id = #{id}\")\n    User findById(Long id);\n\n    @Select(\"select id, username from t_user\")\n    List<User> findAll();\n\n    @Select(\"select count(*) from t_user\")\n    long count();\n}",
+      "notes": [
+        "XML 映射文件默认和接口同包同名，放在 resources 下对应目录即可。",
+        "一个接口已经加了 @Mapper，@MapperScan 再扫到它也不会重复注册。"
+      ],
+      "related": [
+        "@MapperScan",
+        "@Select",
+        "@Results"
+      ],
+      "since": "MyBatis 3.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "MyBatis 官方：注解式 SQL 与 Mapper 接口",
+          "url": "https://mybatis.org/mybatis-3/java-api.html"
+        },
+        {
+          "label": "MyBatis 3 API：@Mapper 定义",
+          "url": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Mapper.html"
+        }
+      ],
+      "tags": [
+        "MyBatis",
+        "持久层",
+        "代理"
+      ]
+    },
+    {
+      "id": "mapper-scan",
+      "name": "@MapperScan",
+      "category": "data",
+      "subcategory": "SQL 映射",
+      "package": "org.mybatis.spring.annotation.MapperScan",
+      "level": "进阶",
+      "tagline": "一次扫描整个包下的 Mapper",
+      "plain": "写在配置类上，指定一个或多个包，包下所有接口都会被注册成 MyBatis 的 Mapper Bean，省得每个接口都加 @Mapper。它是 mybatis-spring 提供的，不在 MyBatis 核心包里。多数据源时每个数据源配一个 @MapperScan，用 sqlSessionFactoryRef 指明用哪个。属性里还有 nameGenerator、factoryBean 等高级选项，一般项目用不上。",
+      "keyPoints": [
+        "包名用 basePackages 或 value 指定，可以写多个。",
+        "扫描的是包下所有接口，注意别把非 Mapper 接口扫进去。",
+        "多数据源时用 sqlSessionFactoryRef 绑定各自的 SqlSessionFactory。",
+        "只写 @MapperScan 不写 @Mapper 也能工作。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要扫描的包，和 basePackages 等价"
+        },
+        {
+          "name": "basePackages",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "Mapper 接口所在包"
+        },
+        {
+          "name": "annotationClass",
+          "type": "Class",
+          "default": "Annotation.class",
+          "desc": "只注册带指定注解的接口"
+        },
+        {
+          "name": "markerInterface",
+          "type": "Class",
+          "default": "Class.class",
+          "desc": "只注册实现了指定接口的接口"
+        },
+        {
+          "name": "sqlSessionFactoryRef",
+          "type": "String",
+          "default": "",
+          "desc": "指定使用哪个 SqlSessionFactory"
+        },
+        {
+          "name": "sqlSessionTemplateRef",
+          "type": "String",
+          "default": "",
+          "desc": "指定使用哪个 SqlSessionTemplate"
+        },
+        {
+          "name": "lazyInitialization",
+          "type": "String",
+          "default": "",
+          "desc": "懒加载标记，写入 Bean 定义属性"
+        },
+        {
+          "name": "defaultScope",
+          "type": "String",
+          "default": "",
+          "desc": "默认作用域，多数项目用不到"
+        }
+      ],
+      "exampleTitle": "批量扫描 Mapper 包",
+      "example": "import org.mybatis.spring.annotation.MapperScan;\nimport org.springframework.context.annotation.Configuration;\n\n// 扫描包下所有接口，批量注册成 MyBatis 代理 Bean\n@Configuration\n@MapperScan(\n    basePackages = \"com.example.mapper\",\n    sqlSessionFactoryRef = \"sqlSessionFactory\"\n)\npublic class MyBatisConfig {\n\n    // 多数据源时，每套 SqlSessionFactory 配一个 @MapperScan\n    // 单数据源项目可以不写这个类，让 starter 扫描 @Mapper 即可\n    // 每个 Mapper 接口注册成 bean 后，名字默认是接口名首字母小写\n    // 需要更细的扫描范围时，再加 annotationClass 或 markerInterface 过滤\n}",
+      "notes": [
+        "扫到了不需要的接口，可以用 annotationClass、markerInterface 或 excludeFilters 过滤。",
+        "和 @Mapper 二选一即可，混用不冲突，但没必要。"
+      ],
+      "related": [
+        "@Mapper",
+        "@Select",
+        "@Results"
+      ],
+      "since": "MyBatis-Spring 1.2.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "MyBatis-Spring 官方：@MapperScan 与 mapper 扫描",
+          "url": "https://mybatis.org/spring/mappers.html"
+        },
+        {
+          "label": "MyBatis-Spring API：@MapperScan 全部属性",
+          "url": "https://mybatis.org/spring/apidocs/org/mybatis/spring/annotation/MapperScan.html"
+        }
+      ],
+      "tags": [
+        "MyBatis",
+        "配置",
+        "扫描"
+      ]
+    },
+    {
+      "id": "select",
+      "name": "@Select",
+      "category": "data",
+      "subcategory": "SQL 映射",
+      "package": "org.apache.ibatis.annotations.Select",
+      "level": "入门",
+      "tagline": "注解里直接写查询 SQL",
+      "plain": "直接在 Mapper 方法上写 select 语句，省掉 XML。value 是字符串数组，写多段时 MyBatis 会用空格拼起来，所以可以按行拆开提高可读性。参数用 #{} 占位，它会被编译成 PreparedStatement 的 ?，能防 SQL 注入；${} 是字符串直接拼接，只适合表名、排序字段这种可控内容。",
+      "keyPoints": [
+        "数组形式会被空格拼接，适合把长 SQL 拆成多行。",
+        "#{} 走预编译参数，安全；${} 直接拼接，有注入风险。",
+        "复杂动态 SQL（if、foreach）建议放 XML。",
+        "databaseId 用于多数据库方言时区分语句。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "—",
+          "desc": "SQL 语句，可拆成多段传入；单个字符串会被 Java 自动包成数组"
+        },
+        {
+          "name": "databaseId",
+          "type": "String",
+          "default": "",
+          "desc": "指定数据库厂商标识，配合多方言使用"
+        },
+        {
+          "name": "affectData",
+          "type": "boolean",
+          "default": "false",
+          "desc": "是否声明这条语句会改数据"
+        }
+      ],
+      "exampleTitle": "按关键字模糊搜索图书",
+      "example": "import java.util.List;\nimport org.apache.ibatis.annotations.Mapper;\nimport org.apache.ibatis.annotations.Param;\nimport org.apache.ibatis.annotations.Select;\n\n@Mapper\npublic interface BookMapper {\n\n    // 多个字符串会用空格拼成一条 SQL，方便拆行\n    @Select({\n        \"select id, title, author\",\n        \"from t_book\",\n        \"where title like concat('%', #{keyword}, '%')\"\n    })\n    List<Book> search(@Param(\"keyword\") String keyword);\n}",
+      "notes": [
+        "结果列名和属性名对不上时，用 @Results 或开启驼峰映射。",
+        "注解 SQL 里没有 XML 的 <if>，条件多就换成 XML。"
+      ],
+      "related": [
+        "@Mapper",
+        "@Results",
+        "@Param"
+      ],
+      "since": "MyBatis 3.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "MyBatis 官方：@Select 等注解式语句",
+          "url": "https://mybatis.org/mybatis-3/java-api.html"
+        },
+        {
+          "label": "MyBatis 3 API：@Select 属性",
+          "url": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Select.html"
+        }
+      ],
+      "tags": [
+        "MyBatis",
+        "SQL",
+        "查询"
+      ]
+    },
+    {
+      "id": "insert",
+      "name": "@Insert",
+      "category": "data",
+      "subcategory": "SQL 映射",
+      "package": "org.apache.ibatis.annotations.Insert",
+      "level": "入门",
+      "tagline": "注解里直接写插入语句",
+      "plain": "把 insert 语句写在 Mapper 方法上。方法返回值建议用 int 接收影响行数，而不是主键。如果表是自增主键、又想把生成的主键回填到入参对象上，需要再加 @Options(useGeneratedKeys = true, keyProperty = \"id\")。参数是对象时，#{属性名} 会直接取对应 getter，参数是单个简单类型时随便写个名字也能取到值。",
+      "keyPoints": [
+        "返回值是影响行数，不是自增主键。",
+        "回填自增主键要配 @Options(useGeneratedKeys = true, keyProperty = \"id\")。",
+        "#{username} 取入参对象的属性，不是数据库列名。",
+        "批量插入建议用 XML 的 foreach 或提供者。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "—",
+          "desc": "insert 语句，可拆成多段传入；单个字符串会被 Java 自动包成数组"
+        },
+        {
+          "name": "databaseId",
+          "type": "String",
+          "default": "",
+          "desc": "指定数据库厂商标识"
+        }
+      ],
+      "exampleTitle": "插入用户并回填自增主键",
+      "example": "import org.apache.ibatis.annotations.Insert;\nimport org.apache.ibatis.annotations.Mapper;\nimport org.apache.ibatis.annotations.Options;\n\n@Mapper\npublic interface UserMapper {\n\n    // 自增主键要靠 @Options 才能回填到对象的 id 上\n    @Insert(\"insert into t_user(username, email) values(#{username}, #{email})\")\n    @Options(useGeneratedKeys = true, keyProperty = \"id\")\n    int insert(User user);\n\n    // 返回值是影响行数，不是主键\n    @Insert(\"insert into t_user(username) values(#{username})\")\n    int insertSimple(String username);\n}",
+      "notes": [
+        "批量插入用一条 insert 多组 values 比循环单条快很多。",
+        "Oracle 序列场景要用 @SelectKey 取号，不是 useGeneratedKeys。"
+      ],
+      "related": [
+        "@Mapper",
+        "@Update",
+        "@Param"
+      ],
+      "since": "MyBatis 3.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "MyBatis 官方：@Insert 注解式插入",
+          "url": "https://mybatis.org/mybatis-3/java-api.html"
+        }
+      ],
+      "tags": [
+        "MyBatis",
+        "SQL",
+        "插入"
+      ]
+    },
+    {
+      "id": "update",
+      "name": "@Update",
+      "category": "data",
+      "subcategory": "SQL 映射",
+      "package": "org.apache.ibatis.annotations.Update",
+      "level": "入门",
+      "tagline": "注解里直接写更新语句",
+      "plain": "把 update 语句写在 Mapper 方法上，返回影响行数。返回 0 不一定代表失败：可能 id 不存在，也可能新值和旧值一样，MySQL 默认认为没有变化。Mapper 方法本身不会替你组合多条语句，多条更新要一起成功时，得在 Service 层加 @Transactional。语句里的 #{now} 这类占位符，名字要和 @Param 起的名字对得上。",
+      "keyPoints": [
+        "返回影响行数，0 表示没匹配到或者值没变化。",
+        "多参数必须用 @Param 起名，否则只能写 param1、param2。",
+        "单条 update 自己提交，多条组合更新要外层事务。",
+        "databaseId 可区分不同数据库的写法。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "—",
+          "desc": "update 语句，可拆成多段传入；单个字符串会被 Java 自动包成数组"
+        },
+        {
+          "name": "databaseId",
+          "type": "String",
+          "default": "",
+          "desc": "指定数据库厂商标识"
+        }
+      ],
+      "exampleTitle": "按 id 更新邮箱和状态",
+      "example": "import java.time.LocalDateTime;\nimport org.apache.ibatis.annotations.Mapper;\nimport org.apache.ibatis.annotations.Param;\nimport org.apache.ibatis.annotations.Update;\n\n@Mapper\npublic interface UserMapper {\n\n    // 返回影响行数：0 表示没有这个 id，或者值本来就没变\n    @Update(\"update t_user set email = #{email}, updated_at = #{now} where id = #{id}\")\n    int updateEmail(@Param(\"id\") Long id,\n                    @Param(\"email\") String email,\n                    @Param(\"now\") LocalDateTime now);\n\n    @Update(\"update t_user set status = #{status} where id = #{id}\")\n    int updateStatus(@Param(\"id\") Long id, @Param(\"status\") String status);\n}",
+      "notes": [
+        "MySQL 连接串加 useAffectedRows 后返回的是真正改动的行数，和默认行为不同。",
+        "动态 set 条件建议放 XML，注解里硬写 <script> 可读性差。"
+      ],
+      "related": [
+        "@Mapper",
+        "@Insert",
+        "@Delete"
+      ],
+      "since": "MyBatis 3.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "MyBatis 官方：@Update 注解式更新",
+          "url": "https://mybatis.org/mybatis-3/java-api.html"
+        }
+      ],
+      "tags": [
+        "MyBatis",
+        "SQL",
+        "更新"
+      ]
+    },
+    {
+      "id": "delete",
+      "name": "@Delete",
+      "category": "data",
+      "subcategory": "SQL 映射",
+      "package": "org.apache.ibatis.annotations.Delete",
+      "level": "入门",
+      "tagline": "注解里直接写删除语句",
+      "plain": "把 delete 语句写在 Mapper 方法上，返回被删掉的行数。业务系统里更常见的是逻辑删除：不真的 delete，而是 update 一个 deleted 字段，查询时统一带上过滤条件。真删除时注意外键约束，有子表引用会直接报错；数据量大时别一次删太多，分批删更稳。",
+      "keyPoints": [
+        "返回影响行数，可以用它判断是否真的删到了数据。",
+        "逻辑删除比物理删除更安全，便于恢复和审计。",
+        "大批量删除要分批，避免长事务和锁表。",
+        "多参数用 @Param 绑定。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "—",
+          "desc": "delete 语句，可拆成多段传入；单个字符串会被 Java 自动包成数组"
+        },
+        {
+          "name": "databaseId",
+          "type": "String",
+          "default": "",
+          "desc": "指定数据库厂商标识"
+        }
+      ],
+      "exampleTitle": "按 id 和条件删除订单",
+      "example": "import org.apache.ibatis.annotations.Delete;\nimport org.apache.ibatis.annotations.Mapper;\nimport org.apache.ibatis.annotations.Param;\n\n@Mapper\npublic interface OrderMapper {\n\n    // 物理删除，返回影响行数\n    @Delete(\"delete from t_order where id = #{id}\")\n    int deleteById(@Param(\"id\") Long id);\n\n    @Delete(\"delete from t_order where user_id = #{userId} and status = #{status}\")\n    int deleteByUserAndStatus(@Param(\"userId\") Long userId,\n                              @Param(\"status\") String status);\n}",
+      "notes": [
+        "MyBatis-Plus 的 @TableLogic 就是逻辑删除的封装，本质是 update 标记位。",
+        "删除前先备份或归档，物理删除没有后悔药。"
+      ],
+      "related": [
+        "@Mapper",
+        "@Update",
+        "@Select"
+      ],
+      "since": "MyBatis 3.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "MyBatis 官方：@Delete 注解式删除",
+          "url": "https://mybatis.org/mybatis-3/java-api.html"
+        }
+      ],
+      "tags": [
+        "MyBatis",
+        "SQL",
+        "删除"
+      ]
+    },
+    {
+      "id": "param-mybatis",
+      "name": "@Param",
+      "category": "data",
+      "subcategory": "SQL 映射",
+      "package": "org.apache.ibatis.annotations.Param",
+      "level": "入门",
+      "tagline": "给 MyBatis 的 Mapper 参数命名",
+      "plain": "MyBatis 的 @Param 全限定名是 org.apache.ibatis.annotations.Param，给方法参数起名，SQL 里就能用 #{名字} 引用。不写的话，多个参数只能按 param1、param2 或 arg0、arg1 访问，可读性差，改顺序还容易错。参数是单个对象时可以不写，直接取对象属性；单个简单类型也可以不写。它只是给参数贴个名字，让 SQL 能按名字取值，不改变参数类型。",
+      "keyPoints": [
+        "全限定名是 org.apache.ibatis.annotations.Param，和 Spring Data 的同名注解不同包。",
+        "多参数必须用 @Param 起名，否则只能用 param1、param2。",
+        "单参数（简单类型或对象）可以省略。",
+        "名字要和 SQL 里 #{} 内的名称一致。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "—",
+          "desc": "参数名，对应 SQL 里 #{} 中的名称"
+        }
+      ],
+      "exampleTitle": "两个参数分别绑定到 #{} 占位符",
+      "example": "import org.apache.ibatis.annotations.Mapper;\nimport org.apache.ibatis.annotations.Param;\nimport org.apache.ibatis.annotations.Select;\n\n@Mapper\npublic interface OrderMapper {\n\n    // 多个参数必须用 @Param 起名，否则 SQL 里只能写 #{param1}、#{param2}\n    @Select(\"select * from t_order where user_id = #{userId} and status = #{status}\")\n    java.util.List<Order> findByUserAndStatus(@Param(\"userId\") Long userId,\n                                              @Param(\"status\") String status);\n\n    // 只有一个参数时命名不强制\n    @Select(\"select * from t_order where id = #{id}\")\n    Order findById(Long id);\n}",
+      "notes": [
+        "和 Spring Data 的 @Param 混在同一个文件里时，检查 import 是否正确。",
+        "用了 @Param 之后 param1、param2 仍然可用，但没人这么写。"
+      ],
+      "related": [
+        "@Select",
+        "@Insert",
+        "@Update"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "MyBatis 官方：@Param 给参数命名",
+          "url": "https://mybatis.org/mybatis-3/java-api.html"
+        },
+        {
+          "label": "MyBatis 3 API：@Param 定义",
+          "url": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Param.html"
+        }
+      ],
+      "tags": [
+        "MyBatis",
+        "参数绑定",
+        "SQL"
+      ]
+    },
+    {
+      "id": "results",
+      "name": "@Results",
+      "category": "data",
+      "subcategory": "SQL 映射",
+      "package": "org.apache.ibatis.annotations.Results",
+      "level": "进阶",
+      "tagline": "手工指定结果集到对象的映射",
+      "plain": "数据库列名和属性名对不上、又没开驼峰映射时，用 @Results 手写映射规则：@Result(column = \"user_name\", property = \"userName\")。给它一个 id，其他方法就能用 @ResultMap(\"id\") 复用这套规则。字段少时手写不麻烦，字段多建议开 mapUnderscoreToCamelCase 自动搞定，省得逐个去写，比在查询里一个个起别名省事。",
+      "keyPoints": [
+        "用 @Result 逐个声明列名到属性名的对应关系。",
+        "id = true 标出主键列，MyBatis 靠它合并结果。",
+        "给 @Results 命名 id，可在别处用 @ResultMap 复用。",
+        "一对多关联用 @Many，一对一用 @One。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Result[]",
+          "default": "{}",
+          "desc": "一组 @Result 映射"
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "default": "",
+          "desc": "映射集的名字，供 @ResultMap 复用"
+        }
+      ],
+      "exampleTitle": "手写 user_name 到 userName 的映射并复用",
+      "example": "import java.util.List;\nimport org.apache.ibatis.annotations.Mapper;\nimport org.apache.ibatis.annotations.Result;\nimport org.apache.ibatis.annotations.ResultMap;\nimport org.apache.ibatis.annotations.Results;\nimport org.apache.ibatis.annotations.Select;\n\n@Mapper\npublic interface UserMapper {\n\n    // 列名 user_name 和属性名 userName 对不上时，手写映射\n    @Results(id = \"userMap\", value = {\n        @Result(column = \"id\", property = \"id\", id = true),\n        @Result(column = \"user_name\", property = \"userName\"),\n        @Result(column = \"created_at\", property = \"createdAt\")\n    })\n    @Select(\"select id, user_name, created_at from t_user where id = #{id}\")\n    User findById(Long id);\n\n    // 复用上面定义的映射集\n    @ResultMap(\"userMap\")\n    @Select(\"select id, user_name, created_at from t_user\")\n    List<User> findAll();\n}",
+      "notes": [
+        "开了 mapUnderscoreToCamelCase 之后，下划线转驼峰就自动完成了，不用手写。",
+        "@Results 写在方法上只对该方法生效，想复用就必须给它 id。"
+      ],
+      "related": [
+        "@Select",
+        "@Mapper",
+        "@Param"
+      ],
+      "since": "MyBatis 3.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "MyBatis 官方：@Results 结果映射",
+          "url": "https://mybatis.org/mybatis-3/java-api.html"
+        },
+        {
+          "label": "MyBatis 3 API：@Results 属性",
+          "url": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Results.html"
+        }
+      ],
+      "tags": [
+        "MyBatis",
+        "结果映射",
+        "SQL"
+      ]
+    },
+    {
+      "id": "enable-caching",
+      "name": "@EnableCaching",
+      "category": "data",
+      "subcategory": "缓存注解",
+      "package": "org.springframework.cache.annotation.EnableCaching",
+      "level": "入门",
+      "tagline": "打开 Spring 的注解式缓存",
+      "plain": "加在配置类上，Spring 才会处理 @Cacheable、@CachePut、@CacheEvict 这些注解，并为 Bean 创建缓存代理。它需要一个 CacheManager，Boot 会自动配一个，你也可以换成 Redis、Caffeine 等实现。不配 CacheManager 又没加这个注解时，缓存注解完全不起作用，也不会报错，很容易误以为缓存生效了。它只负责开启，缓存存在哪、多久过期由具体实现决定。",
+      "keyPoints": [
+        "没有它，@Cacheable 之类的注解不会被处理。",
+        "需要一个 CacheManager Bean，Boot 会按依赖自动选择实现。",
+        "缓存代理基于 AOP，同类自调用同样不生效。",
+        "proxyTargetClass 控制用 JDK 还是 CGLIB 代理。"
+      ],
+      "attributes": [
+        {
+          "name": "mode",
+          "type": "AdviceMode",
+          "default": "PROXY",
+          "desc": "代理模式，默认基于代理"
+        },
+        {
+          "name": "proxyTargetClass",
+          "type": "boolean",
+          "default": "false",
+          "desc": "true 时强制使用 CGLIB 代理"
+        },
+        {
+          "name": "order",
+          "type": "int",
+          "default": "2147483647",
+          "desc": "缓存增强器的顺序"
+        }
+      ],
+      "exampleTitle": "开启缓存并注册一个本地 CacheManager",
+      "example": "import org.springframework.cache.CacheManager;\nimport org.springframework.cache.annotation.EnableCaching;\nimport org.springframework.cache.concurrent.ConcurrentMapCacheManager;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\n\n@Configuration\n@EnableCaching\npublic class CacheConfig {\n\n    // 真实项目多换成 RedisCacheManager；没有 CacheManager 启动会报错\n    @Bean\n    public CacheManager cacheManager() {\n        return new ConcurrentMapCacheManager(\"users\", \"orders\");\n    }\n}",
+      "notes": [
+        "默认 key 由 SimpleKeyGenerator 生成：无参用 SimpleKey.EMPTY，单参用参数本身，多参组合。",
+        "生产环境先想清楚失效策略，缓存最难的是“什么时候删”。"
+      ],
+      "related": [
+        "@Cacheable",
+        "@CachePut",
+        "@CacheEvict",
+        "@CacheConfig"
+      ],
+      "since": "Spring 3.1",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：开启缓存支持与 CacheManager",
+          "url": "https://docs.spring.io/spring-framework/reference/integration/cache.html#enable-caching"
+        },
+        {
+          "label": "Spring 6.2 API：@EnableCaching 与代理模式",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/EnableCaching.html"
+        }
+      ],
+      "tags": [
+        "缓存",
+        "配置",
+        "Spring"
+      ]
+    },
+    {
+      "id": "cacheable",
+      "name": "@Cacheable",
+      "category": "data",
+      "subcategory": "缓存注解",
+      "package": "org.springframework.cache.annotation.Cacheable",
+      "level": "入门",
+      "tagline": "先查缓存，命中就不执行方法",
+      "plain": "调用方法前先按 key 查缓存，命中就直接返回缓存值，方法根本不执行；没命中才执行方法，并把返回值按 key 写进缓存。key 用 SpEL 写，比如 #id 取参数、#user.id 取对象属性。condition 在方法执行前判断，不满足就不走缓存；unless 在方法执行后判断，满足就不缓存结果。",
+      "keyPoints": [
+        "命中缓存时方法不执行，方法里的日志也不会打印。",
+        "key 不写时用默认生成器，单参数就是参数本身。",
+        "condition 执行前判断，unless 执行后判断，二者都是 SpEL。",
+        "sync = true 让同一 key 的并发加载只执行一次。",
+        "返回 null 时默认也会缓存，不想缓存就写 unless = \"#result == null\"。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "缓存名，和 cacheNames 等价"
+        },
+        {
+          "name": "key",
+          "type": "String",
+          "default": "",
+          "desc": "SpEL 表达式，默认用参数生成"
+        },
+        {
+          "name": "keyGenerator",
+          "type": "String",
+          "default": "",
+          "desc": "指定 key 生成器 Bean 名"
+        },
+        {
+          "name": "cacheManager",
+          "type": "String",
+          "default": "",
+          "desc": "指定缓存管理器"
+        },
+        {
+          "name": "cacheResolver",
+          "type": "String",
+          "default": "",
+          "desc": "指定缓存解析器，和 cacheManager 二选一"
+        },
+        {
+          "name": "condition",
+          "type": "String",
+          "default": "",
+          "desc": "方法执行前判断，满足才走缓存"
+        },
+        {
+          "name": "unless",
+          "type": "String",
+          "default": "",
+          "desc": "方法执行后判断，满足则不缓存结果"
+        },
+        {
+          "name": "sync",
+          "type": "boolean",
+          "default": "false",
+          "desc": "同一 key 的并发加载是否同步"
+        }
+      ],
+      "exampleTitle": "按 id 查用户，结果进 users 缓存",
+      "example": "import org.springframework.cache.annotation.Cacheable;\nimport org.springframework.stereotype.Service;\n\n@Service\npublic class UserService {\n\n    private final UserRepository userRepository;\n\n    public UserService(UserRepository userRepository) {\n        this.userRepository = userRepository;\n    }\n\n    // 先查 users 缓存，没命中才执行方法并写入\n    @Cacheable(cacheNames = \"users\", key = \"#id\", unless = \"#result == null\")\n    public User getById(Long id) {\n        return userRepository.findById(id).orElse(null);\n    }\n}",
+      "notes": [
+        "同类内部调用不会经过缓存代理，和 @Transactional 的坑一样。",
+        "缓存的是返回对象本身，返回可变对象时别在外部改它。"
+      ],
+      "related": [
+        "@CachePut",
+        "@CacheEvict",
+        "@CacheConfig",
+        "@EnableCaching"
+      ],
+      "since": "Spring 3.1",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：@Cacheable 的 key/condition/unless 语义",
+          "url": "https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html"
+        },
+        {
+          "label": "Spring 6.2 API：@Cacheable 全部属性",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/Cacheable.html"
+        }
+      ],
+      "tags": [
+        "缓存",
+        "查询",
+        "Spring"
+      ]
+    },
+    {
+      "id": "cache-put",
+      "name": "@CachePut",
+      "category": "data",
+      "subcategory": "缓存注解",
+      "package": "org.springframework.cache.annotation.CachePut",
+      "level": "进阶",
+      "tagline": "方法一定执行，结果写回缓存",
+      "plain": "和 @Cacheable 相反，@CachePut 每次都会真正执行方法，然后把返回值按 key 写进缓存。典型用法是更新数据后同步缓存：先改数据库，再把新对象放进缓存，保证下一次读能命中新值。key 要和查询时用的 key 一致，否则会写进另一个位置，读的时候照样不命中。",
+      "keyPoints": [
+        "永远执行方法，不会因为缓存命中而跳过。",
+        "用返回值覆盖缓存，适合更新之后回写。",
+        "key 必须和 @Cacheable 的 key 规则一致。",
+        "返回值是 null 时，缓存里可能存进 null，要自己处理。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "缓存名，和 cacheNames 等价"
+        },
+        {
+          "name": "key",
+          "type": "String",
+          "default": "",
+          "desc": "SpEL 表达式，指定写入的 key"
+        },
+        {
+          "name": "keyGenerator",
+          "type": "String",
+          "default": "",
+          "desc": "指定 key 生成器 Bean 名"
+        },
+        {
+          "name": "cacheManager",
+          "type": "String",
+          "default": "",
+          "desc": "指定缓存管理器"
+        },
+        {
+          "name": "cacheResolver",
+          "type": "String",
+          "default": "",
+          "desc": "指定缓存解析器"
+        },
+        {
+          "name": "condition",
+          "type": "String",
+          "default": "",
+          "desc": "满足条件才执行缓存写入"
+        },
+        {
+          "name": "unless",
+          "type": "String",
+          "default": "",
+          "desc": "满足条件则不写缓存"
+        },
+        {
+          "name": "cacheNames",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "缓存名，value 的别名"
+        }
+      ],
+      "exampleTitle": "更新用户后把新对象写回缓存",
+      "example": "import org.springframework.cache.annotation.CachePut;\nimport org.springframework.stereotype.Service;\n\n@Service\npublic class UserService {\n\n    private final UserRepository userRepository;\n\n    public UserService(UserRepository userRepository) {\n        this.userRepository = userRepository;\n    }\n\n    // 方法一定执行，返回的 User 会写入 users 缓存\n    @CachePut(cacheNames = \"users\", key = \"#user.id\")\n    public User update(User user) {\n        return userRepository.save(user);\n    }\n}",
+      "notes": [
+        "更新抛异常时方法没有返回值，缓存不会被覆盖，靠事务回滚保证一致。",
+        "并发更新时 @CachePut 不保证顺序，强一致场景建议直接删缓存。"
+      ],
+      "related": [
+        "@Cacheable",
+        "@CacheEvict",
+        "@EnableCaching"
+      ],
+      "since": "Spring 3.1",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：@CachePut 与 @Cacheable 的区别",
+          "url": "https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html"
+        },
+        {
+          "label": "Spring 6.2 API：@CachePut 全部属性",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CachePut.html"
+        }
+      ],
+      "tags": [
+        "缓存",
+        "更新",
+        "Spring"
+      ]
+    },
+    {
+      "id": "cache-evict",
+      "name": "@CacheEvict",
+      "category": "data",
+      "subcategory": "缓存注解",
+      "package": "org.springframework.cache.annotation.CacheEvict",
+      "level": "进阶",
+      "tagline": "方法执行后清掉缓存",
+      "plain": "用来删缓存：方法执行完（默认）后，按 key 删除对应缓存项；allEntries = true 则清空整个 cache，适合列表缓存这种没法精确定位 key 的场景。beforeInvocation = true 改成方法执行前删，方法抛异常也照样删。缓存删除和数据库写入不在一个事务里，极端情况下会有短暂不一致。",
+      "keyPoints": [
+        "默认方法成功返回后才删除，抛异常就不删。",
+        "allEntries = true 清空整个 cache，慎用于大缓存。",
+        "beforeInvocation = true 在方法执行前就删。",
+        "缓存删除与数据库事务不同步，允许最终一致即可。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "缓存名，和 cacheNames 等价"
+        },
+        {
+          "name": "key",
+          "type": "String",
+          "default": "",
+          "desc": "SpEL 表达式，指定要删除的 key"
+        },
+        {
+          "name": "keyGenerator",
+          "type": "String",
+          "default": "",
+          "desc": "指定 key 生成器 Bean 名"
+        },
+        {
+          "name": "cacheManager",
+          "type": "String",
+          "default": "",
+          "desc": "指定缓存管理器"
+        },
+        {
+          "name": "cacheResolver",
+          "type": "String",
+          "default": "",
+          "desc": "指定缓存解析器"
+        },
+        {
+          "name": "condition",
+          "type": "String",
+          "default": "",
+          "desc": "满足条件才执行删除"
+        },
+        {
+          "name": "allEntries",
+          "type": "boolean",
+          "default": "false",
+          "desc": "是否清空整个 cache"
+        },
+        {
+          "name": "beforeInvocation",
+          "type": "boolean",
+          "default": "false",
+          "desc": "是否在方法执行前就删除"
+        }
+      ],
+      "exampleTitle": "删除用户时清缓存，刷新列表时清空整个 cache",
+      "example": "import org.springframework.cache.annotation.CacheEvict;\nimport org.springframework.stereotype.Service;\n\n@Service\npublic class UserService {\n\n    private final UserRepository userRepository;\n\n    public UserService(UserRepository userRepository) {\n        this.userRepository = userRepository;\n    }\n\n    // 删除后清掉对应 key\n    @CacheEvict(cacheNames = \"users\", key = \"#id\")\n    public void deleteById(Long id) {\n        userRepository.deleteById(id);\n    }\n\n    // 列表缓存没法精确定位 key，直接清空整个 cache\n    @CacheEvict(cacheNames = \"userList\", allEntries = true)\n    public void refreshList() {\n    }\n}",
+      "notes": [
+        "先更新库再删缓存，比先删缓存再更新库更常用，出错概率更小。",
+        "要同时清多个 cache 时，用 @Caching 组合多个 @CacheEvict。"
+      ],
+      "related": [
+        "@Cacheable",
+        "@CachePut",
+        "@CacheConfig",
+        "@EnableCaching"
+      ],
+      "since": "Spring 3.1",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：@CacheEvict 的 allEntries/beforeInvocation",
+          "url": "https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html"
+        },
+        {
+          "label": "Spring 6.2 API：@CacheEvict 全部属性",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CacheEvict.html"
+        }
+      ],
+      "tags": [
+        "缓存",
+        "失效",
+        "Spring"
+      ]
+    },
+    {
+      "id": "cache-config",
+      "name": "@CacheConfig",
+      "category": "data",
+      "subcategory": "缓存注解",
+      "package": "org.springframework.cache.annotation.CacheConfig",
+      "level": "入门",
+      "tagline": "类级共享缓存配置",
+      "plain": "一个 Service 里十几个方法都用同一个 cache，每个注解都写 cacheNames 很啰嗦。在类上加 @CacheConfig(cacheNames = \"users\")，类里所有缓存注解默认就用它，方法上写了就以方法为准。它还能统一指定 keyGenerator、cacheManager、cacheResolver。只对当前类生效，不会影响别的类，也不会真的创建缓存。",
+      "keyPoints": [
+        "类级默认值：cacheNames、keyGenerator、cacheManager、cacheResolver。",
+        "方法上的注解优先，可以覆盖类级配置。",
+        "减少重复配置，改缓存名只改一处。",
+        "只能标在类上，标在方法上无效。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "默认缓存名，和 cacheNames 等价"
+        },
+        {
+          "name": "cacheNames",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "默认缓存名"
+        },
+        {
+          "name": "keyGenerator",
+          "type": "String",
+          "default": "",
+          "desc": "默认 key 生成器 Bean 名"
+        },
+        {
+          "name": "cacheManager",
+          "type": "String",
+          "default": "",
+          "desc": "默认缓存管理器"
+        },
+        {
+          "name": "cacheResolver",
+          "type": "String",
+          "default": "",
+          "desc": "默认缓存解析器"
+        }
+      ],
+      "exampleTitle": "一个 Service 共用 users 缓存",
+      "example": "import org.springframework.cache.annotation.CacheConfig;\nimport org.springframework.cache.annotation.CacheEvict;\nimport org.springframework.cache.annotation.Cacheable;\nimport org.springframework.stereotype.Service;\n\n@Service\n@CacheConfig(cacheNames = \"users\")\npublic class UserService {\n\n    private final UserRepository userRepository;\n\n    public UserService(UserRepository userRepository) {\n        this.userRepository = userRepository;\n    }\n\n    // 不用再重复写 cacheNames = \"users\"\n    @Cacheable(key = \"#id\")\n    public User getById(Long id) {\n        return userRepository.findById(id).orElse(null);\n    }\n\n    @CacheEvict(key = \"#id\")\n    public void deleteById(Long id) {\n        userRepository.deleteById(id);\n    }\n}",
+      "notes": [
+        "类里多个 cache 时，在方法上单独写 cacheNames 覆盖即可。",
+        "它只负责默认值，真正开启缓存仍然要靠 @EnableCaching。"
+      ],
+      "related": [
+        "@Cacheable",
+        "@CacheEvict",
+        "@EnableCaching"
+      ],
+      "since": "Spring 4.1",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 6.2 API：@CacheConfig 类级默认值",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CacheConfig.html"
+        },
+        {
+          "label": "Spring 官方：缓存注解的类级配置",
+          "url": "https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html"
+        }
+      ],
+      "tags": [
+        "缓存",
+        "配置",
+        "Spring"
+      ]
+    },
+    {
+      "id": "enable-async",
+      "name": "@EnableAsync",
+      "category": "async",
+      "subcategory": "异步支持",
+      "package": "org.springframework.scheduling.annotation.EnableAsync",
+      "level": "入门",
+      "tagline": "打开 @Async 异步执行能力",
+      "plain": "加在配置类上，Spring 才会识别 @Async 并为 Bean 创建异步代理，把方法丢到线程池里执行。默认用 Boot 自动配置的 applicationTaskExecutor；想要独立线程池，就定义 Executor Bean，再在 @Async 里写 qualifier 指定。没有这个注解，@Async 只是个普通注解，方法照样同步执行。它只负责开启，用哪个线程池由 @Async 的参数或默认执行器决定。",
+      "keyPoints": [
+        "没有它，@Async 不生效，方法同步执行。",
+        "默认执行器来自 Boot 的 applicationTaskExecutor。",
+        "自定义线程池：定义 Executor Bean，并在 @Async(\"名字\") 里指定。",
+        "代理模式下同类自调用不会异步。"
+      ],
+      "attributes": [
+        {
+          "name": "mode",
+          "type": "AdviceMode",
+          "default": "PROXY",
+          "desc": "代理模式，默认基于代理"
+        },
+        {
+          "name": "order",
+          "type": "int",
+          "default": "2147483647",
+          "desc": "异步增强器的顺序"
+        },
+        {
+          "name": "proxyTargetClass",
+          "type": "boolean",
+          "default": "false",
+          "desc": "true 时强制使用 CGLIB 代理"
+        },
+        {
+          "name": "annotation",
+          "type": "Class",
+          "default": "Annotation.class",
+          "desc": "自定义异步注解，默认扫描 @Async"
+        }
+      ],
+      "exampleTitle": "配置一个发邮件的专用线程池",
+      "example": "import java.util.concurrent.Executor;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.scheduling.annotation.EnableAsync;\nimport org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;\n\n@Configuration\n@EnableAsync\npublic class AsyncConfig {\n\n    // 不配就用 Boot 默认的 applicationTaskExecutor\n    @Bean(\"mailExecutor\")\n    public Executor mailExecutor() {\n        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();\n        executor.setCorePoolSize(4);\n        executor.setMaxPoolSize(8);\n        executor.setQueueCapacity(200);\n        executor.setThreadNamePrefix(\"mail-\");\n        executor.initialize();\n        return executor;\n    }\n}",
+      "notes": [
+        "线程池队列满了会抛 TaskRejectedException，要配拒绝策略。",
+        "异步线程里拿不到请求上下文，ThreadLocal 要自己传递。"
+      ],
+      "related": [
+        "@Async",
+        "@EnableScheduling",
+        "@Scheduled"
+      ],
+      "since": "Spring 3.1",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：@EnableAsync 与异步执行器",
+          "url": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html#scheduling-annotation-support-async"
+        },
+        {
+          "label": "Spring 6.2 API：@EnableAsync 属性",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/EnableAsync.html"
+        }
+      ],
+      "tags": [
+        "异步",
+        "线程池",
+        "Spring"
+      ]
+    },
+    {
+      "id": "async",
+      "name": "@Async",
+      "category": "async",
+      "subcategory": "异步支持",
+      "package": "org.springframework.scheduling.annotation.Async",
+      "level": "进阶",
+      "tagline": "把这个方法丢到线程池里跑",
+      "plain": "标在方法上，调用方立刻返回，方法体在另一个线程执行。返回值只能是 void 或 Future、CompletableFuture：void 拿不到结果也拿不到异常；用 CompletableFuture 可以等结果、处理异常。它靠代理生效，同类里直接调用不会异步；方法也不能是 private，否则代理拦不到。",
+      "keyPoints": [
+        "返回值只能是 void、Future 或 CompletableFuture。",
+        "同类自调用不经过代理，异步会失效。",
+        "代理模式下方法必须是 public。",
+        "用 qualifier 指定线程池：@Async(\"mailExecutor\")。",
+        "void 方法的异常传不回调用方，要自己 try-catch 记录。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "线程池的 qualifier 或 Bean 名，默认用主执行器"
+        }
+      ],
+      "exampleTitle": "发邮件与带返回值的异步调用",
+      "example": "import java.util.concurrent.CompletableFuture;\nimport org.springframework.scheduling.annotation.Async;\nimport org.springframework.stereotype.Service;\n\n@Service\npublic class MailService {\n\n    // 从别的 Bean 调用才会走代理、进线程池\n    @Async(\"mailExecutor\")\n    public void sendWelcome(String email) {\n        System.out.println(\"send to \" + email);\n    }\n\n    @Async\n    public CompletableFuture<String> sendAsync(String email) {\n        // 返回值只能是 void、Future 或 CompletableFuture\n        return CompletableFuture.completedFuture(\"ok\");\n    }\n}",
+      "notes": [
+        "异步方法里再开事务，事务边界属于异步线程，和调用方无关。",
+        "线程池要设名字前缀，排查日志时一眼能看出是哪个池。"
+      ],
+      "related": [
+        "@EnableAsync",
+        "@EnableScheduling",
+        "@Scheduled"
+      ],
+      "since": "Spring 3.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：@Async 的返回值与执行器",
+          "url": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html#scheduling-annotation-support-async"
+        },
+        {
+          "label": "Spring 6.2 API：@Async 与 qualifier",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/Async.html"
+        }
+      ],
+      "tags": [
+        "异步",
+        "线程池",
+        "Spring"
+      ]
+    },
+    {
+      "id": "enable-scheduling",
+      "name": "@EnableScheduling",
+      "category": "async",
+      "subcategory": "定时任务",
+      "package": "org.springframework.scheduling.annotation.EnableScheduling",
+      "level": "入门",
+      "tagline": "打开定时任务的支持",
+      "plain": "加在配置类上，Spring 才会扫描 @Scheduled 方法并按 cron 或固定间隔调度。默认调度器只有一个线程，一个任务跑久了会把后面的任务全堵住，所以多任务场景要自己配 TaskScheduler 线程池。它只负责开启，任务的具体时间写在 @Scheduled 上，配错了不会报错但不会按预期执行。",
+      "keyPoints": [
+        "没有它，@Scheduled 方法不会被调度。",
+        "默认单线程，任务会排队，多任务要配线程池。",
+        "配一个 TaskScheduler Bean 即可替换默认调度器。",
+        "集群部署时每个实例都会跑，需要分布式锁或选主。"
+      ],
+      "attributes": [],
+      "exampleTitle": "开启定时任务并配 4 个调度线程",
+      "example": "import org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.scheduling.annotation.EnableScheduling;\nimport org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;\n\n@Configuration\n@EnableScheduling\npublic class SchedulingConfig {\n\n    // 默认调度器是单线程，多个任务会互相排队\n    @Bean\n    public ThreadPoolTaskScheduler taskScheduler() {\n        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();\n        scheduler.setPoolSize(4);\n        scheduler.setThreadNamePrefix(\"sched-\");\n        scheduler.initialize();\n        return scheduler;\n    }\n}",
+      "notes": [
+        "定时任务抛异常不会影响下一次调度，但异常会被吞掉，记得自己记录日志。",
+        "默认关机不会等待任务跑完（waitForTasksToCompleteOnShutdown 默认 false）；要优雅停机就设 setWaitForTasksToCompleteOnShutdown(true)，再配 setAwaitTerminationSeconds 给等待上限。"
+      ],
+      "related": [
+        "@Scheduled",
+        "@EnableAsync",
+        "@Async"
+      ],
+      "since": "Spring 3.1",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：开启注解式定时任务",
+          "url": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html#scheduling-annotation-support-scheduled"
+        },
+        {
+          "label": "Spring 6.2 API：@EnableScheduling",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/EnableScheduling.html"
+        }
+      ],
+      "tags": [
+        "定时任务",
+        "调度",
+        "Spring"
+      ]
+    },
+    {
+      "id": "scheduled",
+      "name": "@Scheduled",
+      "category": "async",
+      "subcategory": "定时任务",
+      "package": "org.springframework.scheduling.annotation.Scheduled",
+      "level": "入门",
+      "tagline": "按 cron 或固定间隔跑方法",
+      "plain": "标在方法上，Spring 按 cron 表达式或固定间隔调用它。方法必须无参、返回 void，否则启动时报错。cron 是六段，依次是秒、分、时、日、月、周，比 Linux 的五段多一个秒；fixedRate 按固定频率跑，fixedDelay 是上次跑完再等多久，任务耗时超过间隔时 fixedRate 会追着补跑。",
+      "keyPoints": [
+        "方法必须返回 void 且不能有参数，否则启动失败。",
+        "cron 是六段，支持 zone 指定时区。",
+        "fixedRate 按开始时间算间隔，fixedDelay 按结束时间算。",
+        "initialDelay 控制首次延迟，配合 fixedRate 或 fixedDelay 用。",
+        "默认单线程调度，长任务会阻塞其他任务。"
+      ],
+      "attributes": [
+        {
+          "name": "cron",
+          "type": "String",
+          "default": "",
+          "desc": "六段 cron 表达式"
+        },
+        {
+          "name": "zone",
+          "type": "String",
+          "default": "",
+          "desc": "cron 使用的时区，默认服务器时区"
+        },
+        {
+          "name": "fixedRate",
+          "type": "long",
+          "default": "-1",
+          "desc": "固定频率，单位毫秒"
+        },
+        {
+          "name": "fixedDelay",
+          "type": "long",
+          "default": "-1",
+          "desc": "上次结束到下次开始的间隔，单位毫秒"
+        },
+        {
+          "name": "initialDelay",
+          "type": "long",
+          "default": "-1",
+          "desc": "首次执行延迟，单位毫秒"
+        },
+        {
+          "name": "timeUnit",
+          "type": "TimeUnit",
+          "default": "MILLISECONDS",
+          "desc": "各时间属性的单位"
+        },
+        {
+          "name": "fixedRateString",
+          "type": "String",
+          "default": "",
+          "desc": "字符串形式的固定频率，支持占位符"
+        },
+        {
+          "name": "fixedDelayString",
+          "type": "String",
+          "default": "",
+          "desc": "字符串形式的固定间隔，支持占位符"
+        }
+      ],
+      "exampleTitle": "每 5 分钟生成报表，另有固定间隔刷新",
+      "example": "import java.time.LocalDateTime;\nimport org.springframework.scheduling.annotation.Scheduled;\nimport org.springframework.stereotype.Component;\n\n@Component\npublic class ReportJob {\n\n    // 六段 cron：秒 分 时 日 月 周，这里每 5 分钟执行一次\n    @Scheduled(cron = \"0 0/5 * * * *\", zone = \"Asia/Shanghai\")\n    public void buildReport() {\n        System.out.println(\"build report at \" + LocalDateTime.now());\n    }\n\n    // 上次执行完 30 秒后再跑，串行不会重叠\n    @Scheduled(fixedDelay = 30_000)\n    public void refreshCache() {\n        // 刷新逻辑\n    }\n}",
+      "notes": [
+        "cron 里的 ? 只能用在日或周其中一个，另一个用 *。",
+        "集群环境要加分布式锁，否则每个节点都会执行一次。"
+      ],
+      "related": [
+        "@EnableScheduling",
+        "@EnableAsync",
+        "@Async"
+      ],
+      "since": "Spring 3.0",
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：@Scheduled 的 cron、fixedRate 与 fixedDelay",
+          "url": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html#scheduling-annotation-support-scheduled"
+        },
+        {
+          "label": "Spring 6.2 API：@Scheduled 全部属性",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html"
+        }
+      ],
+      "tags": [
+        "定时任务",
+        "cron",
+        "Spring"
+      ]
+    }
+  ]
+}

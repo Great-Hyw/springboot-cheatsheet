@@ -1,0 +1,11 @@
+==================== PathVariable
+--- required in 6.1 Optional Element Summary: yes
+6.2 detail:  required boolean required Whether the path variable is required. Defaults to true , leading to an exception being thrown if the path variable is missing in the incoming request. Switch this to false if you prefer a null or Java 8 java.util.Optional in this case. for example, on a ModelAttribute method which serves for different requests. Since: 4.3.3 Default: true 
+==================== ControllerAdvice
+--- name in 6.1 Optional Element Summary: yes
+6.2 detail:  name @AliasFor ( annotation = Component.class , attribute ="value") String name Alias for Component.value() . Since: 6.1 Default: "" value @AliasFor ("basePackages") String [] value Alias for the basePackages() attribute. Allows for more concise annotation declarations — for example, @ControllerAdvice("org.my.pkg") is equivalent to @ControllerAdvice(basePackages = "org.my.pkg") . Since: 4.0 See Also: basePackages() Default: {} basePackages @AliasFor ("value") String [] basePackages Array of base packages. Controllers that belong to those base packages or sub-packages thereof will be included — for exa
+==================== ExceptionHandler
+--- exception in 6.1 Optional Element Summary: no
+6.2 detail:  exception @AliasFor ("value") Class <? extends Throwable >[] exception Exceptions handled by the annotated method. If empty, will default to any exceptions listed in the method argument list. Since: 6.2 Default: {} produces String [] produces Media Types that can be produced by the annotated method. Since: 6.2 Default: {} 
+--- produces in 6.1 Optional Element Summary: no
+6.2 detail:  produces String [] produces Media Types that can be produced by the annotated method. Since: 6.2 Default: {} 

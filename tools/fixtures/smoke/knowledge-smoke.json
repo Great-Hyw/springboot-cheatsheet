@@ -1,0 +1,23 @@
+{
+  "generatedBy": "knowledge-a",
+  "items": [
+    {
+      "id": "dup-topic",
+      "title": "重复测试文章",
+      "category": "principle",
+      "level": "入门",
+      "readingMinutes": 5,
+      "summary": "这是一篇用来测试审计脚本的知识文章，故意写得很短。",
+      "tags": [
+        "测试"
+      ],
+      "content": "## 一句话结论\n\n很短。\n\n## 代码\n\n```java\npublic class A {}\n",
+      "sources": [
+        {
+          "label": "CSDN",
+          "url": "https://juejin.cn/post/123"
+        }
+      ]
+    }
+  ]
+}

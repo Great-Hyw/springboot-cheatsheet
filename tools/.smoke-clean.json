@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0",
+  "tool": "tools/audit.mjs",
+  "generatedAt": "2026-11-26T06:42:13.833Z",
+  "options": {
+    "dataDir": "tools\\fixtures\\smoke-clean",
+    "skipLinks": true,
+    "sampleRatio": 0.4,
+    "linkTimeoutMs": 25000,
+    "concurrency": 6
+  },
+  "index": {
+    "file": "tools\\annotation-audit\\index\\annotations.txt",
+    "annotations": 1107,
+    "simpleNames": 1060
+  },
+  "coverage": {
+    "files": [
+      {
+        "file": "annotations-smoke.json",
+        "kind": "annotation",
+        "generatedBy": "content-core",
+        "items": 1
+      }
+    ],
+    "annotationItems": 1,
+    "knowledgeItems": 0,
+    "categories": [
+      "core"
+    ],
+    "filesWithErrors": []
+  },
+  "summary": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 0,
+    "verdict": "pass",
+    "byCode": {},
+    "linkChecks": {
+      "total": 0,
+      "ok": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "perFile": {}
+  },
+  "issues": [],
+  "linkChecks": [],
+  "sample": {
+    "ratio": 0.4,
+    "total": 1,
+    "sampled": 1,
+    "list": [
+      {
+        "file": "annotations-smoke.json",
+        "id": "component",
+        "name": "@Component",
+        "category": "core"
+      }
+    ]
+  },
+  "manualFocus": {
+    "highRisk": [],
+    "deprecationClaims": []
+  }
+}

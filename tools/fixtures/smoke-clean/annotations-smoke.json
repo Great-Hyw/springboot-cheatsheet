@@ -1,0 +1,54 @@
+{
+  "generatedBy": "content-core",
+  "items": [
+    {
+      "id": "component",
+      "name": "@Component",
+      "category": "core",
+      "subcategory": "Bean 注册",
+      "package": "org.springframework.stereotype.Component",
+      "since": "Spring 2.0",
+      "level": "入门",
+      "tagline": "把一个普通类交给 Spring 托管",
+      "plain": "你在类上写 @Component，等于告诉 Spring：启动时扫描到这个类，就 new 一个实例放进容器，之后谁需要它，Spring 负责递过去。@Service、@Repository、@Controller 本质上都是它的「马甲」，只是语义更明确，方便人和工具识别分层。",
+      "keyPoints": [
+        "只能标在类上（含注解类型、接口上一般无效），扫描由 @ComponentScan 或 @SpringBootApplication 触发。",
+        "默认 Bean 名是类名首字母小写；显式写 @Component(\"myBean\") 可覆盖。",
+        "它只负责「注册 Bean」，不负责注入依赖；注入用 @Autowired 或构造器。",
+        "被扫描的类必须能被 Spring 实例化（非 private 构造器、非抽象类）。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "Bean 名称。不写则用类名首字母小写。"
+        }
+      ],
+      "exampleTitle": "最小可用示例",
+      "example": "import org.springframework.stereotype.Component;\n\n@Component\npublic class EmailSender {\n    public void send(String to) {\n        System.out.println(\"send mail to \" + to);\n    }\n}\n\n// 使用方：构造器注入（推荐）\n// @Service\n// public class UserService {\n//     private final EmailSender emailSender;\n//     public UserService(EmailSender emailSender) { this.emailSender = emailSender; }\n// }",
+      "notes": [
+        "@Component 与 @Bean 的区别：前者让 Spring 扫描「自己的类」，后者在配置类里手动注册「第三方类」的实例。",
+        "同类/同包被扫描到才会生效；启动类所在包是默认扫描根，放到子包之外不会被扫到。"
+      ],
+      "related": [
+        "@Service",
+        "@Repository",
+        "@ComponentScan",
+        "@Bean"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Classpath Scanning and Managed Components",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans/classpath-scanning.html"
+        }
+      ],
+      "tags": [
+        "Bean",
+        "组件扫描",
+        "IoC"
+      ]
+    }
+  ]
+}

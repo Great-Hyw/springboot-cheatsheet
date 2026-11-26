@@ -1,0 +1,224 @@
+SOURCE: https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/mock/mockito/MockBean.html
+FETCHED: 2026-11-26T06:46:05.380Z
+
+MockBean (Spring Boot 3.5.16 API) 
+
+ JavaScript is disabled on your browser. 
+
+ Package org.springframework.boot.test.mock.mockito 
+ Annotation Interface MockBean 
+
+ @Deprecated ( since ="3.4.0",
+ forRemoval =true)
+ @Target ({ TYPE , FIELD })
+ @Retention ( RUNTIME )
+ @Documented 
+ @Repeatable ( MockBeans.class )
+ public @interface MockBean 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ since 3.4.0 for removal in 4.0.0 in favor of
+ MockitoBean 
+ 
+ Annotation that can be used to add mocks to a Spring ApplicationContext . Can be
+ used as a class level annotation or on fields in either @Configuration classes,
+ or test classes that are @RunWith the SpringRunner .
+ 
+ Mocks can be registered by type or by bean name . When registered by
+ type, any existing single bean of a matching type (including subclasses) in the context
+ will be replaced by the mock. When registered by name, an existing bean can be
+ specifically targeted for replacement by a mock. In either case, if no existing bean is
+ defined a new one will be added. Dependencies that are known to the application context
+ but are not beans (such as those
+ registered directly ) will not be found and a mocked bean will be added to the context
+ alongside the existing dependency.
+ 
+ When @MockBean is used on a field, as well as being registered in the
+ application context, the mock will also be injected into the field. Typical usage might
+ be: 
+ &#064;RunWith(SpringRunner.class)
+ public class ExampleTests {
+
+ &#064;MockBean
+ private ExampleService service;
+
+ &#064;Autowired
+ private UserOfService userOfService;
+
+ &#064;Test
+ public void testUserOfService() {
+ given(this.service.greet()).willReturn("Hello");
+ String actual = this.userOfService.makeUse();
+ assertEquals("Was: Hello", actual);
+ }
+
+ &#064;Configuration
+ &#064;Import(UserOfService.class) // A &#064;Component injected with ExampleService
+ static class Config {
+ }
+
+ }
+ If there is more than one bean of the requested type, qualifier metadata must be
+ specified at field level: 
+ &#064;RunWith(SpringRunner.class)
+ public class ExampleTests {
+
+ &#064;MockBean
+ &#064;Qualifier("example")
+ private ExampleService service;
+
+ ...
+ }
+
+ This annotation is @Repeatable and may be specified multiple times when working
+ with Java 8 or contained within an @MockBeans annotation. 
+ 
+ Since: 
+ 1.4.0 
+ Author: 
+ Phillip Webb 
+ See Also: 
+
+ MockitoPostProcessor 
+
+ Optional Element Summary 
+ Optional Elements 
+ 
+ Modifier and Type 
+ Optional Element 
+ Description 
+ org.mockito.Answers 
+ answer 
+ 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ The Answers type to use on the mock. 
+ 
+ Class <?>[] 
+ classes 
+ 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ The classes to mock. 
+ 
+ Class <?>[] 
+ extraInterfaces 
+ 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ Any extra interfaces that should also be declared on the mock. 
+ 
+ String 
+ name 
+ 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ The name of the bean to register or replace. 
+ 
+ MockReset 
+ reset 
+ 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ The reset mode to apply to the mock bean. 
+ 
+ boolean 
+ serializable 
+ 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ If the generated mock is serializable. 
+ 
+ Class <?>[] 
+ value 
+ 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ The classes to mock. 
+
+ Element Details 
+
+ name 
+ String name 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ The name of the bean to register or replace. If not specified the name will either
+ be generated or, if the mock replaces an existing bean, the existing name will be
+ used. 
+ 
+ Returns: 
+ the name of the bean 
+
+ Default: 
+ "" 
+
+ value 
+ @AliasFor ("classes")
+ Class <?>[] value 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ The classes to mock. This is an alias of classes() which can be used for
+ brevity if no other attributes are defined. See classes() for details. 
+ 
+ Returns: 
+ the classes to mock 
+
+ Default: 
+ {} 
+
+ classes 
+ @AliasFor ("value")
+ Class <?>[] classes 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ The classes to mock. Each class specified here will result in a mock being created
+ and registered with the application context. Classes can be omitted when the
+ annotation is used on a field.
+ 
+ When @MockBean also defines a name this attribute can only contain
+ a single value.
+ 
+ If this is the only specified attribute consider using the value alias
+ instead. 
+ 
+ Returns: 
+ the classes to mock 
+
+ Default: 
+ {} 
+
+ extraInterfaces 
+ Class <?>[] extraInterfaces 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ Any extra interfaces that should also be declared on the mock. See
+ MockSettings.extraInterfaces(Class...) for details. 
+ 
+ Returns: 
+ any extra interfaces 
+
+ Default: 
+ {} 
+
+ answer 
+ org.mockito.Answers answer 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ The Answers type to use on the mock. 
+ 
+ Returns: 
+ the answer type 
+
+ Default: 
+ RETURNS_DEFAULTS 
+
+ serializable 
+ boolean serializable 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ If the generated mock is serializable. See MockSettings.serializable() for
+ details. 
+ 
+ Returns: 
+ if the mock is serializable 
+
+ Default: 
+ false 
+
+ reset 
+ MockReset reset 
+ Deprecated, for removal: This API element is subject to removal in a future version. 
+ The reset mode to apply to the mock bean. The default is MockReset.AFTER 
+ meaning that mocks are automatically reset after each test method is invoked. 
+ 
+ Returns: 
+ the reset mode 
+
+ Default: 
+ AFTER

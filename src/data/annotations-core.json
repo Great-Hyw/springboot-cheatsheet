@@ -1,0 +1,1989 @@
+{
+  "generatedBy": "content-core",
+  "items": [
+    {
+      "id": "component",
+      "name": "@Component",
+      "category": "core",
+      "subcategory": "Bean 注册",
+      "package": "org.springframework.stereotype.Component",
+      "since": "Spring 2.5",
+      "level": "入门",
+      "tagline": "把普通类交给 Spring 托管",
+      "plain": "在类上写 @Component，等于告诉 Spring：组件扫描扫到这个类时，就 new 一个实例放进容器，之后谁需要它，Spring 负责递过去。它只解决「对象从哪来」，不解决「依赖怎么给」。业务代码里更常用 @Service、@Repository、@Controller 这几个语义更明确的马甲。",
+      "keyPoints": [
+        "只能标在类上（@Target 为 TYPE），并且必须被 @ComponentScan 或 @SpringBootApplication 扫到才会注册。",
+        "默认 Bean 名是类名首字母小写，如 userService；写 @Component(\"myBean\") 可以显式指定。",
+        "被扫描的类要能被实例化：抽象类、接口、非静态内部类都不会被注册成 Bean。",
+        "@Component 只负责注册，不负责注入；依赖注入用构造器参数或 @Autowired。",
+        "@Service、@Repository、@Controller 都在这层元注解之上组合，行为一致、语义不同。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "Bean 名称。不写则用类名首字母小写。"
+        }
+      ],
+      "exampleTitle": "最小可用示例",
+      "example": "import org.springframework.stereotype.Component;\n\n@Component\npublic class EmailSender {\n\n    public void send(String to, String text) {\n        System.out.println(\"mail to \" + to + \": \" + text);\n    }\n}\n\n// 被扫描后，其他 Bean 可以直接注入它（推荐构造器注入）\n// @Service\n// public class UserService {\n//     private final EmailSender emailSender;\n//     public UserService(EmailSender emailSender) {\n//         this.emailSender = emailSender;\n//     }\n// }",
+      "notes": [
+        "@Component 与 @Bean 分工不同：自己的类用 @Component 让扫描发现，改不了源码的第三方类用 @Bean 在配置类里手动注册。",
+        "启动类所在包是默认扫描根，类放到同级或子包之外不会被扫到，表现是「注入时找不到 Bean」。",
+        "不同包下同名类会撞 Bean 名，用 @Component(\"xxx\") 改名，或给其中一个候选加 @Primary。"
+      ],
+      "related": [
+        "@Service",
+        "@Repository",
+        "@ComponentScan",
+        "@Bean"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Classpath Scanning and Managed Components",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/classpath-scanning.html#beans-stereotype-annotations"
+        }
+      ],
+      "tags": [
+        "Bean",
+        "组件扫描",
+        "IoC"
+      ]
+    },
+    {
+      "id": "service",
+      "name": "@Service",
+      "category": "core",
+      "subcategory": "Bean 注册",
+      "package": "org.springframework.stereotype.Service",
+      "since": "Spring 2.5",
+      "level": "入门",
+      "tagline": "标记业务层组件，本质就是 @Component",
+      "plain": "@Service 是 @Component 的语义化版本：它告诉读代码的人和工具「这一层是业务逻辑」。功能上二者完全等价，都会被组件扫描注册成 Bean。分层清楚的项目里用它比用 @Component 更容易一眼看出职责边界。",
+      "keyPoints": [
+        "它是 @Component 的派生注解（元注解组合），扫描规则、Bean 命名规则一模一样。",
+        "业务逻辑与事务边界通常落在这一层，所以它经常和 @Transactional 一起出现。",
+        "不要为了凑分层在 DAO 或控制器上写它，语义会被后来维护的人误读。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "Bean 名称。不写则用类名首字母小写。"
+        }
+      ],
+      "exampleTitle": "业务层组件的常见写法",
+      "example": "import org.springframework.stereotype.Service;\n\nimport java.util.List;\n\ninterface OrderRepository {\n    List<String> findAll();\n}\n\n@Service\npublic class OrderService {\n\n    private final OrderRepository orderRepository;\n\n    // 只有一个构造器时，Spring 会自动按类型注入，不需要 @Autowired\n    public OrderService(OrderRepository orderRepository) {\n        this.orderRepository = orderRepository;\n    }\n\n    public int countOrders() {\n        return orderRepository.findAll().size();\n    }\n}",
+      "notes": [
+        "名称只是语义，若用 @Component 代替 @Service，运行结果没有任何区别，区别只在可读性与工具识别。",
+        "同类型有多个实现时，注入不会自动挑 @Service，仍需 @Qualifier 或 @Primary 指定。"
+      ],
+      "related": [
+        "@Component",
+        "@Repository",
+        "@Transactional",
+        "@Autowired"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：@Component 与各 stereotype 注解的关系",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/classpath-scanning.html#beans-stereotype-annotations"
+        }
+      ],
+      "tags": [
+        "Bean",
+        "分层",
+        "业务层"
+      ]
+    },
+    {
+      "id": "repository",
+      "name": "@Repository",
+      "category": "core",
+      "subcategory": "Bean 注册",
+      "package": "org.springframework.stereotype.Repository",
+      "since": "Spring 2.0",
+      "level": "入门",
+      "tagline": "数据访问层组件，还会翻译数据库异常",
+      "plain": "@Repository 除了让类被扫描成 Bean，还多一层作用：Spring 会把它抛出的数据库异常翻译成统一的 DataAccessException 体系，调用方不用逐个 catch 各家驱动的异常类型。写 DAO、仓储类时用它，比 @Component 更表意，也顺手拿到异常翻译。",
+      "keyPoints": [
+        "它同样是 @Component 的派生注解，Bean 注册行为和 @Service 相同。",
+        "异常翻译是它的额外价值：把 SQLException 等转成 DataAccessException，前提是异常确实从持久化技术抛出。",
+        "自己 new 出来的对象不受容器管理，标了 @Repository 也不会触发翻译。",
+        "Spring Data 的接口仓库（如 JpaRepository）由框架生成实现，不需要手写这个注解。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "Bean 名称。不写则用类名首字母小写。"
+        }
+      ],
+      "exampleTitle": "基于 JdbcTemplate 的仓储类",
+      "example": "import org.springframework.jdbc.core.JdbcTemplate;\nimport org.springframework.stereotype.Repository;\n\n@Repository\npublic class UserRepository {\n\n    private final JdbcTemplate jdbcTemplate;\n\n    public UserRepository(JdbcTemplate jdbcTemplate) {\n        this.jdbcTemplate = jdbcTemplate;\n    }\n\n    public int countUsers() {\n        Integer count = jdbcTemplate.queryForObject(\"select count(*) from users\", Integer.class);\n        return count == null ? 0 : count;\n    }\n}",
+      "notes": [
+        "异常翻译需要背后有真正的 DataSource 或 ORM；纯内存计算没有数据库异常可翻，但注解本身无害。",
+        "不要为了「看起来分层」而在 service 上写 @Repository，会让排错的人误判异常翻译边界。",
+        "JdbcTemplate 查询失败时抛的是 DataAccessException 子类，这层翻译由框架完成，不是你自己 catch 出来的。"
+      ],
+      "related": [
+        "@Component",
+        "@Service",
+        "@Transactional",
+        "@Autowired"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：@Repository 与异常翻译",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/classpath-scanning.html#beans-stereotype-annotations"
+        }
+      ],
+      "tags": [
+        "Bean",
+        "DAO",
+        "异常翻译"
+      ]
+    },
+    {
+      "id": "controller",
+      "name": "@Controller",
+      "category": "core",
+      "subcategory": "Bean 注册",
+      "package": "org.springframework.stereotype.Controller",
+      "since": "Spring 2.5",
+      "level": "入门",
+      "tagline": "标记 Web 控制器，接收 HTTP 请求",
+      "plain": "@Controller 告诉 Spring 这个类是 Web 层的入口：组件扫描把它注册成 Bean，Spring MVC 再据此把它当作处理器，方法上的 @GetMapping、@PostMapping 才会被映射成接口。它默认把返回值当视图名；想直接返回 JSON 或文本，就加 @ResponseBody。",
+      "keyPoints": [
+        "它是 @Component 的派生注解，注册成 Bean 后由 DispatcherServlet 识别为控制器。",
+        "返回值默认按视图名解析，需要模板引擎；要直接写响应体用 @ResponseBody 或改用 @RestController。",
+        "只标 @Controller 不会产生任何 URL，路由由方法上的 @RequestMapping 系列注解决定。",
+        "控制器默认是单例，不要在成员变量里存与会话/请求相关的状态。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "Bean 名称。不写则用类名首字母小写。"
+        }
+      ],
+      "exampleTitle": "一个返回文本和一个返回视图的方法",
+      "example": "import org.springframework.stereotype.Controller;\nimport org.springframework.ui.Model;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.ResponseBody;\n\n@Controller\npublic class HelloController {\n\n    // 直接写响应体：浏览器看到纯文本\n    @GetMapping(\"/hello\")\n    @ResponseBody\n    public String hello() {\n        return \"hello spring\";\n    }\n\n    // 返回视图名 hello，交给模板引擎（如 Thymeleaf）渲染\n    @GetMapping(\"/page\")\n    public String page(Model model) {\n        model.addAttribute(\"name\", \"spring\");\n        return \"hello\";\n    }\n}",
+      "notes": [
+        "@Controller 加 @ResponseBody 等价于 @RestController；@RestController 不能返回视图名。",
+        "类上写 @RequestMapping(\"/api\") 时，方法路径会拼在它后面，别重复写前缀。",
+        "控制器单例意味着 handler 方法要无状态；需要请求级数据就放进方法参数，别放成员变量。"
+      ],
+      "related": [
+        "@RestController",
+        "@RequestMapping",
+        "@ResponseBody",
+        "@Component"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Annotated Controllers",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller.html"
+        }
+      ],
+      "tags": [
+        "Web",
+        "MVC",
+        "控制器"
+      ]
+    },
+    {
+      "id": "configuration",
+      "name": "@Configuration",
+      "category": "core",
+      "subcategory": "Bean 注册",
+      "package": "org.springframework.context.annotation.Configuration",
+      "since": "Spring 3.0",
+      "level": "入门",
+      "tagline": "声明配置类，集中定义 Bean",
+      "plain": "@Configuration 把类声明成配置类：里面用 @Bean 方法定义对象，容器启动时调用这些方法把对象注册进去。默认情况下配置类会被 CGLIB 代理，所以 @Bean 方法之间互相调用拿到的仍是容器里的同一个单例，而不是又 new 一个。",
+      "keyPoints": [
+        "默认 proxyBeanMethods = true，配置类被 CGLIB 子类化，方法间调用走容器，保证单例语义。",
+        "设 proxyBeanMethods = false 可跳过代理、启动更快，但 @Bean 方法互调会真的创建新对象。",
+        "配置类本身也是 Bean，需要被 @ComponentScan 扫到或用 @Import 导入才生效。",
+        "enforceUniqueMethods 默认 true，会检查同一配置类里同名 @Bean 方法的重载冲突。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "Bean 名称。不写则用类名首字母小写。"
+        },
+        {
+          "name": "proxyBeanMethods",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否用 CGLIB 代理配置类，让 @Bean 方法间调用走容器。"
+        },
+        {
+          "name": "enforceUniqueMethods",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否强制校验 @Bean 方法不能靠重载共存。"
+        }
+      ],
+      "exampleTitle": "用 @Bean 装配两个对象",
+      "example": "import org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\n\nimport java.time.Clock;\n\n@Configuration\npublic class AppConfig {\n\n    @Bean\n    public Clock clock() {\n        return Clock.systemUTC();\n    }\n\n    @Bean\n    public Greeter greeter(Clock clock) {\n        // 参数注入拿到的是容器里的那个 Clock 单例\n        return new Greeter(clock);\n    }\n\n    public static class Greeter {\n        private final Clock clock;\n\n        public Greeter(Clock clock) {\n            this.clock = clock;\n        }\n\n        public String greet() {\n            return \"now = \" + clock.instant();\n        }\n    }\n}",
+      "notes": [
+        "@Configuration 类里的 @Bean 方法返回相同类型时，注入方会因为候选过多而失败，需要 @Primary 或 @Qualifier。",
+        "proxyBeanMethods = false 属于「lite 模式」，方法互调不经过容器，容易多造对象，只在确实不需要拦截时用。",
+        "配置类之间不要互相继承来复用 @Bean，改用 @Import 组合更清晰。"
+      ],
+      "related": [
+        "@Bean",
+        "@ComponentScan",
+        "@Import",
+        "@Component"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Using the @Configuration annotation",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/configuration-annotation.html"
+        }
+      ],
+      "tags": [
+        "配置",
+        "Java Config",
+        "CGLIB"
+      ]
+    },
+    {
+      "id": "bean",
+      "name": "@Bean",
+      "category": "core",
+      "subcategory": "Bean 注册",
+      "package": "org.springframework.context.annotation.Bean",
+      "since": "Spring 3.0",
+      "level": "入门",
+      "tagline": "在配置类里手动注册一个对象",
+      "plain": "@Bean 写在方法上，方法返回什么，Spring 就把什么注册成 Bean。它专治「类改不了、注解加不上」的场景，比如第三方库的 DataSource、线程池。方法参数会自动按类型注入依赖，方法名默认就是 Bean 名，方法体里你自己负责 new。",
+      "keyPoints": [
+        "方法所在类本身必须是 Bean（@Configuration 或 @Component），否则 @Bean 方法不会被执行。",
+        "Bean 名默认取方法名；用 @Bean(\"name\") 改名，或 @Bean(name = {\"a\", \"b\"}) 加别名。",
+        "initMethod / destroyMethod 指定生命周期回调；destroyMethod 默认 (inferred)，会自动推断 close 或 shutdown。",
+        "@Bean 方法默认单例，要每次拿新对象加 @Scope(\"prototype\")。",
+        "方法参数按类型注入，多个候选时配合 @Qualifier 或 @Primary 消歧。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "Bean 名称，与 name 互为别名。"
+        },
+        {
+          "name": "name",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "Bean 名称，可写多个（第一个为主名，其余为别名）。"
+        },
+        {
+          "name": "initMethod",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "初始化方法名，容器创建 Bean 后调用。"
+        },
+        {
+          "name": "destroyMethod",
+          "type": "String",
+          "default": "(inferred)",
+          "desc": "销毁方法名，默认自动推断 close/shutdown。"
+        },
+        {
+          "name": "autowireCandidate",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否作为按类型注入的候选。"
+        },
+        {
+          "name": "defaultCandidate",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否作为默认候选（无 @Qualifier 时的兜底）。"
+        }
+      ],
+      "exampleTitle": "注册一个带销毁回调的线程池",
+      "example": "import org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\n\nimport java.util.concurrent.ExecutorService;\nimport java.util.concurrent.Executors;\n\n@Configuration\npublic class ExecutorConfig {\n\n    // Bean 名是 workerPool；容器关闭时调用 shutdown()\n    @Bean(name = \"workerPool\", destroyMethod = \"shutdown\")\n    public ExecutorService workerPool() {\n        return Executors.newFixedThreadPool(4);\n    }\n}\n\n// 使用方按类型注入即可\n// @Service\n// public class TaskService {\n//     private final ExecutorService pool;\n//     public TaskService(ExecutorService pool) { this.pool = pool; }\n// }",
+      "notes": [
+        "同一个配置类里两个 @Bean 方法返回相同类型时，注入会因候选过多失败，需要 @Primary 或 @Qualifier。",
+        "destroyMethod 的自动推断只对 public 的 close()/shutdown() 生效，第三方对象建议显式写清楚。",
+        "@Bean 方法不要返回 null，容器会把它当成「没有这个 Bean」，下游注入直接失败。",
+        "想「有就跳过、没有才注册」，用 @Conditional 家族控制，而不是在方法里写 if 返回 null。"
+      ],
+      "related": [
+        "@Configuration",
+        "@Component",
+        "@Scope",
+        "@Conditional"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Using the @Bean annotation",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/bean-annotation.html"
+        }
+      ],
+      "tags": [
+        "Bean",
+        "Java Config",
+        "生命周期"
+      ]
+    },
+    {
+      "id": "component-scan",
+      "name": "@ComponentScan",
+      "category": "core",
+      "subcategory": "Bean 注册",
+      "package": "org.springframework.context.annotation.ComponentScan",
+      "since": "Spring 3.1",
+      "level": "入门",
+      "tagline": "指定 Spring 去哪些包找组件",
+      "plain": "Spring 不会自动认识你的类，得有人告诉它去哪儿找。@ComponentScan 就是这份搜索范围：指定包名后，Spring 递归扫描包下的 @Component 及其派生注解，把类注册成 Bean。Spring Boot 的 @SpringBootApplication 已内置它，多数项目不用手写。",
+      "keyPoints": [
+        "不写参数时以标注类所在包为根；basePackages 或 basePackageClasses 可以改搜索范围。",
+        "useDefaultFilters 默认 true，会自动识别 @Component 及派生注解；设为 false 就得自己配 includeFilters。",
+        "excludeFilters 可以排除指定类型，例如按注解或正则排除测试类。",
+        "扫描是递归的，范围开太大既拖慢启动也容易把不该注册的类拉进来。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要扫描的包名，与 basePackages 互为别名。"
+        },
+        {
+          "name": "basePackages",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要扫描的包名（字符串形式）。"
+        },
+        {
+          "name": "basePackageClasses",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "以指定类所在包为扫描根，比写字符串更抗重构。"
+        },
+        {
+          "name": "includeFilters",
+          "type": "Filter[]",
+          "default": "{}",
+          "desc": "额外包含规则，配合 useDefaultFilters = false 使用。"
+        },
+        {
+          "name": "excludeFilters",
+          "type": "Filter[]",
+          "default": "{}",
+          "desc": "排除规则，命中的类不会被注册。"
+        },
+        {
+          "name": "useDefaultFilters",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否启用默认的 @Component 过滤规则。"
+        },
+        {
+          "name": "lazyInit",
+          "type": "boolean",
+          "default": "false",
+          "desc": "扫到的 Bean 是否延迟初始化。"
+        }
+      ],
+      "exampleTitle": "限定包并排除控制器",
+      "example": "import org.springframework.context.annotation.AnnotationConfigApplicationContext;\nimport org.springframework.context.annotation.ComponentScan;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.context.annotation.FilterType;\nimport org.springframework.stereotype.Controller;\n\n@Configuration\n@ComponentScan(\n        basePackages = \"com.example.shop\",\n        excludeFilters = @ComponentScan.Filter(\n                type = FilterType.ANNOTATION, classes = Controller.class)\n)\npublic class CoreConfig {\n\n    public static void main(String[] args) {\n        try (var ctx = new AnnotationConfigApplicationContext(CoreConfig.class)) {\n            System.out.println(\"beans = \" + ctx.getBeanDefinitionCount());\n        }\n    }\n}",
+      "notes": [
+        "basePackages 写的是包名不是类名；想跟着重构走就用 basePackageClasses 指向一个标记类。",
+        "启动类是默认扫描根，把组件放在启动类所在包之外，需要显式加 @ComponentScan 或 @Import。",
+        "排除规则写错不会报错，只会安静地少注册 Bean，排查时先看扫描范围。"
+      ],
+      "related": [
+        "@Component",
+        "@Configuration",
+        "@Import",
+        "@SpringBootApplication"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Classpath Scanning and Managed Components",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/classpath-scanning.html"
+        }
+      ],
+      "tags": [
+        "组件扫描",
+        "包扫描",
+        "Bean"
+      ]
+    },
+    {
+      "id": "import",
+      "name": "@Import",
+      "category": "core",
+      "subcategory": "Bean 注册",
+      "package": "org.springframework.context.annotation.Import",
+      "since": "Spring 3.0",
+      "level": "进阶",
+      "tagline": "把别的配置类顺带装进容器",
+      "plain": "@Import 写在配置类上，作用是「顺带把另一个配置类也装上」。被导入类里的 @Bean 定义会一起注册，常用于拼装模块配置或引入框架自带配置。被导入的类不需要在组件扫描范围内，这是它和 @Component 的关键区别。",
+      "keyPoints": [
+        "value 是 Class 数组且没有默认值，必须显式写明要导入哪些类。",
+        "导入 @Configuration 类会展开它的 @Bean 定义；导入普通类则把这个类本身注册成 Bean。",
+        "被导入的类不受 @ComponentScan 范围限制，适合引入第三方或框架提供的配置。",
+        "Spring Boot 自动配置就是通过 @Import 选择一个 ImportSelector 来批量导入配置类的。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Class<?>[]",
+          "default": "—",
+          "desc": "要导入的配置类或组件类，必填。"
+        }
+      ],
+      "exampleTitle": "引入另一个配置类里定义的 Bean",
+      "example": "import org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.context.annotation.Import;\n\n@Configuration\n@Import(DataSourceConfig.class)\npublic class AppConfig {\n    // 这里不用再写一遍 DataSource 的 @Bean\n}\n\n@Configuration\nclass DataSourceConfig {\n\n    @Bean\n    public String jdbcUrl() {\n        return \"jdbc:h2:mem:demo\";\n    }\n}\n\n// 启动后两个类里的 @Bean 都在同一个容器中",
+      "notes": [
+        "@Import 的类即使不在扫描路径下也会生效，这是它和 @Component 最重要的区别。",
+        "被导入的配置类若带 @Conditional，条件不满足时整体跳过，不会影响启动。",
+        "循环导入会让容器初始化失败，模块拆分时注意依赖方向保持单向。"
+      ],
+      "related": [
+        "@Configuration",
+        "@ComponentScan",
+        "@ImportResource",
+        "@Bean"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Composing Java-based Configurations（@Import）",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/composing-configuration-classes.html#beans-java-using-import"
+        }
+      ],
+      "tags": [
+        "配置装配",
+        "Java Config",
+        "模块化"
+      ]
+    },
+    {
+      "id": "import-resource",
+      "name": "@ImportResource",
+      "category": "core",
+      "subcategory": "Bean 注册",
+      "package": "org.springframework.context.annotation.ImportResource",
+      "since": "Spring 3.0",
+      "level": "进阶",
+      "tagline": "把 XML 配置里的 Bean 导入容器",
+      "plain": "@ImportResource 用来加载老的 XML 配置文件：写 @ImportResource(\"classpath:beans.xml\")，Spring 会把 XML 里定义的 Bean 一并注册进容器。迁移老项目、或不得不复用现成 XML 时用它；新项目更推荐 Java 配置，可读性和编译期检查都更好。",
+      "keyPoints": [
+        "locations 或 value 写资源路径，支持 classpath: 前缀，多个文件用数组。",
+        "XML 里的 <bean> 和注解注册的 Bean 在同一个容器里，可以互相注入。",
+        "reader 属性可以替换默认的 XmlBeanDefinitionReader，一般保持默认即可。",
+        "路径写错时启动直接失败，不会静默跳过，这点和 ignoreResourceNotFound 的注解不同。"
+      ],
+      "attributes": [
+        {
+          "name": "locations",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "XML 资源位置，如 classpath:beans.xml。"
+        },
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "locations 的别名。"
+        }
+      ],
+      "exampleTitle": "加载 classpath 下的老 XML 配置",
+      "example": "import org.springframework.context.annotation.Configuration;\nimport org.springframework.context.annotation.ImportResource;\n\n@Configuration\n@ImportResource({\"classpath:legacy-beans.xml\", \"classpath:extra-beans.xml\"})\npublic class LegacyConfig {\n}\n\n// src/main/resources/legacy-beans.xml 大致内容：\n// <beans xmlns=\"http://www.springframework.org/schema/beans\"\n//        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n//        xsi:schemaLocation=\"http://www.springframework.org/schema/beans\n//            https://www.springframework.org/schema/beans/spring-beans.xsd\">\n//     <bean id=\"legacyService\" class=\"com.example.LegacyService\"/>\n// </beans>\n//\n// 启动后 legacyService 与注解 Bean 在同一个容器，可直接注入",
+      "notes": [
+        "文件不存在会抛 IOException 导致启动失败，路径和大小写（Linux 区分）要核对。",
+        "XML 与 Java 配置混用时 Bean 名容易撞，排查冲突先打印容器里的 Bean 名称清单。",
+        "新代码别再用 XML 定义业务 Bean，只把它当作迁移期的兼容层。"
+      ],
+      "related": [
+        "@Import",
+        "@Configuration",
+        "@Bean"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：XML-centric 与 Java 配置组合（@ImportResource）",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/composing-configuration-classes.html#beans-java-combining-xml-centric"
+        }
+      ],
+      "tags": [
+        "XML",
+        "配置迁移",
+        "Bean"
+      ]
+    },
+    {
+      "id": "property-source",
+      "name": "@PropertySource",
+      "category": "core",
+      "subcategory": "Bean 配置",
+      "package": "org.springframework.context.annotation.PropertySource",
+      "since": "Spring 3.1",
+      "level": "入门",
+      "tagline": "把 properties 文件读进 Environment",
+      "plain": "@PropertySource 把外部 .properties 文件读进 Spring 的 Environment，之后就能用 @Value(\"${key}\") 或 environment.getProperty(\"key\") 取值。它适合少量固定的配置文件；Spring Boot 项目通常由 application.properties 自动加载，不必手写。",
+      "keyPoints": [
+        "value 是资源路径数组且必须写，如 classpath:app.properties。",
+        "同名 key 谁优先由 PropertySources 的顺序决定；系统属性和环境变量默认排在最前，优先级更高。",
+        "ignoreResourceNotFound = true 时文件缺失不报错，适合可选配置。",
+        "中文内容建议显式设 encoding = \"UTF-8\"，否则按 Java properties 规范以 ISO-8859-1 解析。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "—",
+          "desc": "properties 文件位置，必填，支持 classpath: 前缀。"
+        },
+        {
+          "name": "encoding",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "文件字符编码，如 UTF-8；不写用平台默认。"
+        },
+        {
+          "name": "ignoreResourceNotFound",
+          "type": "boolean",
+          "default": "false",
+          "desc": "文件找不到时是否忽略。"
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "这个 PropertySource 的唯一名称，一般不用写。"
+        }
+      ],
+      "exampleTitle": "从 properties 读一个配置项",
+      "example": "import org.springframework.beans.factory.annotation.Value;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.context.annotation.PropertySource;\n\n@Configuration\n@PropertySource(value = \"classpath:app.properties\", encoding = \"UTF-8\")\npublic class AppProperties {\n\n    @Value(\"${app.name}\")\n    private String appName;\n\n    public String describe() {\n        return \"app = \" + appName;\n    }\n}\n\n// src/main/resources/app.properties:\n// app.name=spring-demo",
+      "notes": [
+        "@PropertySource 只认 .properties 和 XML 形式的 properties，不认 YAML。",
+        "它不会覆盖已存在的系统属性或环境变量，值「没生效」时先查优先级，而不是怀疑注解没扫到。",
+        "配置项多起来之后改用 @ConfigurationProperties 绑定对象，比散落的 @Value 好维护。"
+      ],
+      "related": [
+        "@Value",
+        "@Configuration",
+        "@Profile"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Using @PropertySource",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/environment.html#beans-using-propertysource"
+        }
+      ],
+      "tags": [
+        "配置",
+        "properties",
+        "Environment"
+      ]
+    },
+    {
+      "id": "value",
+      "name": "@Value",
+      "category": "core",
+      "subcategory": "依赖注入",
+      "package": "org.springframework.beans.factory.annotation.Value",
+      "since": "Spring 3.0",
+      "level": "入门",
+      "tagline": "把配置值注入字段或参数",
+      "plain": "@Value 用来把配置值塞进字段、方法参数或构造器参数。最常见是占位符写法 @Value(\"${app.name}\")，从 properties、环境变量、命令行参数里取值；也支持 SpEL 表达式 #{}。适合零散的一两个配置，成组的配置项用 @ConfigurationProperties 绑定更省事。",
+      "keyPoints": [
+        "占位符 ${key} 从 Environment 取值，没配又没写默认值，启动直接失败。",
+        "可以带默认值：@Value(\"${app.port:8080}\")，冒号后面就是兜底值。",
+        "支持 SpEL 表达式 #{...}，能调方法，但别把外部输入拼进表达式。",
+        "@Value 由 BeanPostProcessor 处理，在 BeanPostProcessor 自身里用它不生效。",
+        "优先写在构造器参数上，字段可以 final，对象创建完就是完整的。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "—",
+          "desc": "要注入的表达式：占位符 ${...} 或 SpEL #{...}，必填。"
+        }
+      ],
+      "exampleTitle": "构造器参数注入配置",
+      "example": "import org.springframework.beans.factory.annotation.Value;\nimport org.springframework.stereotype.Component;\n\n@Component\npublic class MailProperties {\n\n    private final String host;\n    private final int port;\n\n    // ${mail.host} 必须在配置里存在；${mail.port:25} 缺省时用 25\n    public MailProperties(@Value(\"${mail.host}\") String host,\n                          @Value(\"${mail.port:25}\") int port) {\n        this.host = host;\n        this.port = port;\n    }\n\n    public String endpoint() {\n        return host + \":\" + port;\n    }\n}",
+      "notes": [
+        "配置缺失又没写默认值时，启动报 Could not resolve placeholder，尽早失败是好事，别用 try/catch 吞掉。",
+        "静态字段上标 @Value 不生效（容器注入不到 static 字段），需要的话用 setter 或构造器。",
+        "SpEL 能调用任意方法，拼接用户可控的字符串有风险，配置类里尤其注意。"
+      ],
+      "related": [
+        "@PropertySource",
+        "@ConfigurationProperties",
+        "@Autowired"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Using @Value",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/value-annotations.html"
+        }
+      ],
+      "tags": [
+        "配置",
+        "依赖注入",
+        "SpEL"
+      ]
+    },
+    {
+      "id": "autowired",
+      "name": "@Autowired",
+      "category": "core",
+      "subcategory": "依赖注入",
+      "package": "org.springframework.beans.factory.annotation.Autowired",
+      "since": "Spring 2.5",
+      "level": "入门",
+      "tagline": "让 Spring 自动把依赖注进来",
+      "plain": "@Autowired 让 Spring 自动找依赖：按类型在容器里匹配 Bean，注进构造器、setter、字段或方法参数。现代写法优先构造器注入，依赖一眼看清、方便测试，字段还能用 final。类里只有一个构造器时，Spring 会自动用它注入，注解其实可以省略。",
+      "keyPoints": [
+        "默认 required = true，找不到匹配 Bean 启动就失败；设 false 允许 null，但容易埋雷。",
+        "按类型匹配；同类型多个候选时按参数名兜底，再不行用 @Qualifier 或 @Primary。",
+        "只有一个构造器时从 4.3 起自动注入，@Autowired 可以不写。",
+        "构造器注入的循环依赖会直接启动失败，而不是悄悄塞个代理糊过去。"
+      ],
+      "attributes": [
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "true",
+          "desc": "找不到匹配 Bean 时是否允许为 null。默认 true，即必须注入成功。"
+        }
+      ],
+      "exampleTitle": "推荐：构造器注入",
+      "example": "import org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.stereotype.Service;\n\n@Service\npublic class OrderService {\n\n    private final PaymentGateway paymentGateway;\n\n    @Autowired\n    public OrderService(PaymentGateway paymentGateway) {\n        this.paymentGateway = paymentGateway;\n    }\n\n    public void pay(String orderId) {\n        paymentGateway.pay(orderId);\n    }\n}\n\ninterface PaymentGateway {\n    void pay(String orderId);\n}",
+      "notes": [
+        "字段注入靠反射，private 也能塞进去，但脱离容器 new 不出来，单测时替换依赖很别扭。",
+        "构造器注入 + final 字段是最稳的写法；类里只有一个构造器时注解省略也没问题。",
+        "候选不唯一时报 NoUniqueBeanDefinitionException，按提示加 @Qualifier 点名或 @Primary 定默认。"
+      ],
+      "related": [
+        "@Qualifier",
+        "@Primary",
+        "@Resource",
+        "@Inject"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Autowiring Collaborators",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired.html"
+        }
+      ],
+      "tags": [
+        "依赖注入",
+        "IoC",
+        "构造器注入"
+      ]
+    },
+    {
+      "id": "qualifier",
+      "name": "@Qualifier",
+      "category": "core",
+      "subcategory": "依赖注入",
+      "package": "org.springframework.beans.factory.annotation.Qualifier",
+      "since": "Spring 2.5",
+      "level": "入门",
+      "tagline": "同类型多个 Bean 时点名要哪个",
+      "plain": "同类型有好几个 Bean 时，@Autowired 按类型挑不出来，@Qualifier(\"名字\") 就是点名要哪个：value 通常写 Bean 名。它也可以标在候选类上打标签，注入时按标签筛选。Bean 名本身就是默认限定符，所以按名字点名往往直接命中。",
+      "keyPoints": [
+        "value 是限定符，最常见写 Bean 名，必须和注册时完全一致，区分大小写。",
+        "标在字段/参数上按限定符挑；标在候选类上则参与匹配，不改 Bean 名。",
+        "没写 @Qualifier 时，Spring 会尝试按字段名或参数名兜底匹配。",
+        "匹配结果仍不唯一就启动失败，再用 @Primary 定默认或加更细的标签收窄。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "限定符值，通常写 Bean 名，也可是自定义标签。"
+        }
+      ],
+      "exampleTitle": "两个实现，按名字选一个",
+      "example": "import org.springframework.beans.factory.annotation.Qualifier;\nimport org.springframework.stereotype.Component;\nimport org.springframework.stereotype.Service;\n\ninterface Notifier {\n    void send(String msg);\n}\n\n@Component(\"smsNotifier\")\nclass SmsNotifier implements Notifier {\n    public void send(String msg) {\n        System.out.println(\"sms: \" + msg);\n    }\n}\n\n@Component(\"mailNotifier\")\nclass MailNotifier implements Notifier {\n    public void send(String msg) {\n        System.out.println(\"mail: \" + msg);\n    }\n}\n\n@Service\npublic class AlertService {\n\n    private final Notifier notifier;\n\n    public AlertService(@Qualifier(\"smsNotifier\") Notifier notifier) {\n        this.notifier = notifier;\n    }\n\n    public void alert(String msg) {\n        notifier.send(msg);\n    }\n}",
+      "notes": [
+        "限定符拼错时启动报 NoSuchBeanDefinitionException，报错信息里会列出候选 Bean 名，对着抄最快。",
+        "优先在构造器参数上写 @Qualifier，比字段注入更容易在测试里替换实现。",
+        "候选类上的 @Qualifier 是「打标签」，不是改 Bean 名；两者混用容易理解错。"
+      ],
+      "related": [
+        "@Autowired",
+        "@Primary",
+        "@Component",
+        "@Bean"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Fine-tuning Autowiring with Qualifiers",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired-qualifiers.html"
+        }
+      ],
+      "tags": [
+        "依赖注入",
+        "Bean 名",
+        "候选筛选"
+      ]
+    },
+    {
+      "id": "primary",
+      "name": "@Primary",
+      "category": "core",
+      "subcategory": "依赖注入",
+      "package": "org.springframework.context.annotation.Primary",
+      "since": "Spring 3.0",
+      "level": "入门",
+      "tagline": "多个候选里指定默认那个",
+      "plain": "同类型有多个 Bean、注入点又没点名时，Spring 不知道给谁。给其中一个候选标 @Primary，它就是默认答案，所有没写 @Qualifier 的注入都用它。适合有明确主实现的场景，比如主数据源、主时钟、主序列化器；显式点名优先于它。",
+      "keyPoints": [
+        "只能标在类或 @Bean 方法上，标在字段、参数上不生效。",
+        "多个 @Primary 同时存在等于没标，注入照样因候选不唯一而失败。",
+        "@Qualifier 显式点名优先，@Primary 只决定没点名时的默认值。",
+        "Boot 自动配置常用 @Primary 提供默认实现，覆盖时自己定义同类型 Bean 再加 @Primary。"
+      ],
+      "attributes": [],
+      "exampleTitle": "两个 Clock，默认用 UTC",
+      "example": "import org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.context.annotation.Primary;\n\nimport java.time.Clock;\nimport java.time.ZoneId;\n\n@Configuration\npublic class ClockConfig {\n\n    @Bean\n    @Primary\n    public Clock systemClock() {\n        return Clock.systemUTC();\n    }\n\n    @Bean\n    public Clock shanghaiClock() {\n        return Clock.system(ZoneId.of(\"Asia/Shanghai\"));\n    }\n}\n\n// 注入 Clock 时默认拿到 systemClock；\n// 要另一个就写 @Qualifier(\"shanghaiClock\")",
+      "notes": [
+        "@Primary 是「默认」，不是「唯一」：别的候选仍然存在，@Qualifier 依然能拿到。",
+        "覆盖自动配置的默认 Bean 时，常见做法是自己定义同类型 Bean 并标 @Primary。",
+        "两个候选都标 @Primary 属于配置错误，启动或注入时才暴露，别这么写。"
+      ],
+      "related": [
+        "@Qualifier",
+        "@Autowired",
+        "@Bean"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Fine-tuning Autowiring with @Primary",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired-primary.html"
+        }
+      ],
+      "tags": [
+        "依赖注入",
+        "默认实现",
+        "候选筛选"
+      ]
+    },
+    {
+      "id": "scope",
+      "name": "@Scope",
+      "category": "core",
+      "subcategory": "Bean 配置",
+      "package": "org.springframework.context.annotation.Scope",
+      "since": "Spring 2.5",
+      "level": "进阶",
+      "tagline": "控制 Bean 是单例还是每次新建",
+      "plain": "默认所有 Bean 都是单例：容器里只有一个实例，谁注入都是它。@Scope 用来改规则，最常用 prototype，每次获取都新建一个；Web 场景还有 request、session 等作用域。跨作用域注入要配合代理，否则单例里会一直攥着最早的那个实例。",
+      "keyPoints": [
+        "value 写作用域名：singleton、prototype、request、session、application、websocket。",
+        "prototype Bean 容器只负责创建，不负责销毁，@PreDestroy 不会执行。",
+        "单例注入短生命周期 Bean 时用 proxyMode 生成代理，否则拿到的是旧实例。",
+        "scopeName 与 value 互为别名，两个都写会报错。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "作用域名，不写等同 singleton。"
+        },
+        {
+          "name": "scopeName",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "value 的别名，二选一。"
+        },
+        {
+          "name": "proxyMode",
+          "type": "ScopedProxyMode",
+          "default": "DEFAULT",
+          "desc": "是否生成作用域代理，跨作用域注入时用 TARGET_CLASS 或 INTERFACES。"
+        }
+      ],
+      "exampleTitle": "每次获取都新建的 prototype Bean",
+      "example": "import org.springframework.context.annotation.Scope;\nimport org.springframework.stereotype.Component;\n\n@Component\n@Scope(\"prototype\")\npublic class ReportTask {\n\n    private final long createdAt = System.currentTimeMillis();\n\n    public long createdAt() {\n        return createdAt;\n    }\n}\n\n// 每次 getBean 或注入都会得到新实例：\n// var a = ctx.getBean(ReportTask.class);\n// var b = ctx.getBean(ReportTask.class);\n// System.out.println(a == b); // false",
+      "notes": [
+        "单例 Bean 里注入 prototype Bean，只在创建时注入一次，之后永远是同一个；要每次新的用 ObjectProvider 或代理。",
+        "request、session、application 这些作用域只在 Web 环境有效，普通容器里用会抛异常。",
+        "prototype 只保证实例独立，不代表线程安全，共享资源照样要自己同步。"
+      ],
+      "related": [
+        "@Component",
+        "@Lazy",
+        "@Bean"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Bean Scopes",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-scopes.html"
+        }
+      ],
+      "tags": [
+        "Bean 作用域",
+        "单例",
+        "prototype"
+      ]
+    },
+    {
+      "id": "lazy",
+      "name": "@Lazy",
+      "category": "core",
+      "subcategory": "Bean 配置",
+      "package": "org.springframework.context.annotation.Lazy",
+      "since": "Spring 3.0",
+      "level": "进阶",
+      "tagline": "第一次用到时才创建 Bean",
+      "plain": "@Lazy 让 Bean 别在启动时创建，等第一次被用到再初始化。启动慢、Bean 又重（连数据库、加载大文件）时能省时间；标在注入点上则注入一个代理，真正调用方法时才去容器取目标对象，也常用来打断循环依赖。",
+      "keyPoints": [
+        "value 默认 true；写 @Lazy(false) 可显式关掉，例如覆盖全局懒加载。",
+        "可以标在类、@Bean 方法、构造器、字段、参数上，注入点上的 @Lazy 生成代理。",
+        "延迟初始化把「启动就失败」推迟到「首次调用才失败」，错误发现得更晚。",
+        "全局开关是 @ComponentScan(lazyInit = true)，Boot 里还有 spring.main.lazy-initialization。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "boolean",
+          "default": "true",
+          "desc": "true 表示延迟初始化（默认值），false 表示立即初始化。"
+        }
+      ],
+      "exampleTitle": "重对象延迟创建",
+      "example": "import org.springframework.context.annotation.Lazy;\nimport org.springframework.stereotype.Component;\nimport org.springframework.stereotype.Service;\n\n@Component\n@Lazy\npublic class HeavyReportGenerator {\n\n    public HeavyReportGenerator() {\n        System.out.println(\"这个初始化很重，启动时先不做\");\n    }\n\n    public String generate() {\n        return \"report\";\n    }\n}\n\n@Service\nclass ReportService {\n\n    private final HeavyReportGenerator generator;\n\n    // 注入点再标 @Lazy：拿到代理，调用 generate() 时才真正创建\n    public ReportService(@Lazy HeavyReportGenerator generator) {\n        this.generator = generator;\n    }\n\n    public String run() {\n        return generator.generate();\n    }\n}",
+      "notes": [
+        "全局懒加载能缩短启动时间，但配置错误会推迟到运行期才暴露，生产环境慎用。",
+        "注入点的 @Lazy 只是代理，别在构造器里调用目标方法，否则等于立刻初始化。",
+        "循环依赖优先改设计；@Lazy 只是让容器能启动，不是架构问题的解药。"
+      ],
+      "related": [
+        "@Scope",
+        "@Component",
+        "@Autowired"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Lazy-initialized Beans",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-lazy-init.html#lazy"
+        }
+      ],
+      "tags": [
+        "启动优化",
+        "延迟初始化",
+        "Bean 配置"
+      ]
+    },
+    {
+      "id": "profile",
+      "name": "@Profile",
+      "category": "core",
+      "subcategory": "Bean 配置",
+      "package": "org.springframework.context.annotation.Profile",
+      "since": "Spring 3.1",
+      "level": "进阶",
+      "tagline": "按环境决定 Bean 是否注册",
+      "plain": "@Profile 给 Bean 打环境标签：只有激活了对应 profile，它才会注册。比如 @Profile(\"dev\") 的测试数据源只在开发环境生效。激活方式有 spring.profiles.active、命令行参数，测试里用 @ActiveProfiles。没激活任何 profile 时，带 @Profile(\"default\") 的才生效。",
+      "keyPoints": [
+        "value 是字符串数组，写多个时任意一个激活就注册（或的关系）。",
+        "支持表达式：! 取反、& 与、| 或，例如 @Profile(\"prod & !canary\")。",
+        "标在 @Configuration 类上控制整类，标在 @Bean 方法上只控一个。",
+        "没激活任何 profile 时只有 default profile 生效，别把关键 Bean 只挂在某个环境上。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "—",
+          "desc": "要匹配的 profile 名称或表达式，必填，至少一个。"
+        }
+      ],
+      "exampleTitle": "开发和生产各一个数据源",
+      "example": "import org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.context.annotation.Profile;\nimport org.springframework.jdbc.datasource.DriverManagerDataSource;\n\nimport javax.sql.DataSource;\n\n@Configuration\npublic class DataSourceConfig {\n\n    @Bean\n    @Profile(\"dev\")\n    public DataSource devDataSource() {\n        // 开发环境：内存库，随进程消失\n        return new DriverManagerDataSource(\"jdbc:h2:mem:dev\", \"sa\", \"\");\n    }\n\n    @Bean\n    @Profile(\"prod\")\n    public DataSource prodDataSource() {\n        // 生产环境：实际项目应换成连接池数据源\n        return new DriverManagerDataSource(\"jdbc:mysql://db:3306/app\", \"app\", \"secret\");\n    }\n}",
+      "notes": [
+        "profile 名拼错不报错，只是什么都不注册；排查时先打印 Environment.getActiveProfiles()。",
+        "生产环境用 spring.profiles.active 显式指定；多个 profile 同时激活时注意同类型 Bean 冲突。",
+        "测试用 @ActiveProfiles(\"test\") 固定环境，别依赖本机变量。"
+      ],
+      "related": [
+        "@Conditional",
+        "@Configuration",
+        "@Bean"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Bean Definition Profiles",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/environment.html#beans-definition-profiles"
+        }
+      ],
+      "tags": [
+        "多环境",
+        "profile",
+        "条件注册"
+      ]
+    },
+    {
+      "id": "depends-on",
+      "name": "@DependsOn",
+      "category": "core",
+      "subcategory": "Bean 配置",
+      "package": "org.springframework.context.annotation.DependsOn",
+      "since": "Spring 3.0",
+      "level": "进阶",
+      "tagline": "强制先创建指定 Bean",
+      "plain": "大多数先后关系靠构造器注入就能表达，但有些只是「必须先生效」，并不持有引用，比如先建表再预热缓存。@DependsOn 就是显式声明：创建我这个 Bean 之前，先把指定名字的 Bean 创建好。它只影响初始化顺序，不建立注入关系。",
+      "keyPoints": [
+        "value 写 Bean 名数组，容器保证这些 Bean 先初始化。",
+        "只能标在类或 @Bean 方法上，写的是名字不是类型，改名后要同步改。",
+        "它只影响初始化顺序，不建立注入关系，需要引用还是得注入。",
+        "被依赖的 Bean 不存在时启动失败，没有「可选依赖」语义。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "必须先初始化的 Bean 名数组。"
+        }
+      ],
+      "exampleTitle": "先初始化 schema，再预热缓存",
+      "example": "import org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.context.annotation.DependsOn;\n\n@Configuration\npublic class CacheConfig {\n\n    @Bean\n    public SchemaInitializer schemaInitializer() {\n        return new SchemaInitializer();\n    }\n\n    @Bean\n    @DependsOn(\"schemaInitializer\")\n    public CacheWarmer cacheWarmer() {\n        return new CacheWarmer();\n    }\n\n    static class SchemaInitializer {\n        SchemaInitializer() {\n            System.out.println(\"1. schema ready\");\n        }\n    }\n\n    static class CacheWarmer {\n        CacheWarmer() {\n            System.out.println(\"2. cache warmed\");\n        }\n    }\n}",
+      "notes": [
+        "Bean 名是字符串，重构改方法名时容易漏改，建议把名字定义成常量复用。",
+        "初始化顺序优先用构造器注入表达；@DependsOn 只用于「无引用但需前置」的少数场景。",
+        "被依赖 Bean 是懒加载时，@DependsOn 会强制把它提前创建，注意别破坏懒加载设计。"
+      ],
+      "related": [
+        "@Bean",
+        "@Order",
+        "@Lazy"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Using depends-on",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-dependson.html"
+        }
+      ],
+      "tags": [
+        "初始化顺序",
+        "依赖关系",
+        "Bean 配置"
+      ]
+    },
+    {
+      "id": "order",
+      "name": "@Order",
+      "category": "core",
+      "subcategory": "Bean 配置",
+      "package": "org.springframework.core.annotation.Order",
+      "since": "Spring 2.0",
+      "level": "进阶",
+      "tagline": "给同一组组件排先后顺序",
+      "plain": "@Order 用来排序：注入 List 或数组时决定元素顺序，也用于多个切面、过滤器、监听器的执行先后。值越小优先级越高，默认是最低优先级。注意它不控制单例的启动顺序，启动先后由依赖关系和 @DependsOn 决定。",
+      "keyPoints": [
+        "value 是 int，越小越靠前；默认 2147483647，即 Ordered.LOWEST_PRECEDENCE。",
+        "注入 List<T> 或 T[] 时按它排序；注入 Map 不受影响。",
+        "可标在类、@Bean 方法或字段上；字段上的 @Order 用于注入点排序。",
+        "它不影响单例启动顺序，那个由依赖关系和 @DependsOn 决定。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "int",
+          "default": "2147483647",
+          "desc": "排序值，越小优先级越高，默认最低优先级。"
+        }
+      ],
+      "exampleTitle": "按顺序注入处理步骤",
+      "example": "import org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.core.annotation.Order;\n\nimport java.util.function.Supplier;\n\n@Configuration\npublic class PipelineConfig {\n\n    @Bean\n    @Order(2)\n    public Supplier<String> secondStep() {\n        return () -> \"second\";\n    }\n\n    @Bean\n    @Order(1)\n    public Supplier<String> firstStep() {\n        return () -> \"first\";\n    }\n}\n\n// 注入 List<Supplier<String>> steps 时，顺序是 firstStep、secondStep，\n// 因为 @Bean 方法上的 @Order 参与了集合注入排序。",
+      "notes": [
+        "排序只对「同类型多候选」有意义，不同接口的 Bean 之间比大小没有效果。",
+        "切面顺序用 @Order 或实现 Ordered，值越小越先执行；@Aspect 上标 @Order 很常见。",
+        "@Order 和 Ordered 接口二选一：顺序在编译期就固定的用注解，运行时才能确定的用实现 Ordered 的 Bean。"
+      ],
+      "related": [
+        "@DependsOn",
+        "@Primary",
+        "@Aspect"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Ordering of Autowired Dependencies",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired.html#beans-factory-ordered"
+        },
+        {
+          "label": "Spring API：@Order",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/core/annotation/Order.html"
+        }
+      ],
+      "tags": [
+        "排序",
+        "切面顺序",
+        "集合注入"
+      ]
+    },
+    {
+      "id": "post-construct",
+      "name": "@PostConstruct",
+      "category": "core",
+      "subcategory": "生命周期",
+      "package": "jakarta.annotation.PostConstruct",
+      "level": "入门",
+      "tagline": "依赖注入完成后做初始化",
+      "plain": "@PostConstruct 标在方法上，容器把依赖都注入完之后调用一次，适合做初始化：校验配置、预热缓存、准备连接。它来自 Jakarta Annotation 规范，Boot 3 起包名是 jakarta.annotation，老项目的 javax 要换掉。构造器里依赖还没注入，所以这类事放这里做。",
+      "keyPoints": [
+        "执行时机在依赖注入之后、Bean 对外可用之前，此时注入的依赖都已就绪。",
+        "方法要无参、非 static、返回 void；一个类里保持一个初始化点，别写多个。",
+        "构造器执行时依赖还没注入，所以「运行前必须准备好」的逻辑放 @PostConstruct。",
+        "命名空间用 jakarta.annotation.PostConstruct，Boot 3 不再有 javax 版本。"
+      ],
+      "attributes": [],
+      "exampleTitle": "启动后预热本地缓存",
+      "example": "import jakarta.annotation.PostConstruct;\nimport org.springframework.stereotype.Component;\n\nimport java.util.HashMap;\nimport java.util.Map;\n\n@Component\npublic class PriceCache {\n\n    private final Map<String, Integer> prices = new HashMap<>();\n\n    @PostConstruct\n    public void warmUp() {\n        // 依赖注入完成后执行：把基础数据加载进内存\n        prices.put(\"apple\", 5);\n        prices.put(\"pear\", 8);\n        System.out.println(\"cache warmed, size = \" + prices.size());\n    }\n\n    public int priceOf(String name) {\n        return prices.getOrDefault(name, -1);\n    }\n}",
+      "notes": [
+        "别在 @PostConstruct 里做长耗时阻塞操作，它会拖慢启动；重活考虑异步或 ApplicationReadyEvent。",
+        "同时存在 @PostConstruct 和 InitializingBean.afterPropertiesSet 时，前者先执行。",
+        "它属于 Bean 生命周期回调，不是构造器替代品：对象已创建、依赖已注入，才是它的时间点。"
+      ],
+      "related": [
+        "@PreDestroy",
+        "@Component",
+        "@Autowired"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Using @PostConstruct and @PreDestroy",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/postconstruct-and-predestroy-annotations.html"
+        },
+        {
+          "label": "Jakarta API：@PostConstruct",
+          "url": "https://jakarta.ee/specifications/annotations/2.1/apidocs/jakarta.annotation/jakarta/annotation/PostConstruct.html"
+        }
+      ],
+      "tags": [
+        "生命周期",
+        "初始化",
+        "Jakarta"
+      ]
+    },
+    {
+      "id": "pre-destroy",
+      "name": "@PreDestroy",
+      "category": "core",
+      "subcategory": "生命周期",
+      "package": "jakarta.annotation.PreDestroy",
+      "level": "入门",
+      "tagline": "容器销毁 Bean 前做清理",
+      "plain": "@PreDestroy 标在方法上，容器关闭、销毁这个 Bean 之前调用一次，用来收尾：关线程池、注销监听、释放文件句柄。它和 @PostConstruct 是一对，都来自 Jakarta 规范。注意 prototype Bean 容器不负责销毁，这个方法不会自动执行。",
+      "keyPoints": [
+        "只在容器正常关闭时触发；kill -9 或进程崩溃不会执行。",
+        "方法要无参、非 static、返回 void，一个类里保持一个清理点。",
+        "prototype 作用域的 Bean 不归容器管销毁，@PreDestroy 不会调用。",
+        "需要在关闭阶段保证执行的清理，别只依赖它，重要资源要有兜底。"
+      ],
+      "attributes": [],
+      "exampleTitle": "关闭时优雅停掉线程池",
+      "example": "import jakarta.annotation.PreDestroy;\nimport org.springframework.stereotype.Component;\n\nimport java.util.concurrent.ExecutorService;\nimport java.util.concurrent.Executors;\n\n@Component\npublic class ReportExecutor {\n\n    private final ExecutorService pool = Executors.newFixedThreadPool(2);\n\n    public void submit(Runnable task) {\n        pool.submit(task);\n    }\n\n    @PreDestroy\n    public void shutdown() {\n        // 容器关闭前优雅收尾，避免线程泄漏\n        pool.shutdown();\n        System.out.println(\"executor shut down\");\n    }\n}",
+      "notes": [
+        "prototype Bean 的清理要自己负责：手动调用销毁方法，或用 try-with-resources 管资源。",
+        "进程被强杀时回调不会执行，关键数据要么实时落盘，要么加 JVM shutdown hook 兜底。",
+        "它属于容器销毁阶段，不是 finalize：别在这里做耗时重活，关闭会被拖慢。"
+      ],
+      "related": [
+        "@PostConstruct",
+        "@Component",
+        "@Bean"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Using @PostConstruct and @PreDestroy",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/postconstruct-and-predestroy-annotations.html"
+        },
+        {
+          "label": "Jakarta API：@PreDestroy",
+          "url": "https://jakarta.ee/specifications/annotations/2.1/apidocs/jakarta.annotation/jakarta/annotation/PreDestroy.html"
+        }
+      ],
+      "tags": [
+        "生命周期",
+        "资源清理",
+        "Jakarta"
+      ]
+    },
+    {
+      "id": "event-listener",
+      "name": "@EventListener",
+      "category": "core",
+      "subcategory": "事件",
+      "package": "org.springframework.context.event.EventListener",
+      "since": "Spring 4.2",
+      "level": "进阶",
+      "tagline": "收到应用事件时执行方法",
+      "plain": "@EventListener 标在 Bean 的方法上，容器发事件时会调用它。方法参数就是事件类型，容器按类型把事件送过来；要监听多个类型就用 classes 指定。事件用 ApplicationEventPublisher.publishEvent 发布，适合解耦「下了单之后还要做几件事」这类流程，不用互相写死依赖。",
+      "keyPoints": [
+        "方法参数即事件类型；写 Object 参数会收到所有事件，慎用。",
+        "要监听多个事件或不带参数时，用 @EventListener({A.class, B.class}) 指定类型。",
+        "默认同步执行：在发布线程里直接调用，监听逻辑慢会拖住发布方。",
+        "condition 可以用 SpEL 过滤，如 condition = \"#event.content == 'x'\"。",
+        "被 @Lazy 标记的 Bean 不会被注册为监听器，事件会静默丢失。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Class[]",
+          "default": "{}",
+          "desc": "要监听的事件类型，不写则由方法参数推断。"
+        },
+        {
+          "name": "classes",
+          "type": "Class[]",
+          "default": "{}",
+          "desc": "value 的别名，二选一。"
+        },
+        {
+          "name": "condition",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "SpEL 过滤条件，返回 true 才调用监听方法。"
+        }
+      ],
+      "exampleTitle": "下单后发邮件通知",
+      "example": "import org.springframework.context.ApplicationEventPublisher;\nimport org.springframework.context.event.EventListener;\nimport org.springframework.stereotype.Component;\nimport org.springframework.stereotype.Service;\n\nclass OrderCreatedEvent {\n    private final String orderId;\n\n    OrderCreatedEvent(String orderId) {\n        this.orderId = orderId;\n    }\n\n    public String orderId() {\n        return orderId;\n    }\n}\n\n@Component\nclass OrderCreatedListener {\n\n    @EventListener\n    public void onOrderCreated(OrderCreatedEvent event) {\n        System.out.println(\"send mail for \" + event.orderId());\n    }\n}\n\n@Service\npublic class OrderService {\n\n    private final ApplicationEventPublisher publisher;\n\n    public OrderService(ApplicationEventPublisher publisher) {\n        this.publisher = publisher;\n    }\n\n    public void create(String orderId) {\n        publisher.publishEvent(new OrderCreatedEvent(orderId));\n    }\n}",
+      "notes": [
+        "监听方法返回非 void 值或集合时，返回值会被当成新事件继续发布，公开 API 时注意别意外形成事件链。",
+        "同步监听在发布线程执行，异常会抛回发布方；要异步就加 @Async，但异步监听抛的异常不会传给发布方。",
+        "监听器方法尽量短：它跑在发布方线程里，慢操作会把整条业务链路拖长。"
+      ],
+      "related": [
+        "@TransactionalEventListener",
+        "@Async",
+        "@Component"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Annotation-based Event Listeners",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/context-introduction.html#context-functionality-events-annotation"
+        }
+      ],
+      "tags": [
+        "事件",
+        "解耦",
+        "ApplicationEvent"
+      ]
+    },
+    {
+      "id": "transactional-event-listener",
+      "name": "@TransactionalEventListener",
+      "category": "core",
+      "subcategory": "事件",
+      "package": "org.springframework.transaction.event.TransactionalEventListener",
+      "since": "Spring 4.2",
+      "level": "进阶",
+      "tagline": "事务提交后才处理事件",
+      "plain": "@TransactionalEventListener 是事务版的事件监听器：默认等发布事件的事务提交成功后才执行，事务回滚就不执行。适合「订单入库成功后发通知」这类必须跟事务同生共死的动作。用 phase 可以改成提交前、回滚后或完成时执行。",
+      "keyPoints": [
+        "默认 phase = AFTER_COMMIT：事务提交后才调用；回滚则不调用。",
+        "phase 可选 BEFORE_COMMIT、AFTER_COMMIT、AFTER_ROLLBACK、AFTER_COMPLETION。",
+        "fallbackExecution = true 时没有事务也执行；默认 false，无事务就静默跳过。",
+        "只对事务中发布的事件生效，发布方通常要标 @Transactional。"
+      ],
+      "attributes": [
+        {
+          "name": "phase",
+          "type": "TransactionPhase",
+          "default": "AFTER_COMMIT",
+          "desc": "绑定到事务的哪个阶段执行。"
+        },
+        {
+          "name": "fallbackExecution",
+          "type": "boolean",
+          "default": "false",
+          "desc": "没有事务时是否仍然执行监听器。"
+        },
+        {
+          "name": "condition",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "SpEL 过滤条件。"
+        }
+      ],
+      "exampleTitle": "支付事务提交后再通知",
+      "example": "import org.springframework.context.ApplicationEventPublisher;\nimport org.springframework.stereotype.Component;\nimport org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\nimport org.springframework.transaction.event.TransactionPhase;\nimport org.springframework.transaction.event.TransactionalEventListener;\n\nclass OrderPaidEvent {\n    private final String orderId;\n\n    OrderPaidEvent(String orderId) { this.orderId = orderId; }\n\n    public String orderId() { return orderId; }\n}\n\n@Component\nclass PaidNotifier {\n\n    // 事务提交成功后才执行；回滚则跳过\n    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)\n    public void onPaid(OrderPaidEvent event) {\n        System.out.println(\"notify buyer of \" + event.orderId());\n    }\n}\n\n@Service\npublic class PaymentService {\n\n    private final ApplicationEventPublisher publisher;\n\n    public PaymentService(ApplicationEventPublisher publisher) {\n        this.publisher = publisher;\n    }\n\n    @Transactional\n    public void pay(String orderId) {\n        publisher.publishEvent(new OrderPaidEvent(orderId));\n    }\n}",
+      "notes": [
+        "发布事件时没有事务，监听器默认什么都不做；排查「没反应」时先确认发布方法有没有 @Transactional。",
+        "AFTER_COMMIT 里监听器抛异常不会回滚已提交的数据，只能记日志或走补偿。",
+        "提交后才写库等于开启新事务，注意别在监听器里假设自己还处在原事务中。"
+      ],
+      "related": [
+        "@EventListener",
+        "@Transactional",
+        "@Async"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Transaction-bound Events",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/event.html"
+        }
+      ],
+      "tags": [
+        "事件",
+        "事务",
+        "提交后处理"
+      ]
+    },
+    {
+      "id": "conditional",
+      "name": "@Conditional",
+      "category": "core",
+      "subcategory": "条件装配",
+      "package": "org.springframework.context.annotation.Conditional",
+      "since": "Spring 4.0",
+      "level": "进阶",
+      "tagline": "满足条件才注册这个 Bean",
+      "plain": "@Conditional 是条件装配的底层开关：只有指定的 Condition 全部匹配，这个 Bean 或配置类才注册。Spring Boot 的 @ConditionalOnClass、@ConditionalOnProperty 都是它派生出来的。自定义时实现 Condition 接口，在 matches 里看环境、类路径或配置再决定要不要。",
+      "keyPoints": [
+        "value 是 Condition 实现类数组，全部匹配才注册（AND 语义）。",
+        "可标在类、@Bean 方法上，也能当元注解组合出新的条件注解。",
+        "matches 能拿到 ConditionContext 和 AnnotatedTypeMetadata，读 Environment、BeanFactory、类路径。",
+        "@Conditional 不支持继承：父类或重写方法上的条件不会被考虑。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Class[]",
+          "default": "—",
+          "desc": "Condition 实现类数组，全部匹配才注册，必填。"
+        }
+      ],
+      "exampleTitle": "只在 Windows 上注册的 Bean",
+      "example": "import org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Condition;\nimport org.springframework.context.annotation.ConditionContext;\nimport org.springframework.context.annotation.Conditional;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.core.type.AnnotatedTypeMetadata;\n\nclass OnWindowsCondition implements Condition {\n\n    @Override\n    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {\n        String os = context.getEnvironment().getProperty(\"os.name\", \"\");\n        return os.toLowerCase().contains(\"win\");\n    }\n}\n\n@Configuration\npublic class ShellConfig {\n\n    @Bean\n    @Conditional(OnWindowsCondition.class)\n    public String shellHint() {\n        return \"cmd\";\n    }\n}",
+      "notes": [
+        "多个 @Conditional 注解之间是 AND；要「或」得自己组合条件类，Boot 里可用 AnyNestedCondition。",
+        "条件在 Bean 定义阶段评估，此时别的 Bean 可能还没创建，别在 matches 里依赖容器中的实例。",
+        "日常优先用 Boot 现成的 @ConditionalOnProperty、@ConditionalOnClass，少写自定义 Condition。"
+      ],
+      "related": [
+        "@Profile",
+        "@Bean",
+        "@Configuration"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring API：@Conditional",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/context/annotation/Conditional.html"
+        }
+      ],
+      "tags": [
+        "条件装配",
+        "自动配置",
+        "Condition"
+      ]
+    },
+    {
+      "id": "resource",
+      "name": "@Resource",
+      "category": "core",
+      "subcategory": "依赖注入",
+      "package": "jakarta.annotation.Resource",
+      "level": "入门",
+      "tagline": "按名字注入 Bean",
+      "plain": "@Resource 是 Jakarta 规范的注入注解，Spring 支持它。默认按名字找 Bean：不写 name 时用字段名或 setter 对应的属性名；名字找不到再退回按类型匹配，此时和 @Autowired 接近。它来自 Java EE 时代，迁移老项目时很常见。",
+      "keyPoints": [
+        "默认按名字注入：name 不写时取字段名或 setter 对应的属性名。",
+        "名字匹配不到时回退按类型注入，有多个候选则仍可能失败。",
+        "常用于字段或 setter 方法；类级 @Target 也合法，但 Spring 只对字段和方法执行注入；不支持构造器参数，用不了 final 字段。",
+        "lookup 用于 JNDI 场景，Spring 项目里很少用到。"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "要注入的 Bean 名，不写则由字段名或属性名推断。"
+        },
+        {
+          "name": "lookup",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "JNDI 查找名，Spring 里基本不用。"
+        },
+        {
+          "name": "authenticationType",
+          "type": "AuthenticationType",
+          "default": "CONTAINER",
+          "desc": "认证方式，仅对支持该语义的容器有效。"
+        },
+        {
+          "name": "shareable",
+          "type": "boolean",
+          "default": "true",
+          "desc": "该资源是否可共享，规范属性，Spring 里影响很小。"
+        }
+      ],
+      "exampleTitle": "按字段名注入",
+      "example": "import jakarta.annotation.Resource;\nimport org.springframework.stereotype.Component;\nimport org.springframework.stereotype.Service;\n\ninterface Notifier {\n    void send(String msg);\n}\n\n@Component(\"smsNotifier\")\nclass SmsNotifier implements Notifier {\n    public void send(String msg) {\n        System.out.println(\"sms: \" + msg);\n    }\n}\n\n@Service\npublic class AlertService {\n\n    // 字段名 smsNotifier 就是 Bean 名，@Resource 默认按它找\n    @Resource\n    private Notifier smsNotifier;\n\n    public void alert(String msg) {\n        smsNotifier.send(msg);\n    }\n}",
+      "notes": [
+        "改字段名会悄悄改变注入目标，最好显式写 @Resource(name = \"xxx\")，别依赖推断。",
+        "它不支持构造器注入，依赖不可变对象时还是用 @Autowired 的构造器注入。",
+        "Spring 项目内部优先用 @Autowired；@Resource 主要出现在 Java EE 迁移或标准注解风格代码里。"
+      ],
+      "related": [
+        "@Autowired",
+        "@Qualifier",
+        "@Inject"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Injection with @Resource",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/resource.html"
+        },
+        {
+          "label": "Jakarta API：@Resource",
+          "url": "https://jakarta.ee/specifications/annotations/3.0/apidocs/jakarta.annotation/jakarta/annotation/Resource.html"
+        }
+      ],
+      "tags": [
+        "依赖注入",
+        "按名注入",
+        "Jakarta"
+      ]
+    },
+    {
+      "id": "inject",
+      "name": "@Inject",
+      "category": "core",
+      "subcategory": "依赖注入",
+      "package": "jakarta.inject.Inject",
+      "level": "入门",
+      "tagline": "标准版的自动注入注解",
+      "plain": "@Inject 是 JSR-330 标准的注入注解，Spring 支持它，效果基本等同 @Autowired，但没有 required 属性：找不到依赖就失败。它按类型匹配，配合 @Named 指定名字。写公共库时用它，代码不直接绑定 Spring，换成别的 DI 容器也能跑。",
+      "keyPoints": [
+        "按类型注入，等同于 @Autowired 的默认行为，没有 required 开关。",
+        "可以标在构造器、方法、字段上，支持 Optional 和 @Nullable 表达可选依赖。",
+        "配合 @Named(\"beanName\") 按名字选 Bean，作用类似 @Qualifier。",
+        "需要 jakarta.inject-api 依赖，Boot 3 项目里通常由 web starter 带进来。"
+      ],
+      "attributes": [],
+      "exampleTitle": "标准注解风格的构造器注入",
+      "example": "import jakarta.inject.Inject;\nimport jakarta.inject.Named;\nimport org.springframework.stereotype.Component;\nimport org.springframework.stereotype.Service;\n\ninterface Notifier {\n    void send(String msg);\n}\n\n@Component(\"mailNotifier\")\nclass MailNotifier implements Notifier {\n    public void send(String msg) {\n        System.out.println(\"mail: \" + msg);\n    }\n}\n\n@Service\npublic class AlertService {\n\n    private final Notifier notifier;\n\n    @Inject\n    public AlertService(@Named(\"mailNotifier\") Notifier notifier) {\n        this.notifier = notifier;\n    }\n\n    public void alert(String msg) {\n        notifier.send(msg);\n    }\n}",
+      "notes": [
+        "@Inject 没有 required=false，需要可选依赖就用 Optional<Notifier> 参数或 @Nullable。",
+        "它和 @Autowired 功能重叠，同一个项目里选一种风格，别混着写。",
+        "Spring 对 JSR-330 注解的支持有限：它不能像 @Component 那样组合出自定义注解。"
+      ],
+      "related": [
+        "@Named",
+        "@Autowired",
+        "@Component"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Using JSR 330 Standard Annotations",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/standard-annotations.html"
+        }
+      ],
+      "tags": [
+        "依赖注入",
+        "JSR-330",
+        "标准注解"
+      ]
+    },
+    {
+      "id": "named",
+      "name": "@Named",
+      "category": "core",
+      "subcategory": "依赖注入",
+      "package": "jakarta.inject.Named",
+      "level": "入门",
+      "tagline": "给 Bean 起名或按名挑选",
+      "plain": "@Named 来自 JSR-330，有两个用途：标在类上相当于用 @Component 并指定名字；标在注入点上则配合 @Inject 按名字选 Bean。它常和 @Inject 搭配，让代码保持标准注解风格。注意 JSR-330 没有组合模型，它不能像 @Component 那样被当作元注解再组合。",
+      "keyPoints": [
+        "标在类上：注册时用这个名字，写法等价于 @Component(\"name\")。",
+        "标在注入点上：配合 @Inject 按名字取 Bean，作用类似 @Qualifier。",
+        "不写 value 时，标在类上默认用类名首字母小写。",
+        "JSR-330 不支持注解组合，@Named 不能作为元注解派生新注解。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "Bean 名或注入时要匹配的名字。"
+        }
+      ],
+      "exampleTitle": "按名字挑选实现",
+      "example": "import jakarta.inject.Inject;\nimport jakarta.inject.Named;\nimport org.springframework.stereotype.Component;\nimport org.springframework.stereotype.Service;\n\ninterface ReportRenderer {\n    String render();\n}\n\n@Component(\"pdfRenderer\")\nclass PdfRenderer implements ReportRenderer {\n    public String render() {\n        return \"pdf\";\n    }\n}\n\n@Service\npublic class ReportService {\n\n    private final ReportRenderer renderer;\n\n    @Inject\n    public ReportService(@Named(\"pdfRenderer\") ReportRenderer renderer) {\n        this.renderer = renderer;\n    }\n\n    public String export() {\n        return renderer.render();\n    }\n}",
+      "notes": [
+        "标在类上时它只是「带名字的组件标记」，没有 @Component 那样的派生能力，自定义组合注解请用 Spring 的注解体系。",
+        "标在注入点上只能按名字挑，不能表达 @Qualifier 那种自定义标签。",
+        "包名是 jakarta.inject.Named，老项目里的 javax.inject.Named 需要一起迁移。"
+      ],
+      "related": [
+        "@Inject",
+        "@Component",
+        "@Qualifier"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Using JSR 330 Standard Annotations",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/standard-annotations.html"
+        }
+      ],
+      "tags": [
+        "依赖注入",
+        "JSR-330",
+        "Bean 名"
+      ]
+    },
+    {
+      "id": "alias-for",
+      "name": "@AliasFor",
+      "category": "core",
+      "subcategory": "元注解",
+      "package": "org.springframework.core.annotation.AliasFor",
+      "since": "Spring 4.2",
+      "level": "进阶",
+      "tagline": "让注解属性互为别名",
+      "plain": "@AliasFor 是给注解作者用的元注解：让一个注解里的两个属性互为别名，或者在组合注解里把属性转发给被组合的注解。比如自定义 @MyService 时，把它的 value 转发到 @Component 的 value 上。写业务代码一般用不到，封装注解时才需要。",
+      "keyPoints": [
+        "同一个注解内声明别名：成对标注，两个属性返回值相同、默认值也相同。",
+        "组合注解里转发属性：写 annotation = 目标注解.class 和 attribute = \"目标属性\"。",
+        "转发到的注解必须真的存在于注解类上，属性名也要对得上，否则解析报错。",
+        "别名语义靠 MergedAnnotations 生效，直接反射拿注解实例不会自动同步。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "同一注解内互为别名的另一个属性名。"
+        },
+        {
+          "name": "attribute",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "被组合注解里的属性名，与 annotation 搭配使用。"
+        }
+      ],
+      "exampleTitle": "把属性转发给 @Component",
+      "example": "import org.springframework.core.annotation.AliasFor;\nimport org.springframework.stereotype.Component;\n\nimport java.lang.annotation.ElementType;\nimport java.lang.annotation.Retention;\nimport java.lang.annotation.RetentionPolicy;\nimport java.lang.annotation.Target;\n\n@Target(ElementType.TYPE)\n@Retention(RetentionPolicy.RUNTIME)\n@Component\npublic @interface MyService {\n\n    // @MyService(\"orderService\") 的 value 转发给 @Component 的 value\n    @AliasFor(annotation = Component.class, attribute = \"value\")\n    String value() default \"\";\n}\n\n// 用法：@MyService(\"orderService\") 等价于 @Component(\"orderService\")",
+      "notes": [
+        "同一注解内做别名时，两个属性必须同类型、同默认值，而且都要标 @AliasFor，否则启动会报注解配置错误。",
+        "组合注解转发的目标属性必须存在，类型也要兼容，写错在解析注解时才炸，编译期发现不了。",
+        "只在自定义注解时才需要它；业务代码里见到它，说明作者在封装组合注解。"
+      ],
+      "related": [
+        "@Component",
+        "@Configuration"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring API：@AliasFor",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/core/annotation/AliasFor.html"
+        }
+      ],
+      "tags": [
+        "元注解",
+        "组合注解",
+        "注解属性"
+      ]
+    },
+    {
+      "id": "aspect",
+      "name": "@Aspect",
+      "category": "aop",
+      "subcategory": "切面定义",
+      "package": "org.aspectj.lang.annotation.Aspect",
+      "level": "入门",
+      "tagline": "声明一个切面类",
+      "plain": "@Aspect 标在类上，声明这是一个切面：里面放切点方法和通知方法。它本身不注册 Bean，还要配合 @Component 或 @Bean 才会被容器管理，并且要开启 @EnableAspectJAutoProxy 才生效。切面用来装横切逻辑，比如日志、权限、耗时统计。",
+      "keyPoints": [
+        "标了 @Aspect 不等于注册 Bean，要配合 @Component 或 @Bean。",
+        "需要 @EnableAspectJAutoProxy 开启代理，Spring Boot 自动配置已默认开启。",
+        "classpath 上要有 aspectjweaver 1.9+，切点表达式靠它解析，但运行时仍是 Spring AOP 代理。",
+        "一个切面类里可以有多个切点和多个通知方法，按需组合。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "切面的描述性名字，仅作标识，不影响匹配。"
+        }
+      ],
+      "exampleTitle": "一个最简切面",
+      "example": "import org.aspectj.lang.annotation.Aspect;\nimport org.aspectj.lang.annotation.Before;\nimport org.springframework.stereotype.Component;\nimport org.springframework.stereotype.Service;\n\n@Aspect\n@Component\npublic class LogAspect {\n\n    @Before(\"execution(* com.example.service.*.*(..))\")\n    public void beforeService() {\n        System.out.println(\"calling service method\");\n    }\n}\n\n@Service\nclass OrderService {\n\n    public void create() {\n        System.out.println(\"create order\");\n    }\n}",
+      "notes": [
+        "Spring AOP 只拦截经过代理的调用：同类内部 this 调用目标方法不会触发切面。",
+        "final 类无法被 CGLIB 代理，运行时会报错；final 方法不会被拦截，切面静默失效。",
+        "多个切面的执行顺序用 @Order 或 Ordered 控制，值越小越先进入。"
+      ],
+      "related": [
+        "@EnableAspectJAutoProxy",
+        "@Pointcut",
+        "@Around"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Declaring an Aspect",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/at-aspectj.html"
+        }
+      ],
+      "tags": [
+        "AOP",
+        "切面",
+        "横切逻辑"
+      ]
+    },
+    {
+      "id": "pointcut",
+      "name": "@Pointcut",
+      "category": "aop",
+      "subcategory": "切面定义",
+      "package": "org.aspectj.lang.annotation.Pointcut",
+      "level": "入门",
+      "tagline": "抽出可复用的切点表达式",
+      "plain": "@Pointcut 用来抽公共切点：把 execution(...) 这类表达式写成一个空方法，再在通知注解里按方法名引用，避免每个通知重复抄表达式。方法返回 void、方法体为空。复杂切点可以用 &&、||、! 组合，也能引用其他切面里的切点。",
+      "keyPoints": [
+        "方法返回 void、方法体为空，方法名就是切点名。",
+        "通知里用方法名引用，如 @Before(\"serviceMethods()\")；跨类用全限定名。",
+        "切点方法本身不会执行，它只是切点表达式的签名。",
+        "切点表达式支持 execution、within、@annotation、args 等指示符，可组合。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "AspectJ 切点表达式。"
+        },
+        {
+          "name": "argNames",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "参数名声明，编译未保留调试信息时用于绑定参数。"
+        }
+      ],
+      "exampleTitle": "抽出 service 层切点",
+      "example": "import org.aspectj.lang.annotation.Aspect;\nimport org.aspectj.lang.annotation.Before;\nimport org.aspectj.lang.annotation.Pointcut;\nimport org.springframework.stereotype.Component;\n\n@Aspect\n@Component\npublic class ServiceLogAspect {\n\n    // 空方法，只作为切点的名字\n    @Pointcut(\"execution(* com.example.service.*.*(..))\")\n    public void serviceMethods() {\n    }\n\n    @Before(\"serviceMethods()\")\n    public void logCall() {\n        System.out.println(\"before service method\");\n    }\n}",
+      "notes": [
+        "切点方法不要加 @Before 等通知注解，它只负责命名，不会自己执行。",
+        "切点表达式语法错误在容器启动时就会抛异常，不会静默失效。",
+        "跨切面引用写全限定名：com.example.OtherAspect.serviceMethods()，把切点集中到一个类里更好维护。"
+      ],
+      "related": [
+        "@Aspect",
+        "@Before",
+        "@Around"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Declaring a Pointcut",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/pointcuts.html#aop-pointcuts-designators"
+        }
+      ],
+      "tags": [
+        "AOP",
+        "切点",
+        "表达式"
+      ]
+    },
+    {
+      "id": "before",
+      "name": "@Before",
+      "category": "aop",
+      "subcategory": "通知类型",
+      "package": "org.aspectj.lang.annotation.Before",
+      "level": "入门",
+      "tagline": "方法执行前先跑一段",
+      "plain": "@Before 是前置通知：匹配到切点的方法执行之前先跑一段逻辑。常用来做参数校验、打日志、设置上下文。它拿不到目标方法的返回值，但可以通过 JoinPoint 拿到方法名、参数和目标对象，比如 JoinPoint.getArgs()。",
+      "keyPoints": [
+        "value 写切点表达式，必填；也可以引用 @Pointcut 方法名。",
+        "方法可以声明 JoinPoint 参数，用来读方法名、参数、目标对象。",
+        "它改不了目标方法的返回值，也不能阻止方法执行，除非抛异常。",
+        "多个 @Before 的顺序由切面的 @Order 决定，别依赖声明顺序。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "—",
+          "desc": "切点表达式，必填。"
+        },
+        {
+          "name": "argNames",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "参数名声明，编译未保留调试信息时使用。"
+        }
+      ],
+      "exampleTitle": "调用前打印参数个数",
+      "example": "import org.aspectj.lang.JoinPoint;\nimport org.aspectj.lang.annotation.Aspect;\nimport org.aspectj.lang.annotation.Before;\nimport org.springframework.stereotype.Component;\n\n@Aspect\n@Component\npublic class ParamCheckAspect {\n\n    @Before(\"execution(* com.example.service.*.*(..))\")\n    public void check(JoinPoint joinPoint) {\n        Object[] args = joinPoint.getArgs();\n        String name = joinPoint.getSignature().getName();\n        if (args.length == 0) {\n            System.out.println(\"no args: \" + name);\n        }\n    }\n}",
+      "notes": [
+        "在 @Before 里抛异常会阻止目标方法执行，可以做简易权限校验，但错误信息要写清楚原因。",
+        "想改入参得用 @Around 的 proceed(args)，@Before 只能读。",
+        "切点表达式直接写字符串最省事；多处复用时抽成 @Pointcut。"
+      ],
+      "related": [
+        "@After",
+        "@Around",
+        "@Pointcut"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Before Advice",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-advice-before"
+        }
+      ],
+      "tags": [
+        "AOP",
+        "前置通知",
+        "Advice"
+      ]
+    },
+    {
+      "id": "after",
+      "name": "@After",
+      "category": "aop",
+      "subcategory": "通知类型",
+      "package": "org.aspectj.lang.annotation.After",
+      "level": "入门",
+      "tagline": "方法结束后一定执行",
+      "plain": "@After 是最终通知：不管目标方法正常返回还是抛异常，只要执行过就会跑，类似 finally。适合释放资源、清理 ThreadLocal、还原上下文。它拿不到返回值；要拿返回值用 @AfterReturning，要处理异常用 @AfterThrowing。",
+      "keyPoints": [
+        "value 写切点表达式，必填，也可以引用 @Pointcut 方法。",
+        "正常返回和抛异常都会执行，相当于 finally 的时机。",
+        "拿不到返回值，也不能吞掉异常。",
+        "要按结果分流时，用 @AfterReturning 和 @AfterThrowing 更明确。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "—",
+          "desc": "切点表达式，必填。"
+        },
+        {
+          "name": "argNames",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "参数名声明，编译未保留调试信息时使用。"
+        }
+      ],
+      "exampleTitle": "清理 ThreadLocal",
+      "example": "import org.aspectj.lang.JoinPoint;\nimport org.aspectj.lang.annotation.After;\nimport org.aspectj.lang.annotation.Aspect;\nimport org.springframework.stereotype.Component;\n\n@Aspect\n@Component\npublic class ContextCleanupAspect {\n\n    @After(\"execution(* com.example.service.*.*(..))\")\n    public void cleanup(JoinPoint joinPoint) {\n        // 无论目标方法成功还是抛异常都会走到这里\n        String method = joinPoint.getSignature().toShortString();\n        System.out.println(\"done: \" + method);\n    }\n}",
+      "notes": [
+        "finally 语义：目标方法抛异常时它照样执行，但异常会继续抛给调用方。",
+        "在 @After 里再抛异常会盖掉原来的异常，排查问题更难，清理逻辑本身要足够稳。",
+        "不同切面之间的执行顺序靠 @Order 决定，不要依赖「谁写在前面」。"
+      ],
+      "related": [
+        "@Before",
+        "@AfterReturning",
+        "@AfterThrowing"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：After (Finally) Advice",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-advice-after-finally"
+        }
+      ],
+      "tags": [
+        "AOP",
+        "最终通知",
+        "Advice"
+      ]
+    },
+    {
+      "id": "after-returning",
+      "name": "@AfterReturning",
+      "category": "aop",
+      "subcategory": "通知类型",
+      "package": "org.aspectj.lang.annotation.AfterReturning",
+      "level": "进阶",
+      "tagline": "正常返回后处理结果",
+      "plain": "@AfterReturning 在目标方法正常返回后执行，能拿到返回值，适合做结果审计、日志记录、数据加工。如果方法抛异常，它不执行。返回值默认是只读的：换掉引用不影响调用方拿到的值，但改返回对象内部状态会真的改掉。",
+      "keyPoints": [
+        "只有正常返回才执行；抛异常走 @AfterThrowing。",
+        "returning 指定一个参数名来接收返回值，类型不匹配就不触发。",
+        "value 写切点表达式，也可以用 pointcut 属性，两者选一个。",
+        "返回 null 也会执行，处理返回值前记得判空。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "切点表达式。"
+        },
+        {
+          "name": "pointcut",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "value 的别名，二选一。"
+        },
+        {
+          "name": "returning",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "接收返回值的参数名。"
+        },
+        {
+          "name": "argNames",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "参数名声明，编译未保留调试信息时使用。"
+        }
+      ],
+      "exampleTitle": "记录查询结果",
+      "example": "import org.aspectj.lang.annotation.AfterReturning;\nimport org.aspectj.lang.annotation.Aspect;\nimport org.springframework.stereotype.Component;\n\n@Aspect\n@Component\npublic class ResultAuditAspect {\n\n    @AfterReturning(\n            pointcut = \"execution(* com.example.service.*.find*(..))\",\n            returning = \"result\")\n    public void audit(Object result) {\n        // 返回值参数名必须和 returning 一致\n        System.out.println(\"returned: \" + result);\n    }\n}",
+      "notes": [
+        "returning 的值必须和方法参数名一一对应，写错在启动或首次执行时就会报错。",
+        "在 @AfterReturning 里抛异常会让调用方收到异常，而不是拿到原返回值。",
+        "改返回值引用没用，但改返回对象的内部字段会影响调用方，副作用要想清楚。"
+      ],
+      "related": [
+        "@AfterThrowing",
+        "@After",
+        "@Around"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：After Returning Advice",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-advice-after-returning"
+        }
+      ],
+      "tags": [
+        "AOP",
+        "返回通知",
+        "Advice"
+      ]
+    },
+    {
+      "id": "after-throwing",
+      "name": "@AfterThrowing",
+      "category": "aop",
+      "subcategory": "通知类型",
+      "package": "org.aspectj.lang.annotation.AfterThrowing",
+      "level": "进阶",
+      "tagline": "抛异常后做记录或告警",
+      "plain": "@AfterThrowing 在目标方法抛异常后执行，能拿到异常对象，适合统一记异常日志、发告警、做失败统计。它不能把异常变成正常返回：异常会继续抛给调用方，除非你在通知里显式处理掉。throwing 指定参数名接收异常。",
+      "keyPoints": [
+        "只有抛异常才执行；正常返回不触发。",
+        "throwing 指定接收异常的参数名，参数类型决定匹配哪类异常。",
+        "它不会改变异常流向，异常仍会抛给调用方。",
+        "value 写切点表达式，也可以用 pointcut 属性。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "切点表达式。"
+        },
+        {
+          "name": "throwing",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "接收异常对象的参数名。"
+        },
+        {
+          "name": "pointcut",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "value 的别名，二选一。"
+        },
+        {
+          "name": "argNames",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "参数名声明，编译未保留调试信息时使用。"
+        }
+      ],
+      "exampleTitle": "统一记录 service 异常",
+      "example": "import org.aspectj.lang.annotation.AfterThrowing;\nimport org.aspectj.lang.annotation.Aspect;\nimport org.springframework.stereotype.Component;\n\n@Aspect\n@Component\npublic class ErrorLogAspect {\n\n    @AfterThrowing(\n            pointcut = \"execution(* com.example.service.*.*(..))\",\n            throwing = \"ex\")\n    public void logError(Exception ex) {\n        System.err.println(\"service failed: \" + ex.getMessage());\n    }\n}",
+      "notes": [
+        "参数类型写 Exception 只接 Exception 及其子类；要连 Error 一起接就把类型写成 Throwable。",
+        "在通知里重新包装异常再抛出会覆盖原异常，调用方看到的是新异常，注意保留 cause。",
+        "它和 Spring MVC 的 @ExceptionHandler 不是一回事：一个在业务层兜，一个在控制层统一返回。"
+      ],
+      "related": [
+        "@AfterReturning",
+        "@After",
+        "@Around"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：After Throwing Advice",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-advice-after-throwing"
+        }
+      ],
+      "tags": [
+        "AOP",
+        "异常通知",
+        "Advice"
+      ]
+    },
+    {
+      "id": "around",
+      "name": "@Around",
+      "category": "aop",
+      "subcategory": "通知类型",
+      "package": "org.aspectj.lang.annotation.Around",
+      "level": "进阶",
+      "tagline": "包住目标方法，控制执行",
+      "plain": "@Around 是最强的通知：把目标方法整个包起来，用 ProceedingJoinPoint.proceed() 决定什么时候执行、执行几次、要不要执行。适合耗时统计、重试、缓存这类需要控制流程的逻辑。它也最容易用错，比如忘了调 proceed() 导致目标方法根本不执行。",
+      "keyPoints": [
+        "方法第一个参数必须是 ProceedingJoinPoint，返回类型写 Object。",
+        "必须调用 proceed() 目标方法才会执行，不调就是直接拦死。",
+        "proceed() 可以传新参数改写入参，也可以捕获异常做重试或降级。",
+        "返回值必须和目标方法兼容，否则调用方会收到类型转换异常。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "—",
+          "desc": "切点表达式，必填。"
+        },
+        {
+          "name": "argNames",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "参数名声明，编译未保留调试信息时使用。"
+        }
+      ],
+      "exampleTitle": "统计方法耗时",
+      "example": "import org.aspectj.lang.ProceedingJoinPoint;\nimport org.aspectj.lang.annotation.Around;\nimport org.aspectj.lang.annotation.Aspect;\nimport org.springframework.stereotype.Component;\n\n@Aspect\n@Component\npublic class TimingAspect {\n\n    @Around(\"execution(* com.example.service.*.*(..))\")\n    public Object measure(ProceedingJoinPoint joinPoint) throws Throwable {\n        long start = System.nanoTime();\n        try {\n            return joinPoint.proceed();\n        } finally {\n            long cost = (System.nanoTime() - start) / 1_000_000;\n            String method = joinPoint.getSignature().toShortString();\n            System.out.println(method + \" cost \" + cost + \"ms\");\n        }\n    }\n}",
+      "notes": [
+        "忘了调用 proceed() 目标方法就永远不执行，表现为「功能静默消失」，排查时先看这里。",
+        "proceed() 抛出的异常要原样放行，除非明确要重试或降级，否则会破坏调用方语义。",
+        "能不用 @Around 就别用：@Before / @AfterReturning 够用时，它们更简单也更安全。"
+      ],
+      "related": [
+        "@Before",
+        "@AfterReturning",
+        "@Pointcut"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Around Advice",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-ataspectj-around-advice"
+        }
+      ],
+      "tags": [
+        "AOP",
+        "环绕通知",
+        "耗时统计"
+      ]
+    },
+    {
+      "id": "enable-aspectj-auto-proxy",
+      "name": "@EnableAspectJAutoProxy",
+      "category": "aop",
+      "subcategory": "启用配置",
+      "package": "org.springframework.context.annotation.EnableAspectJAutoProxy",
+      "since": "Spring 3.1",
+      "level": "进阶",
+      "tagline": "开启 @AspectJ 切面支持",
+      "plain": "@EnableAspectJAutoProxy 开启 @AspectJ 风格的切面支持：让容器识别 @Aspect，并给目标 Bean 生成代理。Spring Boot 的自动配置已经默认开启，纯 Spring 项目才需要手写。proxyTargetClass 可强制 CGLIB 代理，exposeProxy 把当前代理暴露出来。",
+      "keyPoints": [
+        "标在配置类上，等同于 XML 的 <aop:aspectj-autoproxy/>。",
+        "Spring Boot 由 AopAutoConfiguration 自动开启，不用手写；纯 Spring 项目才需要。",
+        "proxyTargetClass = true 强制 CGLIB 代理；false 时接口用 JDK 代理，没有接口才用 CGLIB。",
+        "exposeProxy = true 后可用 AopContext.currentProxy() 拿到当前代理。"
+      ],
+      "attributes": [
+        {
+          "name": "proxyTargetClass",
+          "type": "boolean",
+          "default": "false",
+          "desc": "true 时强制使用 CGLIB 代理。"
+        },
+        {
+          "name": "exposeProxy",
+          "type": "boolean",
+          "default": "false",
+          "desc": "是否把代理暴露到 AopContext，供内部取用。"
+        }
+      ],
+      "exampleTitle": "纯 Spring 项目手动开启",
+      "example": "import org.aspectj.lang.annotation.Aspect;\nimport org.aspectj.lang.annotation.Before;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.context.annotation.EnableAspectJAutoProxy;\nimport org.springframework.stereotype.Component;\n\n@Configuration\n@EnableAspectJAutoProxy\npublic class AopConfig {\n    // 纯 Spring 项目在配置类上手动开启；\n    // Spring Boot 自动配置已默认开启，不需要这行\n}\n\n@Aspect\n@Component\nclass LogAspect {\n\n    @Before(\"execution(* com.example.service.*.*(..))\")\n    public void log() {\n        System.out.println(\"before service\");\n    }\n}",
+      "notes": [
+        "切面不生效时先确认代理是否生成：看注入的类型是不是代理对象，别急着怀疑切点表达式。",
+        "强制 CGLIB 后 final 类、final 方法依然不能被代理，报错时先检查类定义。",
+        "exposeProxy 依赖 AopContext 的 ThreadLocal，只在代理调用链里有效，不是通用方案。"
+      ],
+      "related": [
+        "@Aspect",
+        "@Pointcut",
+        "@Configuration"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Enabling @AspectJ Support",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/aspectj-support.html"
+        },
+        {
+          "label": "Spring API：@EnableAspectJAutoProxy",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/context/annotation/EnableAspectJAutoProxy.html"
+        }
+      ],
+      "tags": [
+        "AOP",
+        "代理",
+        "启用配置"
+      ]
+    }
+  ]
+}

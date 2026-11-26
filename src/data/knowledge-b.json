@@ -1,0 +1,249 @@
+{
+  "generatedBy": "knowledge-b",
+  "items": [
+    {
+      "id": "auto-configuration",
+      "title": "Spring Boot 自动配置是怎么生效的",
+      "category": "boot",
+      "level": "入门",
+      "readingMinutes": 6,
+      "summary": "自动配置就是一份类名单加条件注解，满足条件才装 Bean；自己定义就退让，也能关掉和排查。",
+      "tags": [
+        "自动配置",
+        "条件注解",
+        "Spring Boot"
+      ],
+      "sources": [
+        {
+          "label": "Spring Boot 3.5 参考文档：自动配置",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/using/auto-configuration.html"
+        },
+        {
+          "label": "Spring Boot 3.5 参考文档：创建自己的自动配置",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html"
+        }
+      ],
+      "content": "自动配置是 Spring Boot 最像\"魔法\"的地方：加一个依赖，忽然就多出能直接注入的 Bean；自己定义一个同类型的 Bean，它又会悄悄让路。这篇用大白话讲清这套机制怎么运转，以及出问题怎么关、怎么查。\n\n## 先记住结论\n\n`@SpringBootApplication` 是一个组合注解，里面包含了 `@EnableAutoConfiguration`。它的作用就是告诉 Boot：去把各个 jar 包里登记的\"自动配置类\"读出来，按条件决定装不装。\n\n所以自动配置不是\"猜你要什么\"，而是\"按一份名单逐个检查条件，满足就装\"。每个自动配置类上都贴着一堆条件注解，条件不满足就跳过，也不报错。这也是为什么你什么都没配，应用也能跑起来。\n\n理解了这一点，很多现象就顺了：加 `spring-boot-starter-web` 就出现内嵌 Tomcat 和 MVC 相关 Bean，是因为名单里有对应配置；某个 Bean 突然不生效，多半是某个条件没满足。\n\n## 名单和条件\n\n自动配置类的名单写在各 jar 的 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` 文件里，一行一个类名。Boot 自己带一份名单，各 starter 也可以带自己的，启动时汇总，然后用条件注解筛选。\n\n常见的条件注解：\n\n| 条件注解 | 什么时候才生效 |\n| --- | --- |\n| `@ConditionalOnClass` | 类路径上存在指定类 |\n| `@ConditionalOnMissingBean` | 容器里还没有这个 Bean |\n| `@ConditionalOnProperty` | 某个配置项存在且值匹配 |\n| `@ConditionalOnWebApplication` | 当前是 Web 应用 |\n\n\"非侵入\"就是这么来的：你自己声明了 `DataSource`，条件里的 `@ConditionalOnMissingBean(DataSource.class)` 就不成立，Boot 内置的数据源配置自动退让，不会跟你抢。所以你既能开箱即用，也能随时接管，不用先\"关掉\"什么。\n\n## 怎么关、怎么查\n\n只想临时关掉某一个自动配置：\n\n```java\n@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)\npublic class App { }\n```\n\n也可以在配置里排除，适合不方便改代码的场景：\n\n```properties\nspring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration\n```\n\n如果想知道\"某个自动配置为什么没生效\"，启动时加 `--debug`，日志里会打印条件评估报告（condition evaluation report），每一项都写着匹配或不匹配的原因。查这种问题，它比猜快得多。报告很长，建议先搜 \"Negative matches\" 再定位你要找的类。\n\n## 自己做一个自动配置\n\n写公司内部 starter 时也是同一套东西，步骤就三步：\n\n1. 写一个 `@AutoConfiguration` 类，给里面的 Bean 加上条件注解，保证别人能覆盖；\n2. 在 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` 里登记类名；\n3. 打包后确认 imports 文件真的进了 jar。前两步本地能验证，第三步只有发布后才会暴露，是新手最常见的坑。\n\n需要控制加载顺序时，还可以用 `@AutoConfigureAfter`、`@AutoConfigureBefore` 指定与其他自动配置的先后关系。写的时候不要依赖组件扫描，也不要假设使用者一定需要你的每一个 Bean，条件注解就是给用户留的退路。"
+    },
+    {
+      "id": "startup-flow",
+      "title": "Spring Boot 启动时到底发生了什么",
+      "category": "boot",
+      "level": "入门",
+      "readingMinutes": 6,
+      "summary": "启动分准备环境、创建容器、刷新容器三段，事件按固定顺序发布，就绪后才开始接流量。",
+      "tags": [
+        "启动流程",
+        "SpringApplication",
+        "事件机制"
+      ],
+      "sources": [
+        {
+          "label": "Spring Boot 3.5 参考文档：SpringApplication",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/spring-application.html"
+        }
+      ],
+      "content": "Spring Boot 应用启动时，表面上只是执行了一句 `SpringApplication.run(...)`，背后其实是一串有固定顺序的阶段和事件。搞清楚这条链路，启动慢、启动报错、Bean 初始化顺序这些问题会好查很多。\n\n## 启动流程就三段\n\n1. 准备环境：读配置（application.properties、环境变量、命令行参数），创建 `Environment`；\n2. 创建容器：根据项目类型决定用哪种 `ApplicationContext`，把 Bean 定义加载进去；\n3. 刷新容器：实例化单例 Bean、启动内嵌 Web 服务器，最后发布\"就绪\"事件。\n\n比如普通 Spring MVC 应用会创建 `AnnotationConfigServletWebServerApplicationContext`，WebFlux 应用则用响应式的容器实现，普通非 Web 应用退回到通用的容器。用哪种容器由类路径自动判断，不需要你手动选。\n\n`run` 只是最常用的入口。它内部会创建一个 `SpringApplication` 实例，再把应用类交给它去启动；如果需要在启动前改设置，也可以先 `new SpringApplication(App.class)`，设置属性后再调用 `run`。\n\n## 事件顺序（从先到后）\n\n| 事件 | 时机 |\n| --- | --- |\n| `ApplicationStartingEvent` | run 刚开始，还没做任何准备 |\n| `ApplicationEnvironmentPreparedEvent` | 环境准备好，配置文件已读取 |\n| `ApplicationContextInitializedEvent` | 容器创建好，Bean 定义还没加载 |\n| `ApplicationPreparedEvent` | Bean 定义已加载，容器还没 refresh |\n| `ApplicationStartedEvent` | 容器 refresh 完成，Web 服务器已启动 |\n| `ApplicationReadyEvent` | 一切就绪，可以接收请求 |\n| `ApplicationFailedEvent` | 启动过程中抛了异常 |\n\n另外，在 `ApplicationStartedEvent` 之后还会发布可用性状态：先是 Liveness（存活）状态变为 CORRECT，等 `ApplicationReadyEvent` 之后再变成 Readiness（就绪）的 ACCEPTING_TRAFFIC。Kubernetes 的存活探针和就绪探针判断的就是这两个状态。这也解释了为什么应用日志里出现 \"Started\" 之后，流量才真正进来。\n\n## 怎么用这些点\n\n想干\"启动后做点事\"，最常用的是监听 `ApplicationReadyEvent`：\n\n```java\n@Component\npublic class WarmUp {\n    @EventListener(ApplicationReadyEvent.class)\n    public void warmUp() {\n        // 预热缓存、建立连接池等\n    }\n}\n```\n\n注意别在监听器里做太重的活，它会拖慢启动，也会让就绪时间变晚。如果预热失败不该影响启动，记得自己捕获异常，否则可能把整个启动打断。\n\n另外两个常见需求：\n\n- 想知道启动时每个步骤花了多久：可以开启启动步骤记录（`ApplicationStartup`）来采样；\n- 本地开发想快点起来：`spring.main.lazy-initialization=true`，Bean 用到才创建。代价是第一次访问变慢，而且配置错误可能推迟到运行期才暴露，线上一般不建议开。\n\n## 启动失败怎么读\n\n启动失败会发布 `ApplicationFailedEvent`。如果是端口被占用、配置缺失这类常见问题，Boot 的 `FailureAnalyzer` 会把它翻译成人话。看到 \"APPLICATION FAILED TO START\" 这一段，先读它给出的 Description 和 Action，通常比翻堆栈快得多。\n\n如果只是\"启动很慢\"，可以先怀疑三件事：Bean 太多、某个 Bean 的初始化里有远程调用或全表扫描、日志级别开得太细。按事件顺序打点，能快速定位卡在哪一段。"
+    },
+    {
+      "id": "config-priority",
+      "title": "配置优先级：properties、环境变量、命令行谁说了算",
+      "category": "boot",
+      "level": "入门",
+      "readingMinutes": 6,
+      "summary": "配置后加入的覆盖先加入的；profile 再叠一层，命令行和环境变量的优先级很高。",
+      "tags": [
+        "配置优先级",
+        "Profile",
+        "application.properties"
+      ],
+      "sources": [
+        {
+          "label": "Spring Boot 3.5 参考文档：外部化配置",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html"
+        },
+        {
+          "label": "Spring Boot 3.5 参考文档：Profile",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/profiles.html"
+        }
+      ],
+      "content": "配置来源很多：application.properties、YAML、环境变量、命令行参数、测试注解……它们打架时谁赢？规则其实只有一句话。\n\n## 一句话规则\n\n后加入的覆盖先加入的。Boot 按固定顺序把各种属性源放进 `Environment`，越靠后优先级越高。同一个 key 出现在多处时，后面的值生效。\n\n所以排查\"配置怎么不生效\"，本质就是看这个 key 被哪些来源写入了、谁排在最后。Boot 并没有\"合并\"这些值，而是按优先级取第一个命中的来源。\n\n## 从低到高的大致顺序\n\n1. jar 包里的 `application.properties` / `application.yml`；\n2. jar 外面的 `application.properties`（比如同级目录或 `config/` 子目录）；\n3. 操作系统环境变量；\n4. Java 系统属性（`-Dkey=value`）；\n5. 命令行参数（`--server.port=8081`）；\n6. 测试里的 `properties` 属性、`@TestPropertySource` 等。\n\n同一位置下，`.properties` 的优先级高于 `.yml`；而 `application-{profile}.properties` 一定覆盖 `application.properties`。配置文件内部的顺序则是：jar 内 < jar 外，非 profile < profile 专属。\n\n顺序记不住也没关系，记住直觉就行：越\"临时\"、越\"靠近运行现场\"的来源优先级越高。改代码里的配置最不灵活，命令行参数最灵活，所以命令行排在前面。\n\n## Profile：按环境叠一层\n\n`spring.profiles.active=dev` 激活 dev 环境，Boot 会额外加载 `application-dev.properties`。用 `@Profile(\"dev\")` 还能让某个 Bean 只在指定环境注册。\n\nProfile 可以分组，省得每次写一长串：\n\n```properties\nspring.profiles.group.production=proddb,prodmq\n```\n\n这样写 `spring.profiles.active=production`，就等价于同时激活 proddb 和 prodmq 两个 profile。分组定义只能写在非 profile 专属的配置文件里，否则会失效。\n\n## 常见踩坑\n\n- 环境变量名要转成下划线加全大写：`server.port` 对应 `SERVER_PORT`。\n- 命令行参数优先级很高，排查线上问题先看看启动命令里有没有多写一个 `--key`。\n- 想让运维改配置，把 `application.properties` 放在 jar 同级目录或 `config/` 子目录，比重新打包省事得多。\n- 配置值里有特殊字符（比如 `#`、`:`）时，记得按需加引号，否则可能被当成注释或分隔符。\n- YAML 里缩进错了不会报错，只会\"这个配置好像没生效\"，写完建议看一眼解析结果。\n- 排查顺序建议：先看启动日志里打印的配置文件位置，确认到底哪几份文件被读到了，再对着优先级表找\"谁覆盖了谁\"。盲改配置文件往往越改越乱。\n\n最后提醒一句：profile 只是\"把不同环境的配置分开\"，不是安全机制。密码这类敏感信息不要直接提交到仓库，用环境变量或配置中心的加密能力。"
+    },
+    {
+      "id": "interceptor-filter-aop",
+      "title": "过滤器、拦截器、AOP 到底该用哪个",
+      "category": "web",
+      "level": "入门",
+      "readingMinutes": 7,
+      "summary": "过滤器在 Servlet 最外层，拦截器在 Spring MVC 中间，AOP 在方法调用处，按位置选。",
+      "tags": [
+        "过滤器",
+        "拦截器",
+        "AOP"
+      ],
+      "sources": [
+        {
+          "label": "Spring Framework 参考文档：拦截器",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/interceptors.html"
+        },
+        {
+          "label": "Spring Framework 参考文档：过滤器",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/filters.html"
+        },
+        {
+          "label": "Spring Boot 3.5 参考文档：AOP",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/aop.html"
+        }
+      ],
+      "content": "过滤器、拦截器、AOP 三个词都像\"拦截\"，但位置和粒度完全不同。先记一句话：过滤器在最外层（Servlet 容器），拦截器在中间（Spring MVC），AOP 在方法调用处（Spring 容器里的 Bean）。按需求选就行。\n\n## 过滤器：最外层，拿到最原始的请求\n\n过滤器是 Servlet 规范的东西，实现 `jakarta.servlet.Filter`。它包住整个请求，连静态资源、404、别的框架的 Servlet 都会经过它，适合做编码、跨域、请求日志、最前置的鉴权。在 Boot 里把 Filter 声明成 Bean，就会被自动注册。\n\n```java\n@Component\npublic class ReqLogFilter extends OncePerRequestFilter {\n    @Override\n    protected void doFilterInternal(HttpServletRequest request,\n                                    HttpServletResponse response,\n                                    FilterChain chain) throws ServletException, IOException {\n        long start = System.currentTimeMillis();\n        chain.doFilter(request, response);\n        log.info(\"{} {} 用时 {}ms\", request.getMethod(),\n                request.getRequestURI(), System.currentTimeMillis() - start);\n    }\n}\n```\n\n用 `OncePerRequestFilter` 的好处是：一次请求只执行一次，转发、异步分派时不会重复。过滤器的缺点是它只知道\"有个请求进来了\"，不知道这个请求最终会落到哪个 Controller 方法上。\n\n## 拦截器：知道你要进哪个 Controller 方法\n\n拦截器属于 Spring MVC，通过 `WebMvcConfigurer.addInterceptors` 注册，分 `preHandle`、`postHandle`、`afterCompletion` 三个点。它拿得到 `HandlerMethod`，也就是\"即将执行哪个类的哪个方法\"，适合登录校验、权限注解、接口耗时统计。\n\n```java\n@Configuration\npublic class WebConfig implements WebMvcConfigurer {\n    @Override\n    public void addInterceptors(InterceptorRegistry registry) {\n        registry.addInterceptor(new LoginInterceptor())\n                .addPathPatterns(\"/api/**\")\n                .excludePathPatterns(\"/api/login\");\n    }\n}\n```\n\n`preHandle` 返回 false 就中断后续处理，适合做\"没登录直接拦下\"。`afterCompletion` 无论成功失败都会执行，适合清理 ThreadLocal、记录耗时。\n\n注意：官方文档明确说拦截器不适合当安全边界，因为路径匹配和注解控制器的匹配方式可能对不上。真正鉴权建议用 Spring Security 或 Servlet 过滤器链，越早越好。\n\n## AOP：按方法切，不限于 Web\n\nAOP 切的是 Spring Bean 的方法调用，Controller、Service、定时任务都能切，适合事务、日志、埋点这类横切逻辑。\n\n```java\n@Aspect\n@Component\npublic class CostAspect {\n    @Around(\"@annotation(cost)\")\n    public Object around(ProceedingJoinPoint pjp, Cost cost) throws Throwable {\n        long start = System.nanoTime();\n        try {\n            return pjp.proceed();\n        } finally {\n            System.out.println((System.nanoTime() - start) / 1_000_000 + \"ms\");\n        }\n    }\n}\n```\n\n只要类路径上有 AspectJ（通常加 `spring-boot-starter-aop`），Boot 的自动配置会开启自动代理，不用再手写 `@EnableAspectJAutoProxy`。默认用 CGLib 代理；想换 JDK 代理可以设 `spring.aop.proxy-target-class=false`。也因为是代理，同一个类里\"自己调自己\"不会走切面。\n\n## 怎么选\n\n| 需求 | 选它 |\n| --- | --- |\n| 改编码、跨域、最前置的鉴权 | 过滤器 |\n| 按 URL 做登录校验、接口计时 | 拦截器 |\n| 按方法做事务、日志、埋点 | AOP |\n\n写环绕通知时还有个新手坑：方法签名里要引入 `ProceedingJoinPoint`，并且必须调用 `proceed()`，否则原方法根本不会执行，表现为\"业务逻辑莫名其妙没了\"。\n\n一句话总结：能改请求本身用过滤器，需要知道 Controller 方法用拦截器，只想管方法调用用 AOP。实际项目里三者经常一起用：过滤器处理编码和 CORS，拦截器做登录态校验，AOP 记业务日志，各管一段，互不越界。"
+    },
+    {
+      "id": "async-threadpool",
+      "title": "异步任务与线程池：别让 @Async 悄悄失效",
+      "category": "engineering",
+      "level": "进阶",
+      "readingMinutes": 8,
+      "summary": "@Async 要开 @EnableAsync 且必须走代理；线程池最好自定义，void 方法的异常别丢。",
+      "tags": [
+        "@Async",
+        "线程池",
+        "异步"
+      ],
+      "sources": [
+        {
+          "label": "Spring Framework 参考文档：任务执行与调度",
+          "url": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html"
+        },
+        {
+          "label": "Spring Boot 3.5 参考文档：任务执行与调度",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/task-execution-and-scheduling.html"
+        }
+      ],
+      "content": "异步本身不难，难的是它经常\"看起来生效了，其实没生效\"，或者\"生效了，但线程池悄悄把服务拖垮\"。\n\n## 两个开关先加上\n\n```java\n@Configuration\n@EnableAsync\npublic class AsyncConfig { }\n```\n\n配置类上加 `@EnableAsync`，方法上加 `@Async`，调用方就会立刻返回，真正的逻辑在另一个线程执行。\n\nBoot 在没有自定义 `Executor` Bean 时，会自动配置一个 `AsyncTaskExecutor`：默认是 `ThreadPoolTaskExecutor`，8 个核心线程，可随负载增减；如果开启虚拟线程（Java 21+ 且 `spring.threads.virtual.enabled=true`），会换成基于虚拟线程的执行器。这个执行器还会被 Spring MVC、WebFlux 等组件复用，所以改它的参数影响面不止 `@Async`。\n\n什么时候适合异步：发短信、写操作日志、推送消息、跑不影响主流程的统计。反过来，需要立刻返回结果、需要事务一致性的核心链路，不要随手丢进异步。\n\n## 什么情况下 @Async 不生效\n\n- 忘了加 `@EnableAsync`，注解等于注释；\n- 同类内部调用：`this.doAsync()` 不经过代理，切面拦不到；\n- 和 `@PostConstruct` 一起用：生命周期回调阶段代理还没准备好；\n- 返回值写成了其他类型：异步方法只能返回 `void`、`Future` 或 `CompletableFuture` 这类类型。\n\n排查时先看调用是不是穿过了代理对象。最简单的办法是把它挪到另一个 Bean 里注入调用。另外，异步方法拿不到原请求的线程上下文，像 `ThreadLocal` 里存的东西默认不会跟过去，需要手动传参或做上下文透传。\n\n## 线程池最好自己配\n\n自动配置的线程池适合兜底，生产上通常要按业务定制。定义一个 `Executor` Bean，自动配置就会退让：\n\n```java\n@Bean\nThreadPoolTaskExecutor taskExecutor() {\n    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();\n    executor.setCorePoolSize(8);\n    executor.setMaxPoolSize(16);\n    executor.setQueueCapacity(200);\n    executor.setThreadNamePrefix(\"async-\");\n    executor.initialize();\n    return executor;\n}\n```\n\n参数怎么估：核心线程看日常并发，最大线程看峰值，队列容量决定\"能忍多少积压\"。队列越大越不容易拒绝，但延迟也越大、内存占用越高，不要无脑调大。\n\n注意 Spring MVC、WebFlux、GraphQL 这些组件要求有一个名为 `applicationTaskExecutor` 的 Bean；只想让 `@Async` 用，叫 `taskExecutor` 或标记 `@Primary` 也可以。名字不一致时会出现\"自定义的池没用上\"的怪现象。\n\n如果不想自己配，也可以用属性微调，比如限制最大线程数和队列长度：\n\n```properties\nspring.task.execution.pool.max-size=16\nspring.task.execution.pool.queue-capacity=100\nspring.task.execution.pool.keep-alive=10s\n```\n\n## 异常和返回值\n\n返回 `void` 的异步方法，异常默认只会被记录日志，调用方完全感知不到。要么返回 `CompletableFuture` 让调用方处理，要么实现 `AsyncConfigurer` 配一个 `AsyncUncaughtExceptionHandler` 统一兜底：\n\n```java\n@Async\npublic CompletableFuture<String> fetch(Long id) {\n    return CompletableFuture.completedFuture(remoteCall(id));\n}\n```\n\n最后提醒：异步不是越多越好。线程池和队列都有上限，入口不设限，出口就会堆积，最后表现为接口变慢、内存上涨。监控队列长度和拒绝次数，比事后排查便宜。"
+    },
+    {
+      "id": "scheduled-tasks",
+      "title": "定时任务：@Scheduled 的写法和两个坑",
+      "category": "engineering",
+      "level": "入门",
+      "readingMinutes": 7,
+      "summary": "fixedDelay 与 fixedRate 算法不同；默认单线程会排队，多实例会重复执行。",
+      "tags": [
+        "@Scheduled",
+        "定时任务",
+        "cron"
+      ],
+      "sources": [
+        {
+          "label": "Spring Framework 参考文档：任务执行与调度",
+          "url": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html"
+        },
+        {
+          "label": "Spring Boot 3.5 参考文档：任务执行与调度",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/task-execution-and-scheduling.html"
+        }
+      ],
+      "content": "定时任务最常见的需求就一句：\"每隔几分钟跑一次\"。但写起来有三个细节特别容易踩：两种间隔算法不一样、默认只有一个线程、多台机器会重复跑。\n\n## 两个开关先加上\n\n```java\n@Configuration\n@EnableScheduling\npublic class ScheduleConfig { }\n```\n\n配置类加 `@EnableScheduling` 开启调度，方法加 `@Scheduled` 才会被扫描到。方法必须没有参数、返回 `void`，否则启动会报错。这是规范要求，不是建议。\n\n## fixedDelay 和 fixedRate 不一样\n\n| 写法 | 间隔怎么算 | 适合什么 |\n| --- | --- | --- |\n| `fixedDelay` | 上一次方法执行完之后，再等这么久 | 耗时不定、不能叠加的任务 |\n| `fixedRate` | 按开始时间算，上一次开始后固定间隔再开始 | 要求频率稳定、任务很短 |\n\n用同一段代码说清楚：方法执行要 3 秒，间隔设 10 秒。`fixedDelay` 是\"执行完再等 10 秒\"，实际大约 13 秒一次；`fixedRate` 是\"开始后 10 秒再来\"，实际约 10 秒一次。如果方法执行超过间隔，`fixedRate` 会排队，表现就是\"任务越积越多\"。\n\n一般业务用 `fixedDelay` 更安全，它天然不会把自己堆起来。\n\n```java\n@Scheduled(fixedDelay = 60_000, initialDelay = 10_000)\npublic void sync() { }\n\n@Scheduled(cron = \"0 0 3 * * *\", zone = \"Asia/Shanghai\")\npublic void dailyReport() { }\n```\n\n`initialDelay` 是首次延迟，避免应用刚启动就和别的工作抢资源。时间默认按毫秒算，也可以用 `timeUnit` 指定单位。\n\n## cron 写法与参数\n\ncron 是六段：秒、分、时、日、月、周。`0 0 3 * * *` 就是每天凌晨 3 点。写 `*/5 * * * * MON-FRI` 表示周一到周五每 5 分钟一次。跨时区部署时记得设置 `zone`，否则会按服务器默认时区执行，差了 8 小时就是线上事故。\n\n需要多个时间点可以重复写多个 `@Scheduled`。但要清楚：同一方法配了多个触发时间，可能同时被触发，必须保证逻辑可重入。\n\n## 默认单线程和多实例\n\nBoot 会自动配置一个调度器，默认只有一个线程。也就是说所有 `@Scheduled` 方法共用一个线程，前一个跑得久，后面的就排队。这不是 bug，是默认配置。任务多了可以加：\n\n```properties\nspring.task.scheduling.pool.size=4\nspring.task.scheduling.thread-name-prefix=scheduling-\n```\n\n多实例部署时，每个实例都会各自执行一遍，短信会发两次、报表会跑两遍。常见解法有三种：只让一个实例跑（结合选主或开关）、用分布式锁（Redis 之类）、或者把定时任务拆成独立服务只部署一份。没有银弹，按团队运维能力选。\n\n最后一句：定时任务出问题，先确认它到底跑没跑，再看是不是被单线程卡住，最后才怀疑代码逻辑。"
+    },
+    {
+      "id": "packaging-deploy",
+      "title": "打包部署：可执行 jar 和 war 怎么选",
+      "category": "engineering",
+      "level": "入门",
+      "readingMinutes": 7,
+      "summary": "可执行 jar 内置依赖和启动清单，java -jar 即可跑；只有外部容器场景才用 war。",
+      "tags": [
+        "打包",
+        "可执行 jar",
+        "war"
+      ],
+      "sources": [
+        {
+          "label": "Spring Boot 3.5 Maven 插件：打包",
+          "url": "https://docs.spring.io/spring-boot/3.5/maven-plugin/packaging.html"
+        },
+        {
+          "label": "Spring Boot 3.5 文档：传统部署（war）",
+          "url": "https://docs.spring.io/spring-boot/3.5/how-to/deployment/traditional-deployment.html"
+        },
+        {
+          "label": "Spring Boot 3.5 参考文档：优雅停机",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/web/graceful-shutdown.html"
+        }
+      ],
+      "content": "写完代码总要部署。现在的默认答案是：打成一个可执行 jar，`java -jar` 就跑。war 只在必须丢进外部容器时才用。\n\n## 可执行 jar：推荐默认做法\n\n加插件、执行打包，就得到一个包含所有依赖、可以直接运行的 jar：\n\n```xml\n<plugin>\n  <groupId>org.springframework.boot</groupId>\n  <artifactId>spring-boot-maven-plugin</artifactId>\n</plugin>\n```\n\n```bash\nmvn clean package\njava -jar target/demo-0.0.1-SNAPSHOT.jar\n```\n\n插件里的 `repackage` 目标会重写 jar，把依赖和启动类信息打进去。直接运行 `mvn spring-boot:repackage` 不够，因为 jar 还没生成；正确姿势是先 `mvn package`，或者用 parent 里已经绑好的生命周期。打包后你会发现多了一个 `.original` 文件，那就是重写之前的原始 jar，出问题可以对照看。\n\njar 里的清单（MANIFEST）有两项关键信息：`Main-Class` 是 Boot 自己的启动器，`Start-Class` 才是你的 `main` 方法所在类。排查\"jar 跑不起来\"时先看这两行。\n\n## jar 和 war 怎么选\n\n| 场景 | 选择 |\n| --- | --- |\n| 常规微服务、容器部署 | 可执行 jar |\n| 公司有统一的 Tomcat/WebLogic，必须丢 war | war |\n| 需求把配置和代码分离到容器目录 | jar 也能做到，未必要 war |\n\nwar 的写法要改两处：`pom.xml` 里 `packaging` 改成 `war`，启动类继承 `SpringBootServletInitializer` 并覆写 `configure`。之外还要把内嵌容器依赖标记成 `provided`，否则和外部容器里的类打架。\n\n注意：WebFlux 应用不支持打成 war，这是响应式栈的限制，只能跑 jar 或独立部署。\n\n## 部署时的实用配置\n\nBoot 3.5 默认已开启优雅停机：收到停止信号后先不放新请求进来，等手上的请求处理完再退出。等待上限默认 20 秒，可以调：\n\n```properties\nspring.lifecycle.timeout-per-shutdown-phase=30s\n```\n\n不建议关掉。Kubernetes 滚动发布时，正是靠它避免\"请求打到正在退出的实例上\"。如果确实要立刻停，再设 `server.shutdown=immediate`。\n\n打包时记得跳过测试或者至少跑通测试再发：`mvn clean package -DskipTests` 适合本地快速验证，流水线里不要这么干。配置文件、启动参数和端口这些和环境相关的信息，尽量从外部传，不要把生产密码打进 jar。\n\n## 几个容易踩的点\n\n- 端口被占用：先看是不是上一个实例没退干净，再改 `server.port`。\n- 时区不对：容器里默认 UTC 很常见，日志和定时任务都会差 8 小时，显式指定时区。\n- 内存参数：`java -jar` 不会自动限制堆大小，容器里建议用 `-XX:MaxRAMPercentage=75` 这类参数。\n- 日志落在容器里：容器重建就丢，生产上把日志输出到标准输出，交给平台收集。\n- 打包后类找不到：多半是 `provided` 标记用错，或者依赖被 exclude 掉了，用 `mvn dependency:tree` 看依赖树。\n\n记住一句话：可执行 jar 的优点是\"一个文件带走所有东西\"，代价是每次改依赖都要重新打包。部署方式跟着团队的基础设施走，不要为了炫技硬上。"
+    },
+    {
+      "id": "logging-config",
+      "title": "日志配置：从 logging.level 到 logback-spring.xml",
+      "category": "engineering",
+      "level": "入门",
+      "readingMinutes": 7,
+      "summary": "默认 Logback 只打控制台；改级别、写文件用属性，按 profile 切换才需要自己写 xml。",
+      "tags": [
+        "日志",
+        "Logback",
+        "配置文件"
+      ],
+      "sources": [
+        {
+          "label": "Spring Boot 3.5 参考文档：日志",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/logging.html"
+        }
+      ],
+      "content": "日志是最便宜的排查工具，也是最容易被忽略的配置。Spring Boot 的默认日志已经够用，大多数需求用属性就能解决，只有\"按环境切换格式\"这类才需要自己写 xml。\n\n## 默认长什么样\n\n只要用了任何 starter，日志默认就是 Logback，输出到控制台，级别 INFO。所以你会看到启动横幅、Tomcat 端口、Spring 的启动日志，但看不到 DEBUG。\n\n默认格式里包含时间、级别、线程名、logger 名和消息。开发时够用，上线后一般要改成 JSON 或者带链路 ID 的格式，方便日志平台检索。格式可以用 `logging.pattern.console` 和 `logging.pattern.file` 调整，比如把 traceId 拼进去，但字段别堆太多，日志本身的写入开销也要算成本。\n\n## 调级别和写文件\n\n最常用的两个属性：\n\n```properties\nlogging.level.root=INFO\nlogging.level.com.example.order=DEBUG\nlogging.file.name=logs/app.log\n```\n\n第一行管全局，第二行只对指定包生效，粒度可以细到某个类。级别从低到高是 TRACE、DEBUG、INFO、WARN、ERROR、FATAL、OFF，设成 OFF 就是彻底关掉。线上排查临时打开某个包的 DEBUG，改完记得调回去，不然日志量会翻好几倍。\n\n写文件有两种写法：`logging.file.name` 指定完整路径，`logging.file.path` 只指定目录（文件名固定为 `spring.log`）。两个都写时 `logging.file.path` 会被忽略，别同时配。\n\n## 按环境切换：logback-spring.xml\n\n如果只是想改级别、加个文件输出，属性就够了。但要做\"开发环境彩色控制台、生产环境 JSON 文件\"，就得自己写配置。文件名建议用 `logback-spring.xml`，不要用 `logback.xml`：\n\n- `logback.xml` 加载得太早，里面的 Spring 扩展标签（比如 `<springProfile>`）不会被识别，会看到 \"no applicable action for [springProfile]\" 这类提示；\n- `logback-spring.xml` 由 Boot 接管，才支持按 profile 切换。\n\n```xml\n<configuration>\n  <springProfile name=\"dev\">\n    <appender name=\"CONSOLE\" class=\"ch.qos.logback.core.ConsoleAppender\"/>\n  </springProfile>\n  <springProfile name=\"prod\">\n    <appender name=\"FILE\" class=\"ch.qos.logback.core.rolling.RollingFileAppender\"/>\n  </springProfile>\n</configuration>\n```\n\n自己写了 xml 之后，属性里的 `logging.file.*` 就不再起作用，两套机制不要混用，否则会出现\"配了没反应\"。\n\n## 滚动和排错\n\n日志文件必须滚动，否则迟早把磁盘写满。Boot 对 Logback 提供了几个现成属性：\n\n```properties\nlogging.logback.rollingpolicy.max-file-size=100MB\nlogging.logback.rollingpolicy.max-history=30\nlogging.logback.rollingpolicy.total-size-cap=5GB\n```\n\n第一个是单文件上限，第二个保留多少天，第三个是总量上限。三个一起设比较稳。\n\n排查\"我的日志不输出\"，按这个顺序看：包名写对没有、级别有没有被更具体的配置覆盖、日志是不是写进了文件而你在看控制台、以及有没有被 `logback-spring.xml` 里的规则过滤掉。日志配置的问题基本都是\"生效顺序\"问题，先确认哪份配置在起作用，比逐行读 xml 快。"
+    },
+    {
+      "id": "actuator-monitoring",
+      "title": "Actuator：线上怎么看应用是否健康",
+      "category": "boot",
+      "level": "进阶",
+      "readingMinutes": 7,
+      "summary": "加 starter 就有 /actuator/health，默认只暴露 health，其余端点按需开启并做好鉴权。",
+      "tags": [
+        "Actuator",
+        "健康检查",
+        "监控"
+      ],
+      "sources": [
+        {
+          "label": "Spring Boot 3.5 参考文档：启用 Actuator",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/actuator/enabling.html"
+        },
+        {
+          "label": "Spring Boot 3.5 参考文档：Actuator 端点",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/actuator/endpoints.html"
+        }
+      ],
+      "content": "上线之后最怕两件事：服务挂了没人知道，或者以为活着其实已经不能干活。Actuator 就是 Spring Boot 自带的\"体检和仪表盘\"，加个依赖就能用。\n\n## 加依赖就有 health\n\n```xml\n<dependency>\n  <groupId>org.springframework.boot</groupId>\n  <artifactId>spring-boot-starter-actuator</artifactId>\n</dependency>\n```\n\n启动后访问 `http://localhost:8080/actuator/health`，会返回一个 JSON：`{\"status\":\"UP\"}`。这是它默认唯一通过 HTTP 暴露的端点，因为健康检查最常用，也最不敏感。\n\n默认的健康检查包括数据库、磁盘空间、Redis 等组件（取决于你引入了什么）。任何一个关键组件 DOWN，整体状态就会变成 DOWN。这个语义要清楚：它回答的是\"应用还能不能正常干活\"，不是\"进程还在不在\"。\n\n## 暴露更多端点\n\nActuator 有一批端点：`health`（健康）、`info`（信息）、`metrics`（指标）、`env`（环境属性）、`loggers`（日志级别）、`beans`（Bean 列表）、`mappings`（请求映射）、`threaddump`（线程栈）等。默认只开 health，其余要显式打开：\n\n```properties\nmanagement.endpoints.web.exposure.include=health,info,metrics,loggers\n```\n\n要看全部就写 `*`。反过来，用 `exclude` 可以排除，而且排除的优先级高于包含——即使写了 `*`，被 exclude 的也不会暴露。\n\n`loggers` 端点很实用：线上不用重启就能临时把某个包的日志级别调到 DEBUG，排查完再调回来。`threaddump` 在 CPU 飙高时能直接看到线程都在干什么。\n\n## health 端点怎么用\n\n默认的健康详情只返回 UP/DOWN，看不到具体哪个组件挂了。需要排查时打开详情：\n\n```properties\nmanagement.endpoint.health.show-details=always\n```\n\n可选值是 `never`、`when-authorized`、`always`，默认 `never`。`always` 会把数据库连接、磁盘路径这些信息也吐出来，所以只适合内网或调试环境，生产上更推荐 `when-authorized` 配合权限。\n\nKubernetes 场景下，健康检查还要分存活和就绪：存活探针问\"要不要重启你\"，就绪探针问\"能不能接流量\"。Actuator 已经提供了对应的两个路径 `/actuator/health/liveness` 和 `/actuator/health/readiness`，探针直接指过去就行，不用自己写 Controller。\n\n还可以把若干检查组合成健康分组，比如只把数据库放进 `db` 组，让监控单独看：\n\n```properties\nmanagement.endpoint.health.group.db.include=db\n```\n\n## 上线前必须做的一件事\n\nActuator 的端点信息量很大：`env` 能看到配置（可能含密码），`heapdump` 能导出内存快照，`threaddump` 能看到全部线程。这些绝不能裸奔在公网。\n\n三件事至少做一件：只暴露必要端点；用 Spring Security 给 `/actuator/**` 加鉴权；或者把管理端口单独开到内网端口上。官方文档专门提醒过不要不加防护地暴露敏感端点，这不是危言耸听，是真实发生过的事故。\n\n最后，想接 Prometheus 监控指标，需要额外加 `micrometer-registry-prometheus` 依赖，然后暴露 `prometheus` 端点，让采集器来抓。做完这一步，才算从\"能看健康\"升级到\"能看趋势、能配告警\"。"
+    },
+    {
+      "id": "version-migration",
+      "title": "Spring Boot 2→3→4 升级要过哪三关",
+      "category": "migration",
+      "level": "进阶",
+      "readingMinutes": 8,
+      "summary": "Boot 3 要 Java 17 并迁到 jakarta 命名空间，Boot 4 要 Spring Framework 7 与 Servlet 6.1。",
+      "tags": [
+        "版本升级",
+        "jakarta",
+        "Spring Boot 4"
+      ],
+      "sources": [
+        {
+          "label": "Spring Boot 3.5 系统要求",
+          "url": "https://docs.spring.io/spring-boot/3.5/system-requirements.html"
+        },
+        {
+          "label": "Spring Framework 参考文档：概览与 Jakarta EE",
+          "url": "https://docs.spring.io/spring-framework/reference/overview.html"
+        },
+        {
+          "label": "Spring Boot 4.0 系统要求",
+          "url": "https://docs.spring.io/spring-boot/4.0/system-requirements.html"
+        }
+      ],
+      "content": "Spring Boot 从 2 升到 4，不是换个版本号的事。中间经历了两次大版本，踩的坑集中在三关：Java 基线、命名空间、以及框架大版本。提前知道每一关要动什么，升级就不会变成通宵。\n\n## 三关是什么\n\n1. Java 和框架基线：Boot 3 起步就要 Java 17，Boot 4 又把 Spring Framework 拉到 7；\n2. 命名空间迁移：`javax.*` 全部换成 `jakarta.*`，这是改动量最大的一关；\n3. 依赖与测试 API 跟进：Servlet 容器、测试注解、第三方库都要跟着升。\n\n顺序不能乱。先把 JDK 和编译级别升上去，再处理包名，最后才是升级 Boot 版本本身。\n\n## 第一关：Java 版本和框架基线\n\nBoot 3.5 的系统要求很明确：Java 17 起步（可兼容到 Java 25），Spring Framework 6.2 以上。Boot 4.0 的要求是 Java 17 起步（可兼容到 Java 27），Spring Framework 7.0 以上。\n\n所以第一步不是改 Boot 版本，而是确认 JDK。项目如果还停在 Java 8 或 11，先升 JDK，把编译和测试跑通，再谈后面两步。很多\"升级后各种报错\"的根源其实在 JDK 层面，只是被 Boot 的报错挡住了。\n\n## 第二关：javax 换成 jakarta\n\n这是升级 Boot 3 绕不开的硬迁移。Spring Framework 官方文档写得很清楚：从 6.0 开始升级到 Jakarta EE 9 级别（Servlet 5.0+、JPA 3.0+），\"based on the jakarta namespace instead of the javax namespace\"。\n\n落到代码上就是大量 import 替换：\n\n```java\n// 旧\nimport javax.servlet.http.HttpServletRequest;\nimport javax.persistence.Entity;\n// 新\nimport jakarta.servlet.http.HttpServletRequest;\nimport jakarta.persistence.Entity;\n```\n\n推荐做法是全局搜索 `javax.` 和 `javax.servlet`，逐个确认是不是 Jakarta 相关的包。注意有些 `javax` 包属于 JDK 本身（比如 `javax.crypto`、`javax.sql`），这些不能换，换错了编译不过。依赖也要同步：Servlet API、JPA、Validation、注解库都要换成 Jakarta 版本，尤其是公司内部的老 jar。\n\nServlet 容器也变了：Boot 3.5 默认内嵌 Tomcat 10.1（Servlet 6.0），Boot 4 升到 Tomcat 11（Servlet 6.1）。如果还要部署到外部容器，容器版本必须跟得上。\n\n## 第三关：Boot 4 和升级节奏\n\nBoot 4 基于 Spring Framework 7，Servlet 6.1，要求 Tomcat 11 这一代容器。也就是说，前面的 JDK 17 和 jakarta 迁移都得先完成，Boot 4 只是最后一步。\n\n升级前有一个很实用的官方工具：把 `spring-boot-properties-migrator` 加进依赖（runtime 范围），启动时会打印出哪些配置项被改名或废弃，甚至临时帮你兼容旧名字。升级完成后记得把它删掉，它只适合过渡期使用。\n\n测试代码也别忘了：旧文档里的 `@MockBean` 已经由 `@MockitoBean` 取代，Boot 3.5 和 4.0 的文档里都只写新注解了。翻测试类时顺手一起改。\n\n实际节奏建议：分两个大 PR。第一个只升 JDK 和做 javax→jakarta（配 Boot 3.x），跑通全量测试；第二个再升 Boot 4 并修依赖。混在一起做，出了问题根本分不清是哪一步引入的。\n\n最后一句话：升级的本质是\"按依赖顺序往上抬\"，不是\"改到不报错为止\"。每关都留一次可回滚的提交，比什么技巧都管用。"
+    }
+  ]
+}

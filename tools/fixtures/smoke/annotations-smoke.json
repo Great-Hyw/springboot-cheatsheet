@@ -1,0 +1,152 @@
+{
+  "generatedBy": "content-core",
+  "items": [
+    {
+      "id": "component",
+      "name": "@Component",
+      "category": "core",
+      "subcategory": "Bean 注册",
+      "package": "org.springframework.stereotype.Component",
+      "since": "Spring 2.0",
+      "level": "入门",
+      "tagline": "把一个普通类交给 Spring 托管",
+      "plain": "你在类上写 @Component，等于告诉 Spring：启动时扫描到这个类，就 new 一个实例放进容器，之后谁需要它，Spring 负责递过去。@Service、@Repository、@Controller 本质上都是它的「马甲」，只是语义更明确，方便人和工具识别分层。",
+      "keyPoints": [
+        "只能标在类上（含注解类型、接口上一般无效），扫描由 @ComponentScan 或 @SpringBootApplication 触发。",
+        "默认 Bean 名是类名首字母小写；显式写 @Component(\"myBean\") 可覆盖。",
+        "它只负责「注册 Bean」，不负责注入依赖；注入用 @Autowired 或构造器。",
+        "被扫描的类必须能被 Spring 实例化（非 private 构造器、非抽象类）。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "\"\"",
+          "desc": "Bean 名称。不写则用类名首字母小写。"
+        }
+      ],
+      "exampleTitle": "最小可用示例",
+      "example": "import org.springframework.stereotype.Component;\n\n@Component\npublic class EmailSender {\n    public void send(String to) {\n        System.out.println(\"send mail to \" + to);\n    }\n}\n\n// 使用方：构造器注入（推荐）\n// @Service\n// public class UserService {\n//     private final EmailSender emailSender;\n//     public UserService(EmailSender emailSender) { this.emailSender = emailSender; }\n// }",
+      "notes": [
+        "@Component 与 @Bean 的区别：前者让 Spring 扫描「自己的类」，后者在配置类里手动注册「第三方类」的实例。",
+        "同类/同包被扫描到才会生效；启动类所在包是默认扫描根，放到子包之外不会被扫到。"
+      ],
+      "related": [
+        "@Service",
+        "@Repository",
+        "@ComponentScan",
+        "@Bean"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Classpath Scanning and Managed Components",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans/classpath-scanning.html"
+        }
+      ],
+      "tags": [
+        "Bean",
+        "组件扫描",
+        "IoC"
+      ]
+    },
+    {
+      "id": "transactional-demo",
+      "name": "@Transactional",
+      "category": "data",
+      "subcategory": "事务",
+      "package": "org.springframework.transaction.annotation.Transactional",
+      "level": "进阶",
+      "tagline": "声明式事务，方法出错就自动回滚，非常好用而且面试也经常问这个注解",
+      "plain": "给方法加事务，出错回滚。",
+      "keyPoints": [
+        "回滚",
+        "传播行为",
+        "只读"
+      ],
+      "attributes": [
+        {
+          "name": "propagation",
+          "type": "Propagation",
+          "default": "REQUIRED_NEW",
+          "desc": "传播行为。"
+        },
+        {
+          "name": "rollbackForClass",
+          "type": "Class[]",
+          "default": "{}",
+          "desc": "指定回滚异常。"
+        }
+      ],
+      "exampleTitle": "事务示例",
+      "example": "import javax.transaction.Transactional;\nimport org.springframework.stereotype.Service;\n\n@Service\npublic class OrderService {\n    @Transactional\n    private void createOrder() {\n        // 业务逻辑\n    }\n}",
+      "notes": [
+        "别忘了加注解。",
+        "回滚只对 RuntimeException 生效。"
+      ],
+      "related": [
+        "@Service",
+        "@Repository"
+      ],
+      "versionNote": "据说 Boot 4 会移除。",
+      "docs": [
+        {
+          "label": "CSDN 博客：Transactional 详解",
+          "url": "https://blog.csdn.net/xxx/article/details/123"
+        }
+      ],
+      "tags": [
+        "事务",
+        "回滚"
+      ]
+    },
+    {
+      "id": "bean-demo",
+      "name": "@Bean",
+      "category": "core",
+      "subcategory": "Bean 注册",
+      "package": "org.springframework.context.annotation.Bean",
+      "level": "入门",
+      "tagline": "在配置类里手动注册 Bean 实例，用于第三方类",
+      "plain": "在 @Configuration 类的方法上写 @Bean，方法返回的对象会被 Spring 放进容器。方法名默认就是 Bean 名，也可以写 @Bean(\"anotherName\") 显式指定。常用于注册第三方库的类，因为那些类你没有源码，没法写 @Component。这个注解只在配置类里有效，普通类里写没有用。",
+      "keyPoints": [
+        "标在方法上，方法返回值就是 Bean 实例。",
+        "方法名默认是 Bean 名，可用 @Bean(name=...) 覆盖。",
+        "通常配合 @Configuration 使用。"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "Bean 名称数组。"
+        }
+      ],
+      "exampleTitle": "错误示例（故意放错位置）",
+      "example": "import org.springframework.context.annotation.Bean;\n\n@Bean\npublic class BadConfig {\n    // 这里故意把 @Bean 标在类上，用来测试审计脚本能否发现 @Target 冲突\n}",
+      "notes": [
+        "不要写在普通类里。",
+        "方法不能是 private 的。"
+      ],
+      "related": [
+        "@Configuration",
+        "@Component"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring 官方：Java-based container config",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans/java/basic-concepts.html"
+        },
+        {
+          "label": "故意 404 的官方链接",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans/java/no-such-page-xyz.html"
+        }
+      ],
+      "tags": [
+        "Bean",
+        "配置类"
+      ]
+    }
+  ]
+}

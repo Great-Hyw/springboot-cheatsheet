@@ -1,0 +1,2472 @@
+{
+  "generatedBy": "content-boot",
+  "items": [
+    {
+      "id": "spring-boot-application",
+      "name": "@SpringBootApplication",
+      "category": "boot",
+      "subcategory": "启动入口",
+      "package": "org.springframework.boot.autoconfigure.SpringBootApplication",
+      "level": "入门",
+      "since": "Spring Boot 1.2.0",
+      "tagline": "一个注解搞定启动类三件事",
+      "plain": "Spring Boot 应用的入口注解，贴在带 main 方法的启动类上。它把三个注解合成一个：@SpringBootConfiguration 声明配置类，@EnableAutoConfiguration 打开自动配置，@ComponentScan 扫描当前包及子包。所以启动类必须放在最外层包，否则子包里的 Controller、Service 都扫不到。",
+      "keyPoints": [
+        "@SpringBootConfiguration + @EnableAutoConfiguration + @ComponentScan 三合一，正常项目只贴这一个",
+        "启动类要放在项目最外层包，扫描范围默认就是它所在的包",
+        "exclude / excludeName 能在代码里关掉指定自动配置，不依赖配置文件",
+        "proxyBeanMethods = false 可关掉 @Bean 方法的 CGLIB 代理，减少启动开销"
+      ],
+      "attributes": [
+        {
+          "name": "exclude",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要排除的自动配置类，直接写 Class"
+        },
+        {
+          "name": "excludeName",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要排除的自动配置类全限定名，适合不想引依赖时用"
+        },
+        {
+          "name": "scanBasePackages",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "覆盖默认扫描包，可写多个"
+        },
+        {
+          "name": "scanBasePackageClasses",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "按指定类所在包推导扫描范围"
+        },
+        {
+          "name": "proxyBeanMethods",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否代理 @Bean 方法以保证单例语义"
+        }
+      ],
+      "exampleTitle": "最小可运行启动类（排除数据源自动配置）",
+      "example": "package com.example.demo;\n\nimport org.springframework.boot.SpringApplication;\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\nimport org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n// 启动类放在最外层包 com.example.demo，子包才会被扫描到\n@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)\npublic class DemoApplication {\n\n    public static void main(String[] args) {\n        SpringApplication.run(DemoApplication.class, args);\n    }\n}\n\n@RestController\nclass HelloController {\n\n    @GetMapping(\"/hello\")\n    String hello() {\n        return \"hello\";\n    }\n}",
+      "notes": [
+        "启动类不要放在默认包（没有 package），否则组件扫描和实体扫描都会失效，Spring 也发现不了它。",
+        "用 exclude 排除后，该自动配置注册的 bean 也就没了；只想按名字排除又不想引类时用 excludeName。",
+        "还有一个 nameGenerator 属性可以换 bean 名生成器，日常几乎用不到。"
+      ],
+      "related": [
+        "@EnableAutoConfiguration",
+        "@SpringBootConfiguration",
+        "@ComponentScan",
+        "@ConfigurationProperties"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：Using the @SpringBootApplication Annotation",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/using/using-the-springbootapplication-annotation.html"
+        },
+        {
+          "label": "API 文档：SpringBootApplication",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/SpringBootApplication.html"
+        }
+      ],
+      "tags": [
+        "启动类",
+        "自动配置",
+        "入口"
+      ]
+    },
+    {
+      "id": "spring-boot-configuration",
+      "name": "@SpringBootConfiguration",
+      "category": "boot",
+      "subcategory": "启动配置",
+      "package": "org.springframework.boot.SpringBootConfiguration",
+      "level": "入门",
+      "since": "Spring Boot 1.4.0",
+      "tagline": "标记应用主配置类",
+      "plain": "专门用来标记「应用主配置类」的 @Configuration，语义比普通 @Configuration 更明确。@SpringBootApplication 里已经包含了它，所以平时不会单独写。只有你想手拼启动类、或不想用自动配置时，才需要它配合 @EnableAutoConfiguration、@ComponentScan 自己组一个入口。",
+      "keyPoints": [
+        "@Configuration 的 Boot 专用版本，表示这是应用主配置类",
+        "测试时 @SpringBootTest 不指定 classes 会向上查找带它的类",
+        "@SpringBootApplication 的元注解，正常项目不需要单独使用"
+      ],
+      "attributes": [
+        {
+          "name": "proxyBeanMethods",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否代理 @Bean 方法，保持单例语义"
+        }
+      ],
+      "exampleTitle": "手拼启动类：三个注解替代 @SpringBootApplication",
+      "example": "package com.example.demo;\n\nimport org.springframework.boot.SpringApplication;\nimport org.springframework.boot.SpringBootConfiguration;\nimport org.springframework.boot.autoconfigure.EnableAutoConfiguration;\nimport org.springframework.context.annotation.ComponentScan;\n\n// 等价于一个 @SpringBootApplication，只是把三个注解拆开写\n@SpringBootConfiguration\n@EnableAutoConfiguration\n@ComponentScan\npublic class ManualApplication {\n\n    public static void main(String[] args) {\n        SpringApplication.run(ManualApplication.class, args);\n    }\n}",
+      "notes": [
+        "测试类上的 @SpringBootTest 找不到配置类时，就会按包结构向上找带 @SpringBootConfiguration 的类。",
+        "@SpringBootApplication 已经包含它，重复加没有意义也不报错。",
+        "它继承自 @Configuration，所以 @Bean、@Import 等用法完全一样。"
+      ],
+      "related": [
+        "@SpringBootApplication",
+        "@Configuration",
+        "@EnableAutoConfiguration"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "API 文档：SpringBootConfiguration",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/SpringBootConfiguration.html"
+        },
+        {
+          "label": "Boot 参考：Using the @SpringBootApplication Annotation",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/using/using-the-springbootapplication-annotation.html"
+        }
+      ],
+      "tags": [
+        "启动类",
+        "配置类",
+        "测试"
+      ]
+    },
+    {
+      "id": "enable-auto-configuration",
+      "name": "@EnableAutoConfiguration",
+      "category": "boot",
+      "subcategory": "自动配置",
+      "package": "org.springframework.boot.autoconfigure.EnableAutoConfiguration",
+      "level": "入门",
+      "since": "Spring Boot 1.0.0",
+      "tagline": "按依赖自动装配组件",
+      "plain": "打开 Spring Boot 的自动配置开关：启动时读取所有 jar 里登记的自动配置类，根据 classpath 上有什么依赖、容器里已经有哪些 bean，决定装配哪些组件。它必须贴在 @Configuration 类上，而且一个应用只应该有一个入口开启它，通常就是 @SpringBootApplication。",
+      "keyPoints": [
+        "按 classpath 依赖和已有 bean 条件装配，省去大量手工声明",
+        "一个应用只放一个 @SpringBootApplication 或 @EnableAutoConfiguration",
+        "exclude / excludeName 可精确关掉某个自动配置"
+      ],
+      "attributes": [
+        {
+          "name": "exclude",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要排除的自动配置类"
+        },
+        {
+          "name": "excludeName",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要排除的自动配置类全限定名"
+        }
+      ],
+      "exampleTitle": "只开自动配置、排除数据源",
+      "example": "package com.example.demo;\n\nimport org.springframework.boot.SpringApplication;\nimport org.springframework.boot.SpringBootConfiguration;\nimport org.springframework.boot.autoconfigure.EnableAutoConfiguration;\nimport org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;\nimport org.springframework.context.annotation.ComponentScan;\n\n@SpringBootConfiguration\n// 只要自动配置、不要组件扫描时这样写\n@EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)\n@ComponentScan\npublic class DemoApplication {\n\n    public static void main(String[] args) {\n        SpringApplication.run(DemoApplication.class, args);\n    }\n}",
+      "notes": [
+        "自动配置类清单登记在 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports 里。",
+        "排除多个自动配置写成数组：exclude = {DataSourceAutoConfiguration.class, JpaAutoConfiguration.class}。",
+        "@SpringBootApplication 已经包含它，两个同时加等于重复开启。"
+      ],
+      "related": [
+        "@SpringBootApplication",
+        "@AutoConfiguration",
+        "@ConditionalOnClass"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：Auto-configuration",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/using/auto-configuration.html"
+        },
+        {
+          "label": "API 文档：EnableAutoConfiguration",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html"
+        }
+      ],
+      "tags": [
+        "自动配置",
+        "启动",
+        "依赖"
+      ]
+    },
+    {
+      "id": "configuration-properties",
+      "name": "@ConfigurationProperties",
+      "category": "boot",
+      "subcategory": "配置绑定",
+      "package": "org.springframework.boot.context.properties.ConfigurationProperties",
+      "level": "入门",
+      "since": "Spring Boot 1.0.0",
+      "tagline": "按前缀把配置绑到对象",
+      "plain": "把 application.yml、application.properties 里某个前缀下的配置，批量绑定到一个 Java 对象上，字段名自动对应配置名。相比一堆散落的 @Value，它类型安全、可嵌套、能校验，IDE 还能提示。需要配合 @EnableConfigurationProperties 或 @ConfigurationPropertiesScan 注册成 bean。",
+      "keyPoints": [
+        "prefix 指定前缀，字段名与配置名按 relaxed binding 自动匹配",
+        "支持构造器绑定（record 天然不可变），也支持 setter 绑定",
+        "可加 jakarta.validation 约束注解做校验，配合 @Validated 生效",
+        "ignoreUnknownFields 控制配置里多余的键是否报错"
+      ],
+      "attributes": [
+        {
+          "name": "prefix",
+          "type": "String",
+          "default": "",
+          "desc": "配置前缀，如 app.mail"
+        },
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "prefix 的别名，两者写一个即可"
+        },
+        {
+          "name": "ignoreUnknownFields",
+          "type": "boolean",
+          "default": "true",
+          "desc": "遇到对象里没有的配置键是否忽略"
+        },
+        {
+          "name": "ignoreInvalidFields",
+          "type": "boolean",
+          "default": "false",
+          "desc": "绑定失败（类型不匹配）时是否忽略"
+        }
+      ],
+      "exampleTitle": "record 绑定邮件配置并校验",
+      "example": "package com.example.demo.config;\n\nimport jakarta.validation.constraints.NotBlank;\nimport org.springframework.boot.context.properties.ConfigurationProperties;\nimport org.springframework.boot.context.properties.EnableConfigurationProperties;\nimport org.springframework.context.annotation.Configuration;\n\n// 前缀 app.mail 对应 app.mail.host 这类配置项\n@ConfigurationProperties(prefix = \"app.mail\")\npublic record MailProperties(\n        @NotBlank String host,\n        int port,\n        String from) {\n}\n\n@Configuration\n@EnableConfigurationProperties(MailProperties.class)\nclass MailConfig {\n}",
+      "notes": [
+        "构造器绑定默认用唯一的带参构造器（record 刚好满足）；有多个构造器时可用 @ConstructorBinding 指定，或在构造器上加 @Autowired 退出构造器绑定。",
+        "直接标 @Component 也能注册，但构造器绑定推荐用 @EnableConfigurationProperties 或扫描。",
+        "JSR-303 校验要加 @Validated（或构造器参数上的约束注解），否则约束不生效。"
+      ],
+      "related": [
+        "@EnableConfigurationProperties",
+        "@ConfigurationPropertiesScan",
+        "@Value"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：Type-safe Configuration Properties",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html#features.external-config.typesafe-configuration-properties"
+        },
+        {
+          "label": "API 文档：ConfigurationProperties",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/ConfigurationProperties.html"
+        }
+      ],
+      "tags": [
+        "配置",
+        "类型安全",
+        "绑定"
+      ]
+    },
+    {
+      "id": "enable-configuration-properties",
+      "name": "@EnableConfigurationProperties",
+      "category": "boot",
+      "subcategory": "配置绑定",
+      "package": "org.springframework.boot.context.properties.EnableConfigurationProperties",
+      "level": "进阶",
+      "since": "Spring Boot 1.0.0",
+      "tagline": "显式注册配置属性类",
+      "plain": "告诉 Spring：把列出来的这些 @ConfigurationProperties 类注册成 bean。用构造器绑定的配置类没法加 @Component，就必须靠它或扫描来注册。常见写法是贴在一个 @Configuration 类上，把项目里用到的配置类都列进 value。",
+      "keyPoints": [
+        "value 列出要注册的 @ConfigurationProperties 类",
+        "构造器绑定 / record 配置类的标准注册方式",
+        "和 @ConfigurationPropertiesScan 二选一即可"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要注册的配置属性类列表"
+        }
+      ],
+      "exampleTitle": "在配置类上显式注册配置属性",
+      "example": "package com.example.demo.config;\n\nimport org.springframework.boot.context.properties.ConfigurationProperties;\nimport org.springframework.boot.context.properties.EnableConfigurationProperties;\nimport org.springframework.context.annotation.Configuration;\n\n@ConfigurationProperties(prefix = \"app.mail\")\nrecord MailProperties(String host, int port) {\n}\n\n@Configuration\n// 把配置类注册成 bean，构造器绑定才生效\n@EnableConfigurationProperties(MailProperties.class)\npublic class PropertiesConfig {\n}",
+      "notes": [
+        "配置类同时标 @Component 也能注册，但构造器绑定时别再混用注解扫描，容易重复注册。",
+        "配置类多时改用 @ConfigurationPropertiesScan 一次扫完，不用逐个列。",
+        "注册后可以像普通 bean 一样注入配置类，也可以直接 @Autowired 它的字段。"
+      ],
+      "related": [
+        "@ConfigurationProperties",
+        "@ConfigurationPropertiesScan",
+        "@Configuration"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "API 文档：EnableConfigurationProperties",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/EnableConfigurationProperties.html"
+        },
+        {
+          "label": "Boot 参考：Type-safe Configuration Properties",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html#features.external-config.typesafe-configuration-properties"
+        }
+      ],
+      "tags": [
+        "配置",
+        "注册",
+        "绑定"
+      ]
+    },
+    {
+      "id": "configuration-properties-scan",
+      "name": "@ConfigurationPropertiesScan",
+      "category": "boot",
+      "subcategory": "配置绑定",
+      "package": "org.springframework.boot.context.properties.ConfigurationPropertiesScan",
+      "level": "进阶",
+      "since": "Spring Boot 2.2.0",
+      "tagline": "自动扫描配置属性类",
+      "plain": "在启动类上贴一次，就会扫描指定包（默认是注解所在类所在的包）下所有 @ConfigurationProperties 类并注册成 bean，省掉一个个写 @EnableConfigurationProperties。适合配置类很多的项目。注意它只认 @ConfigurationProperties，不扫标了 @Component 的普通类。",
+      "keyPoints": [
+        "扫描 @ConfigurationProperties 类并批量注册",
+        "不写包名时扫描注解所在类所在包及子包",
+        "已被 @Component 标注的类不会被它拾取"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要扫描的包名，等价于 basePackages"
+        },
+        {
+          "name": "basePackages",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要扫描的包名"
+        },
+        {
+          "name": "basePackageClasses",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "按类所在包推导扫描范围"
+        }
+      ],
+      "exampleTitle": "启动类上开启配置属性扫描",
+      "example": "package com.example.demo;\n\nimport org.springframework.boot.SpringApplication;\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\nimport org.springframework.boot.context.properties.ConfigurationProperties;\nimport org.springframework.boot.context.properties.ConfigurationPropertiesScan;\n\n@SpringBootApplication\n// 扫描指定包下的 @ConfigurationProperties 类\n@ConfigurationPropertiesScan(\"com.example.demo.config\")\npublic class DemoApplication {\n\n    public static void main(String[] args) {\n        SpringApplication.run(DemoApplication.class, args);\n    }\n}\n\n@ConfigurationProperties(prefix = \"app.mail\")\nrecord MailProperties(String host, int port) {\n}",
+      "notes": [
+        "和 @EnableConfigurationProperties 二选一，重复注册同一个配置类没必要。",
+        "被扫到的配置类不要再加 @Component，否则可能注册两次。",
+        "包名写错不会报错，但配置全是 null，启动后建议简单自检一次。"
+      ],
+      "related": [
+        "@ConfigurationProperties",
+        "@EnableConfigurationProperties",
+        "@SpringBootApplication"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "API 文档：ConfigurationPropertiesScan",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/ConfigurationPropertiesScan.html"
+        },
+        {
+          "label": "Boot 参考：Type-safe Configuration Properties",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html#features.external-config.typesafe-configuration-properties"
+        }
+      ],
+      "tags": [
+        "配置",
+        "扫描",
+        "绑定"
+      ]
+    },
+    {
+      "id": "auto-configuration",
+      "name": "@AutoConfiguration",
+      "category": "boot",
+      "subcategory": "自动配置",
+      "package": "org.springframework.boot.autoconfigure.AutoConfiguration",
+      "level": "进阶",
+      "since": "Spring Boot 2.7.0",
+      "tagline": "标注自动配置类的专用注解",
+      "plain": "写 starter 或公司内部组件时，把自动配置类标上它，Boot 才知道这是个自动配置。它等价于 @Configuration(proxyBeanMethods = false)，并且支持 before/after 控制与其他自动配置的先后顺序。类名还要登记到 AutoConfiguration.imports 清单里。",
+      "keyPoints": [
+        "替代 @Configuration 标注自动配置类，默认不代理 @Bean 方法",
+        "before/after 指定必须早于或晚于哪些自动配置",
+        "注册清单在 META-INF/spring/...AutoConfiguration.imports",
+        "自动配置类内部通常叠加 @ConditionalOnClass 等条件注解"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "为该自动配置类显式指定 bean 名称"
+        },
+        {
+          "name": "before",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "必须排在这些自动配置之前"
+        },
+        {
+          "name": "after",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "必须排在这些自动配置之后"
+        },
+        {
+          "name": "beforeName",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "按全限定类名指定 before，避免引类"
+        },
+        {
+          "name": "afterName",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "按全限定类名指定 after，避免引类"
+        }
+      ],
+      "exampleTitle": "自定义自动配置类",
+      "example": "package com.example.demo.autoconfigure;\n\nimport org.springframework.boot.autoconfigure.AutoConfiguration;\nimport org.springframework.boot.autoconfigure.condition.ConditionalOnClass;\nimport org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;\nimport org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;\nimport org.springframework.context.annotation.Bean;\n\n// 典型的自动配置类：条件满足才装配 bean\n@AutoConfiguration(after = DataSourceAutoConfiguration.class)\n@ConditionalOnClass(name = \"com.example.demo.PayClient\")\npublic class PayAutoConfiguration {\n\n    @Bean\n    @ConditionalOnMissingBean\n    public PayTemplate payTemplate() {\n        return new PayTemplate();\n    }\n}\n\nclass PayTemplate {\n}",
+      "notes": [
+        "Boot 2.7 引入这个注解，Boot 3.0 起不再支持在 spring.factories 里注册自动配置，必须用 imports 清单。",
+        "多个自动配置之间的顺序按 before/after 做拓扑排序，写错会启动失败并提示循环依赖。",
+        "类本身不需要再标 @Configuration，标了也不会报错但重复。"
+      ],
+      "related": [
+        "@EnableAutoConfiguration",
+        "@ConditionalOnClass",
+        "@ConditionalOnMissingBean",
+        "@ImportAutoConfiguration"
+      ],
+      "versionNote": "@AutoConfiguration 是 Boot 2.7 新增的写法；官方迁移指南说明 Boot 3.0 起自动配置只能登记在 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports，spring.factories 的注册方式已移除。",
+      "docs": [
+        {
+          "label": "Boot 参考：Creating Your Own Auto-configuration",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html"
+        },
+        {
+          "label": "API 文档：AutoConfiguration",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/AutoConfiguration.html"
+        }
+      ],
+      "tags": [
+        "自动配置",
+        "starter",
+        "进阶"
+      ]
+    },
+    {
+      "id": "conditional-on-class",
+      "name": "@ConditionalOnClass",
+      "category": "boot",
+      "subcategory": "条件装配",
+      "package": "org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
+      "level": "进阶",
+      "since": "Spring Boot 1.0.0",
+      "tagline": "classpath 有类才生效",
+      "plain": "条件注解：只有 classpath 上存在指定的类时，被标注的配置类或 @Bean 方法才生效。starter 常用它做「引入依赖才启用」的判断，比如检测到某个客户端类才装配相关组件。类不存在时整段配置静默跳过，不会报错。",
+      "keyPoints": [
+        "value / name 指定类，name 写全限定名更安全",
+        "最典型的用法是标在自动配置类上",
+        "它判断的是类是否存在，判断 bean 请用 @ConditionalOnBean"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要求存在的类"
+        },
+        {
+          "name": "name",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求存在的类全限定名，类可能缺失时用这个"
+        }
+      ],
+      "exampleTitle": "有支付客户端类才装配支付组件",
+      "example": "package com.example.demo.autoconfigure;\n\nimport org.springframework.boot.autoconfigure.AutoConfiguration;\nimport org.springframework.boot.autoconfigure.condition.ConditionalOnClass;\nimport org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;\nimport org.springframework.context.annotation.Bean;\n\n@AutoConfiguration\n// 类路径上有 RedisOperations 才装配\n@ConditionalOnClass(name = \"com.example.demo.PayClient\")\npublic class PayAutoConfiguration {\n\n    @Bean\n    @ConditionalOnMissingBean\n    public PayTemplate payTemplate() {\n        return new PayTemplate();\n    }\n}\n\nclass PayTemplate {\n}",
+      "notes": [
+        "用 name 写全限定名，类不存在也不会触发 NoClassDefFoundError。",
+        "和 @ConditionalOnMissingClass 语义相反，两者不要标在同一个类上。",
+        "只判断类路径，bean 实例是否可用要看 @ConditionalOnBean。"
+      ],
+      "related": [
+        "@ConditionalOnMissingClass",
+        "@ConditionalOnMissingBean",
+        "@AutoConfiguration"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：条件注解",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html#features.developing-auto-configuration.condition-annotations"
+        },
+        {
+          "label": "API 文档：ConditionalOnClass",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnClass.html"
+        }
+      ],
+      "tags": [
+        "条件装配",
+        "自动配置",
+        "classpath"
+      ]
+    },
+    {
+      "id": "conditional-on-missing-bean",
+      "name": "@ConditionalOnMissingBean",
+      "category": "boot",
+      "subcategory": "条件装配",
+      "package": "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean",
+      "level": "进阶",
+      "since": "Spring Boot 1.0.0",
+      "tagline": "没有这个 bean 才创建",
+      "plain": "自动配置里最常见的兜底注解：容器中不存在指定类型的 bean 时，才注册当前 @Bean。用户自己定义了同类型 bean，自动配置就让位，实现「默认配置可被覆盖」。官方建议只在自动配置类里使用，别在普通业务配置上滥用。",
+      "keyPoints": [
+        "按类型、名称或注解判断容器里是否已有 bean",
+        "search 控制搜索范围，默认 ALL",
+        "ignored 可以忽略某些 bean 类型",
+        "只在自动配置类里用，且要保证排在用户配置之后"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "按类型判断是否已存在"
+        },
+        {
+          "name": "name",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "按 bean 名称判断"
+        },
+        {
+          "name": "type",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "按类型全限定名判断，类可能缺失时用"
+        },
+        {
+          "name": "annotation",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "容器里有带该注解的 bean 就算存在"
+        },
+        {
+          "name": "search",
+          "type": "SearchStrategy",
+          "default": "ALL",
+          "desc": "搜索范围：ALL 含父上下文，CURRENT 只看当前"
+        },
+        {
+          "name": "ignored",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "比较时忽略的 bean 类型"
+        }
+      ],
+      "exampleTitle": "没有 ObjectMapper 才注册默认的",
+      "example": "package com.example.demo.autoconfigure;\n\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport org.springframework.boot.autoconfigure.AutoConfiguration;\nimport org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;\nimport org.springframework.context.annotation.Bean;\n\n@AutoConfiguration\npublic class JsonAutoConfiguration {\n\n    @Bean\n    // 容器里还没有同名 bean 才创建，允许用户覆盖\n    @ConditionalOnMissingBean\n    public ObjectMapper objectMapper() {\n        return new ObjectMapper();\n    }\n}",
+      "notes": [
+        "判断发生在用户 bean 注册之后，所以自动配置类的位置要靠后（用 @AutoConfiguration 的 after）。",
+        "参数尽量用 Class，如果目标类可能不存在就用 name / type 写字符串。",
+        "与 @ConditionalOnBean 语义相反，一个要求有、一个要求没有。"
+      ],
+      "related": [
+        "@ConditionalOnBean",
+        "@ConditionalOnClass",
+        "@AutoConfiguration"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：条件注解",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html#features.developing-auto-configuration.condition-annotations"
+        },
+        {
+          "label": "API 文档：ConditionalOnMissingBean",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean.html"
+        }
+      ],
+      "tags": [
+        "条件装配",
+        "自动配置",
+        "bean"
+      ]
+    },
+    {
+      "id": "conditional-on-property",
+      "name": "@ConditionalOnProperty",
+      "category": "boot",
+      "subcategory": "条件装配",
+      "package": "org.springframework.boot.autoconfigure.condition.ConditionalOnProperty",
+      "level": "入门",
+      "since": "Spring Boot 1.1.0",
+      "tagline": "按配置开关决定装配",
+      "plain": "读取 Environment 里的配置项，满足条件才注册这段配置或 bean。最常用作功能开关：app.feature.sms=true 才启用短信模块。匹配不到配置时是否生效由 matchIfMissing 决定，期望值由 havingValue 决定，默认要求值等于 true。",
+      "keyPoints": [
+        "prefix + name 拼出配置键，value 是 name 的别名",
+        "havingValue 指定期望值，matchIfMissing 控制配置缺失时是否生效",
+        "最适合做功能开关，改配置就能启停"
+      ],
+      "attributes": [
+        {
+          "name": "prefix",
+          "type": "String",
+          "default": "",
+          "desc": "配置键前缀，如 app.feature"
+        },
+        {
+          "name": "name",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "配置键名，可写多个"
+        },
+        {
+          "name": "havingValue",
+          "type": "String",
+          "default": "",
+          "desc": "要求配置值等于它；不写时只要求属性存在"
+        },
+        {
+          "name": "matchIfMissing",
+          "type": "boolean",
+          "default": "false",
+          "desc": "配置缺失时是否也生效"
+        },
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "name 的别名"
+        }
+      ],
+      "exampleTitle": "短信功能开关",
+      "example": "package com.example.demo.config;\n\nimport org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\n\n@Configuration\npublic class FeatureConfig {\n\n    // application.yml 里 app.feature.sms=true 才装配\n    @Bean\n    @ConditionalOnProperty(prefix = \"app.feature\", name = \"sms\",\n            havingValue = \"true\", matchIfMissing = false)\n    public SmsSender smsSender() {\n        return new SmsSender();\n    }\n}\n\nclass SmsSender {\n}",
+      "notes": [
+        "havingValue 留空时，只要属性存在且不是 false 就生效。",
+        "matchIfMissing = true 表示配置没写也生效，适合默认开启的功能。",
+        "prefix + name 与直接写全键名 app.feature.sms 是等价的。"
+      ],
+      "related": [
+        "@ConditionalOnBean",
+        "@ConditionalOnClass",
+        "@ConfigurationProperties"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：条件注解",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html#features.developing-auto-configuration.condition-annotations"
+        },
+        {
+          "label": "API 文档：ConditionalOnProperty",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnProperty.html"
+        }
+      ],
+      "tags": [
+        "条件装配",
+        "配置",
+        "开关"
+      ]
+    },
+    {
+      "id": "conditional-on-bean",
+      "name": "@ConditionalOnBean",
+      "category": "boot",
+      "subcategory": "条件装配",
+      "package": "org.springframework.boot.autoconfigure.condition.ConditionalOnBean",
+      "level": "进阶",
+      "since": "Spring Boot 1.0.0",
+      "tagline": "有指定 bean 才生效",
+      "plain": "与 @ConditionalOnMissingBean 相反：容器中已经存在指定类型、名称或注解的 bean 时才注册当前 bean。适合「用户提供了某个组件，我再补上配套组件」的自动配置场景。官方同样建议只在自动配置类里使用。",
+      "keyPoints": [
+        "按类型、名称或注解匹配已有 bean",
+        "search 默认 ALL，可限制只查当前上下文",
+        "顺序敏感：判断时目标 bean 必须已经注册"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "按类型判断"
+        },
+        {
+          "name": "name",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "按 bean 名称判断"
+        },
+        {
+          "name": "type",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "按类型全限定名判断"
+        },
+        {
+          "name": "annotation",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "按 bean 上的注解判断"
+        },
+        {
+          "name": "search",
+          "type": "SearchStrategy",
+          "default": "ALL",
+          "desc": "搜索范围，默认 ALL"
+        }
+      ],
+      "exampleTitle": "有 DataSource 才补审计组件",
+      "example": "package com.example.demo.autoconfigure;\n\nimport javax.sql.DataSource;\nimport org.springframework.boot.autoconfigure.AutoConfiguration;\nimport org.springframework.boot.autoconfigure.condition.ConditionalOnBean;\nimport org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;\nimport org.springframework.context.annotation.Bean;\n\n@AutoConfiguration(after = DataSourceAutoConfiguration.class)\npublic class AuditAutoConfiguration {\n\n    @Bean\n    // 容器里有 DataSource 才装配\n    @ConditionalOnBean(DataSource.class)\n    public AuditRecorder auditRecorder(DataSource dataSource) {\n        return new AuditRecorder(dataSource);\n    }\n}\n\nclass AuditRecorder {\n    AuditRecorder(DataSource dataSource) {\n    }\n}",
+      "notes": [
+        "它依赖 bean 已注册，自动配置类要用 after 排到提供该 bean 的配置后面。",
+        "只看已注册的 bean 定义，不触发初始化；不要拿它判断自己刚注册的 bean。",
+        "与 @ConditionalOnMissingBean 正好相反，按兜底还是按搭配选。"
+      ],
+      "related": [
+        "@ConditionalOnMissingBean",
+        "@ConditionalOnClass",
+        "@AutoConfiguration"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：条件注解",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html#features.developing-auto-configuration.condition-annotations"
+        },
+        {
+          "label": "API 文档：ConditionalOnBean",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnBean.html"
+        }
+      ],
+      "tags": [
+        "条件装配",
+        "自动配置",
+        "bean"
+      ]
+    },
+    {
+      "id": "conditional-on-missing-class",
+      "name": "@ConditionalOnMissingClass",
+      "category": "boot",
+      "subcategory": "条件装配",
+      "package": "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass",
+      "level": "进阶",
+      "since": "Spring Boot 1.0.0",
+      "tagline": "classpath 没类才生效",
+      "plain": "classpath 上不存在指定类时才生效，和 @ConditionalOnClass 正好相反。典型用法是优先装配新实现，缺少新依赖时退回旧实现，让同一份自动配置同时兼容多个版本或可选依赖。",
+      "keyPoints": [
+        "value 写全限定类名数组",
+        "与 @ConditionalOnClass 互斥使用",
+        "适合做新旧实现降级兼容"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求不存在的类全限定名"
+        }
+      ],
+      "exampleTitle": "没有 Redis 客户端就退回本地缓存",
+      "example": "package com.example.demo.autoconfigure;\n\nimport org.springframework.boot.autoconfigure.AutoConfiguration;\nimport org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;\nimport org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;\nimport org.springframework.cache.CacheManager;\nimport org.springframework.cache.concurrent.ConcurrentMapCacheManager;\nimport org.springframework.context.annotation.Bean;\n\n@AutoConfiguration\n// 类路径上没有 Redis 相关类时才走这里\n@ConditionalOnMissingClass(\"com.example.demo.cache.RedisClient\")\npublic class LocalCacheAutoConfiguration {\n\n    @Bean\n    @ConditionalOnMissingBean\n    public CacheManager cacheManager() {\n        return new ConcurrentMapCacheManager();\n    }\n}",
+      "notes": [
+        "只能写字符串类名，因为类可能根本不在 classpath 上。",
+        "判断的是类路径，不是 bean 是否存在。",
+        "和 @ConditionalOnClass 搭配，可以给同一个能力做多套实现。"
+      ],
+      "related": [
+        "@ConditionalOnClass",
+        "@ConditionalOnMissingBean",
+        "@AutoConfiguration"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：条件注解",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html#features.developing-auto-configuration.condition-annotations"
+        },
+        {
+          "label": "API 文档：ConditionalOnMissingClass",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnMissingClass.html"
+        }
+      ],
+      "tags": [
+        "条件装配",
+        "classpath",
+        "兼容"
+      ]
+    },
+    {
+      "id": "conditional-on-web-application",
+      "name": "@ConditionalOnWebApplication",
+      "category": "boot",
+      "subcategory": "条件装配",
+      "package": "org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication",
+      "level": "进阶",
+      "since": "Spring Boot 1.0.0",
+      "tagline": "只在 Web 应用里生效",
+      "plain": "判断当前应用是不是 Web 应用，以及是 Servlet 还是 Reactive 类型。type 默认 ANY，两种都算。写 Web 相关自动配置时贴上它，非 Web 环境（比如跑批任务）就不会白白装配一堆 Web 组件。",
+      "keyPoints": [
+        "type 可选 ANY / SERVLET / REACTIVE",
+        "默认 ANY，只要求是个 Web 应用",
+        "适合 Web 专属的自动配置"
+      ],
+      "attributes": [
+        {
+          "name": "type",
+          "type": "Type",
+          "default": "ANY",
+          "desc": "Web 应用类型：ANY、SERVLET、REACTIVE"
+        }
+      ],
+      "exampleTitle": "只在 Servlet Web 应用里注册拦截器",
+      "example": "package com.example.demo.autoconfigure;\n\nimport org.springframework.boot.autoconfigure.AutoConfiguration;\nimport org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.web.servlet.HandlerInterceptor;\n\n@AutoConfiguration\n// 只有 Servlet Web 应用才装配\n@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)\npublic class RequestLogAutoConfiguration {\n\n    @Bean\n    public RequestLogInterceptor requestLogInterceptor() {\n        return new RequestLogInterceptor();\n    }\n}\n\nclass RequestLogInterceptor implements HandlerInterceptor {\n}",
+      "notes": [
+        "非 Web 应用（spring.main.web-application-type=none）不会加载这段配置。",
+        "SERVLET 对应 Spring MVC，REACTIVE 对应 WebFlux。",
+        "它只判断应用类型，不判断具体请求路径。"
+      ],
+      "related": [
+        "@ConditionalOnClass",
+        "@AutoConfiguration",
+        "@ConditionalOnBean"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：条件注解",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html#features.developing-auto-configuration.condition-annotations"
+        },
+        {
+          "label": "API 文档：ConditionalOnWebApplication",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication.html"
+        }
+      ],
+      "tags": [
+        "条件装配",
+        "web",
+        "自动配置"
+      ]
+    },
+    {
+      "id": "conditional-on-resource",
+      "name": "@ConditionalOnResource",
+      "category": "boot",
+      "subcategory": "条件装配",
+      "package": "org.springframework.boot.autoconfigure.condition.ConditionalOnResource",
+      "level": "进阶",
+      "since": "Spring Boot 1.0.0",
+      "tagline": "资源存在才装配",
+      "plain": "检查某个资源是否存在，存在才让配置生效。资源用 Spring 的 Resource 写法，比如 classpath:app-feature.yml、file:/etc/app.conf。适合「有配置文件才启用」的场景，例如检测到某份配置才装配对应的加载器。",
+      "keyPoints": [
+        "resources 写 Spring Resource 位置（classpath: / file:）",
+        "多个资源写成数组",
+        "只判断存在性，不解析内容"
+      ],
+      "attributes": [
+        {
+          "name": "resources",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要求存在的资源位置"
+        }
+      ],
+      "exampleTitle": "有特性配置文件才启用加载器",
+      "example": "package com.example.demo.config;\n\nimport org.springframework.boot.autoconfigure.condition.ConditionalOnResource;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\n\n@Configuration\n// 配置文件存在时才创建这个 bean\n@ConditionalOnResource(resources = \"classpath:app-feature.yml\")\npublic class FeatureFileConfig {\n\n    @Bean\n    public FeatureLoader featureLoader() {\n        return new FeatureLoader();\n    }\n}\n\nclass FeatureLoader {\n}",
+      "notes": [
+        "通配符支持有限，建议写明确路径，避免判断结果和预期不一致。",
+        "资源判断发生在配置类解析阶段，此时依赖还没有完全初始化。",
+        "可以和 @ConditionalOnProperty 搭配，做更细的启用控制。"
+      ],
+      "related": [
+        "@ConditionalOnProperty",
+        "@ConditionalOnClass",
+        "@ConditionalOnWebApplication"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：条件注解",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html#features.developing-auto-configuration.condition-annotations"
+        },
+        {
+          "label": "API 文档：ConditionalOnResource",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnResource.html"
+        }
+      ],
+      "tags": [
+        "条件装配",
+        "资源",
+        "自动配置"
+      ]
+    },
+    {
+      "id": "servlet-component-scan",
+      "name": "@ServletComponentScan",
+      "category": "boot",
+      "subcategory": "Web 组件",
+      "package": "org.springframework.boot.web.servlet.ServletComponentScan",
+      "level": "进阶",
+      "since": "Spring Boot 1.3.0",
+      "tagline": "扫描 Servlet 三大组件",
+      "plain": "扫描并注册 @WebServlet、@WebFilter、@WebListener 标注的类，让它们像在传统 Servlet 容器里一样工作。只在 Spring Boot 内嵌容器下有效；打成 war 部署到外部容器时这个注解不起作用，由外部容器自己扫描。",
+      "keyPoints": [
+        "识别 @WebServlet、@WebFilter、@WebListener",
+        "仅内嵌 Tomcat / Jetty / Undertow 有效",
+        "默认扫描注解所在包，可用 basePackages 指定"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要扫描的包名，等价于 basePackages"
+        },
+        {
+          "name": "basePackages",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要扫描的包名"
+        },
+        {
+          "name": "basePackageClasses",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "按类所在包推导扫描范围"
+        }
+      ],
+      "exampleTitle": "用 @WebServlet 注册一个老式 Servlet",
+      "example": "package com.example.demo;\n\nimport jakarta.servlet.http.HttpServlet;\nimport jakarta.servlet.http.HttpServletRequest;\nimport jakarta.servlet.http.HttpServletResponse;\nimport jakarta.servlet.annotation.WebServlet;\nimport org.springframework.boot.SpringApplication;\nimport org.springframework.boot.autoconfigure.SpringBootApplication;\nimport org.springframework.boot.web.servlet.ServletComponentScan;\n\n@SpringBootApplication\n// 扫描 @WebServlet / @WebFilter / @WebListener\n@ServletComponentScan\npublic class DemoApplication {\n\n    public static void main(String[] args) {\n        SpringApplication.run(DemoApplication.class, args);\n    }\n}\n\n@WebServlet(urlPatterns = \"/legacy\", name = \"legacyServlet\")\nclass LegacyServlet extends HttpServlet {\n\n    @Override\n    protected void doGet(HttpServletRequest req, HttpServletResponse resp)\n            throws java.io.IOException {\n        resp.getWriter().write(\"legacy\");\n    }\n}",
+      "notes": [
+        "也可以改用 ServletRegistrationBean 手动注册，控制 url 映射和加载顺序更灵活。",
+        "Filter 顺序用 FilterRegistrationBean 控制比 @WebFilter 更可靠。",
+        "部署到外部 Tomcat 时删掉这个注解，否则组件可能注册两次。"
+      ],
+      "related": [
+        "@SpringBootApplication",
+        "@EnableAutoConfiguration",
+        "@Configuration"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：Servlet Web Applications",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/web/servlet.html"
+        },
+        {
+          "label": "API 文档：ServletComponentScan",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/web/servlet/ServletComponentScan.html"
+        }
+      ],
+      "tags": [
+        "servlet",
+        "web",
+        "内嵌容器"
+      ]
+    },
+    {
+      "id": "enable-web-mvc",
+      "name": "@EnableWebMvc",
+      "category": "boot",
+      "subcategory": "MVC 配置",
+      "package": "org.springframework.web.servlet.config.annotation.EnableWebMvc",
+      "level": "进阶",
+      "since": "Spring Framework 3.1",
+      "tagline": "完全接管 Spring MVC 配置",
+      "plain": "引入 Spring MVC 的默认配置，同时关掉 Spring Boot 对 MVC 的自动配置。也就是说 WebMvcConfigurer、消息转换器、静态资源这些都要你自己配。Boot 文档明确：它和 Boot 的 MVC 自动配置互斥，两者不能一起用。",
+      "keyPoints": [
+        "一旦加上，Boot 的 WebMvcAutoConfiguration 就退出",
+        "只想加拦截器 / 跨域时，实现 WebMvcConfigurer 即可，不要加它",
+        "需要完全自定义 MVC 基础设施时才用"
+      ],
+      "attributes": [],
+      "exampleTitle": "手写 MVC 配置（跨域 + 拦截器）",
+      "example": "package com.example.demo.config;\n\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.web.servlet.HandlerInterceptor;\nimport org.springframework.web.servlet.config.annotation.CorsRegistry;\nimport org.springframework.web.servlet.config.annotation.EnableWebMvc;\nimport org.springframework.web.servlet.config.annotation.InterceptorRegistry;\nimport org.springframework.web.servlet.config.annotation.WebMvcConfigurer;\n\n@Configuration\n// 完全接管 MVC 配置，Boot 的 MVC 自动配置会退让\n@EnableWebMvc\npublic class WebConfig implements WebMvcConfigurer {\n\n    @Override\n    public void addCorsMappings(CorsRegistry registry) {\n        registry.addMapping(\"/api/**\").allowedOrigins(\"https://example.com\");\n    }\n\n    @Override\n    public void addInterceptors(InterceptorRegistry registry) {\n        registry.addInterceptor(new AuthInterceptor()).addPathPatterns(\"/api/**\");\n    }\n\n    static class AuthInterceptor implements HandlerInterceptor {\n    }\n}",
+      "notes": [
+        "加上它以后，spring.mvc.* 里大部分配置不再自动生效，要自己补。",
+        "只加拦截器、跨域、格式化器时，实现 WebMvcConfigurer 就够，别加 @EnableWebMvc。",
+        "静态资源映射、消息转换器也要自己配，否则可能 404 或序列化不符合预期。"
+      ],
+      "related": [
+        "@Configuration",
+        "@SpringBootApplication",
+        "@SpringBootTest"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Framework 参考：MVC Config Enable",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/enable.html"
+        },
+        {
+          "label": "Boot 参考：Servlet Web Applications",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/web/servlet.html"
+        }
+      ],
+      "tags": [
+        "spring-mvc",
+        "配置",
+        "web"
+      ]
+    },
+    {
+      "id": "import-auto-configuration",
+      "name": "@ImportAutoConfiguration",
+      "category": "boot",
+      "subcategory": "自动配置",
+      "package": "org.springframework.boot.autoconfigure.ImportAutoConfiguration",
+      "level": "进阶",
+      "since": "Spring Boot 1.3.0",
+      "tagline": "只导入指定的自动配置",
+      "plain": "手动导入若干个自动配置类，顺序规则和 @EnableAutoConfiguration 一样，但只装配你列出的那些，不会全量扫描。测试切片里特别有用：可以精确控制某个测试只加载需要的自动配置，既快又不会缺 bean。",
+      "keyPoints": [
+        "value / classes 列出要导入的自动配置类",
+        "exclude 排除其中一部分",
+        "测试切片常用，普通应用还是用 @EnableAutoConfiguration"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要导入的自动配置类"
+        },
+        {
+          "name": "classes",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "value 的别名"
+        },
+        {
+          "name": "exclude",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要排除的自动配置类"
+        }
+      ],
+      "exampleTitle": "测试里只导入数据源和 Jackson 自动配置",
+      "example": "package com.example.demo;\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.autoconfigure.ImportAutoConfiguration;\nimport org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;\nimport org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.jdbc.core.JdbcTemplate;\n\nimport static org.assertj.core.api.Assertions.assertThat;\n\n@SpringBootTest\n// 测试里只导入需要的自动配置类\n@ImportAutoConfiguration({\n        DataSourceAutoConfiguration.class,\n        JacksonAutoConfiguration.class\n})\nclass RepositorySliceTest {\n\n    @Autowired\n    JdbcTemplate jdbcTemplate;\n\n    @Test\n    void contextLoads() {\n        assertThat(jdbcTemplate).isNotNull();\n    }\n}",
+      "notes": [
+        "排序规则与 @EnableAutoConfiguration 一致，仍受 @AutoConfiguration 的 before/after 影响。",
+        "普通应用直接 @SpringBootApplication 即可，不要用它替代自动配置全量扫描。",
+        "漏了某个自动配置就会缺 bean，排查时先看这里列了哪些。"
+      ],
+      "related": [
+        "@EnableAutoConfiguration",
+        "@AutoConfiguration",
+        "@SpringBootTest"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "API 文档：ImportAutoConfiguration",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/ImportAutoConfiguration.html"
+        },
+        {
+          "label": "Boot 参考：Creating Your Own Auto-configuration",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html"
+        }
+      ],
+      "tags": [
+        "自动配置",
+        "测试",
+        "进阶"
+      ]
+    },
+    {
+      "id": "spring-boot-test",
+      "name": "@SpringBootTest",
+      "category": "test",
+      "subcategory": "集成测试",
+      "package": "org.springframework.boot.test.context.SpringBootTest",
+      "level": "入门",
+      "since": "Spring Boot 1.4.0",
+      "tagline": "启动完整容器的集成测试",
+      "plain": "把整个 Spring Boot 应用上下文启动起来做集成测试：真实装配所有 bean，可以注入任何组件。webEnvironment 决定要不要起 Web 服务器，默认 MOCK 不真起服务器，配合 MockMvc 最轻；要测真实 HTTP 就换成 RANDOM_PORT。",
+      "keyPoints": [
+        "classes 指定配置类，不写则向上查找 @SpringBootConfiguration",
+        "webEnvironment 控制 Web 环境：MOCK / RANDOM_PORT / DEFINED_PORT / NONE",
+        "properties、args 可在测试里临时改配置和启动参数"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "properties 的别名"
+        },
+        {
+          "name": "properties",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "测试专用的配置键值对，如 app.mode=test"
+        },
+        {
+          "name": "args",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "传给应用启动的参数"
+        },
+        {
+          "name": "classes",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "显式指定要加载的配置类"
+        },
+        {
+          "name": "webEnvironment",
+          "type": "WebEnvironment",
+          "default": "MOCK",
+          "desc": "Web 环境类型，默认 MOCK"
+        },
+        {
+          "name": "useMainMethod",
+          "type": "UseMainMethod",
+          "default": "NEVER",
+          "desc": "是否通过 main 方法启动应用"
+        }
+      ],
+      "exampleTitle": "随机端口启动，用真实 HTTP 测接口",
+      "example": "package com.example.demo;\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.boot.test.web.client.TestRestTemplate;\n\nimport static org.assertj.core.api.Assertions.assertThat;\n\n// RANDOM_PORT 会真起服务器，走真实 HTTP\n@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,\n        properties = \"app.mode=test\")\nclass HelloApiTest {\n\n    @Autowired\n    TestRestTemplate restTemplate;\n\n    @Test\n    void hello() {\n        String body = restTemplate.getForObject(\"/hello\", String.class);\n        assertThat(body).isEqualTo(\"hello\");\n    }\n}",
+      "notes": [
+        "会启动完整上下文，比较慢，尽量只用来做端到端验证。",
+        "RANDOM_PORT 下真实端口用 @LocalServerPort 注入后再拼 URL。",
+        "MOCK 模式不真起服务器，适合配 @AutoConfigureMockMvc 发模拟请求。"
+      ],
+      "related": [
+        "@WebMvcTest",
+        "@DataJpaTest",
+        "@AutoConfigureMockMvc"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：Testing Spring Boot Applications",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/testing/spring-boot-applications.html"
+        },
+        {
+          "label": "API 文档：SpringBootTest",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/context/SpringBootTest.html"
+        }
+      ],
+      "tags": [
+        "测试",
+        "集成测试",
+        "上下文"
+      ]
+    },
+    {
+      "id": "web-mvc-test",
+      "name": "@WebMvcTest",
+      "category": "test",
+      "subcategory": "Web 切片",
+      "package": "org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest",
+      "level": "入门",
+      "since": "Spring Boot 1.4.0",
+      "tagline": "只测 MVC 层的切片测试",
+      "plain": "只装配 MVC 相关组件：控制器、@ControllerAdvice、过滤器、消息转换器等，不加载 Service 和 Repository。默认还会配好 MockMvc 和 Spring Security，适合快速测接口路由、参数校验、状态码。依赖的协作对象用 @MockitoBean 提供。",
+      "keyPoints": [
+        "只扫 @Controller、@ControllerAdvice 等 MVC 组件",
+        "默认装配 MockMvc 与 Spring Security",
+        "controllers 可限定只加载某几个控制器"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要加载的控制器类"
+        },
+        {
+          "name": "controllers",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "限定只加载指定控制器"
+        },
+        {
+          "name": "properties",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "测试专用配置"
+        },
+        {
+          "name": "excludeAutoConfiguration",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要排除的自动配置"
+        },
+        {
+          "name": "useDefaultFilters",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否启用默认组件过滤规则"
+        }
+      ],
+      "exampleTitle": "测控制器的路由与 JSON 返回",
+      "example": "package com.example.demo.web;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;\nimport org.springframework.test.context.bean.override.mockito.MockitoBean;\nimport org.springframework.test.web.servlet.MockMvc;\nimport static org.mockito.BDDMockito.given;\nimport static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;\n// 只加载 MVC 组件，Service 用 @MockitoBean 顶替\n@WebMvcTest(OrderController.class)\nclass OrderControllerTest {\n    @Autowired\n    MockMvc mockMvc;\n    @MockitoBean\n    OrderService orderService;\n    @Test\n    void returnsOrder() throws Exception {\n        given(orderService.findById(1L)).willReturn(new Order(1L, \"book\"));\n        mockMvc.perform(get(\"/orders/1\"))\n                .andExpect(status().isOk())\n                .andExpect(jsonPath(\"$.name\").value(\"book\"));\n    }\n}\n@RestController\nclass OrderController {\n    private final OrderService orderService;\n    OrderController(OrderService orderService) { this.orderService = orderService; }\n    @GetMapping(\"/orders/{id}\")\n    Order get(@PathVariable Long id) {\n        return orderService.findById(id);\n    }\n}\nrecord Order(Long id, String name) {\n}\ninterface OrderService {\n    Order findById(Long id);\n}",
+      "notes": [
+        "报 404 时先看控制器是不是被切片的过滤规则排除了。",
+        "需要真实 Service 时用 @Import 引入，别指望切片测试自己扫。",
+        "Security 默认生效，测无权限接口记得加 @WithMockUser。"
+      ],
+      "related": [
+        "@SpringBootTest",
+        "@AutoConfigureMockMvc",
+        "@MockitoBean"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：Testing Spring Boot Applications",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/testing/spring-boot-applications.html"
+        },
+        {
+          "label": "API 文档：WebMvcTest",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/servlet/WebMvcTest.html"
+        }
+      ],
+      "tags": [
+        "测试",
+        "mvc",
+        "切片"
+      ]
+    },
+    {
+      "id": "data-jpa-test",
+      "name": "@DataJpaTest",
+      "category": "test",
+      "subcategory": "数据切片",
+      "package": "org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest",
+      "level": "进阶",
+      "since": "Spring Boot 1.4.0",
+      "tagline": "只测 JPA 与仓储层",
+      "plain": "只装配 JPA 相关组件：实体、Repository、DataSource、EntityManager，不加载 Service 和 MVC。默认用内嵌内存数据库替换真实数据源，每个测试方法跑在事务里、结束后回滚，测试之间互不影响。showSql 默认开着，方便看生成的 SQL。",
+      "keyPoints": [
+        "默认内嵌数据库 + 事务回滚，测试间互不影响",
+        "可注入 TestEntityManager 造数据",
+        "bootstrapMode 控制 JPA 初始化时机，excludeAutoConfiguration 可排除自动配置"
+      ],
+      "attributes": [
+        {
+          "name": "properties",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "测试专用配置"
+        },
+        {
+          "name": "showSql",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否打印 SQL"
+        },
+        {
+          "name": "excludeAutoConfiguration",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要排除的自动配置"
+        },
+        {
+          "name": "bootstrapMode",
+          "type": "BootstrapMode",
+          "default": "DEFAULT",
+          "desc": "JPA 实体管理器初始化时机"
+        },
+        {
+          "name": "excludeFilters",
+          "type": "Filter[]",
+          "default": "{}",
+          "desc": "排除的组件扫描过滤器"
+        },
+        {
+          "name": "useDefaultFilters",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否启用默认组件过滤规则"
+        },
+        {
+          "name": "includeFilters",
+          "type": "Filter[]",
+          "default": "{}",
+          "desc": "额外包含的组件扫描过滤器"
+        }
+      ],
+      "exampleTitle": "用 TestEntityManager 造数据并断言",
+      "example": "package com.example.demo.repository;\nimport jakarta.persistence.Entity;\nimport jakarta.persistence.GeneratedValue;\nimport jakarta.persistence.Id;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;\nimport org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;\nimport static org.assertj.core.api.Assertions.assertThat;\n// 默认内存库 + 事务回滚，测试之间互不影响\n@DataJpaTest\nclass OrderRepositoryTest {\n    @Autowired\n    TestEntityManager em;\n    @Test\n    void persistsOrder() {\n        Order saved = em.persistAndFlush(new Order(\"PAID\"));\n        assertThat(saved.getId()).isNotNull();\n        assertThat(em.find(Order.class, saved.getId()).getStatus()).isEqualTo(\"PAID\");\n    }\n    @Entity\n    static class Order {\n        @Id\n        @GeneratedValue\n        private Long id;\n        private String status;\n        Order() {\n        }\n        Order(String status) {\n            this.status = status;\n        }\n        Long getId() {\n            return id;\n        }\n        String getStatus() {\n            return status;\n        }\n    }\n}",
+      "notes": [
+        "要连真实数据库时加 @AutoConfigureTestDatabase(replace = NONE)。",
+        "默认每个测试方法一个事务并回滚，别在测试里手动提交。",
+        "只扫 JPA 相关组件，Repository 里自定义的其它依赖要自己 @Import。"
+      ],
+      "related": [
+        "@SpringBootTest",
+        "@TestConfiguration",
+        "@ConfigurationProperties"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：Testing Spring Boot Applications",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/testing/spring-boot-applications.html"
+        },
+        {
+          "label": "API 文档：DataJpaTest",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/orm/jpa/DataJpaTest.html"
+        }
+      ],
+      "tags": [
+        "测试",
+        "jpa",
+        "切片"
+      ]
+    },
+    {
+      "id": "json-test",
+      "name": "@JsonTest",
+      "category": "test",
+      "subcategory": "JSON 切片",
+      "package": "org.springframework.boot.test.autoconfigure.json.JsonTest",
+      "level": "进阶",
+      "since": "Spring Boot 1.4.0",
+      "tagline": "只测 JSON 序列化",
+      "plain": "只装配 JSON 序列化相关组件（Jackson、Gson 或 Jsonb），并自动往测试类里注入对应的 Tester 字段，比如 JacksonTester。适合验证字段名、日期格式、忽略字段这些序列化规则。启动快，不碰数据库和 Web 层。",
+      "keyPoints": [
+        "自动配置 JacksonTester / GsonTester / JsonbTester 字段",
+        "只加载 JSON 序列化相关 bean",
+        "用 @JsonComponent 注册的自定义序列化器也会被装配"
+      ],
+      "attributes": [
+        {
+          "name": "properties",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "测试专用配置"
+        },
+        {
+          "name": "excludeAutoConfiguration",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要排除的自动配置"
+        },
+        {
+          "name": "excludeFilters",
+          "type": "Filter[]",
+          "default": "{}",
+          "desc": "排除的组件扫描过滤器"
+        },
+        {
+          "name": "useDefaultFilters",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否启用默认组件过滤规则"
+        },
+        {
+          "name": "includeFilters",
+          "type": "Filter[]",
+          "default": "{}",
+          "desc": "额外包含的组件扫描过滤器"
+        }
+      ],
+      "exampleTitle": "用 JacksonTester 断言 JSON 字段",
+      "example": "package com.example.demo.json;\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.autoconfigure.json.JsonTest;\nimport org.springframework.boot.test.json.JacksonTester;\n\nimport static org.assertj.core.api.Assertions.assertThat;\n\n@JsonTest\nclass BookJsonTest {\n\n    @Autowired\n    JacksonTester<Book> json;\n\n    private final Book book = new Book(\"Spring 实战\", \"Craig Walls\");\n\n    @Test\n    void serializesTitle() throws Exception {\n        assertThat(json.write(book)).hasJsonPathStringValue(\"@.title\");\n        assertThat(json.write(book))\n                .extractingJsonPathStringValue(\"@.title\")\n                .isEqualTo(\"Spring 实战\");\n    }\n}\n\nrecord Book(String title, String author) {\n}",
+      "notes": [
+        "不加载 @Component / @Service，需要它们参与序列化时用 @Import。",
+        "日期格式由 spring.jackson.* 控制，测试里可以用 properties 临时改。",
+        "想验证反序列化用 json.parse(...) 搭配断言即可。"
+      ],
+      "related": [
+        "@SpringBootTest",
+        "@WebMvcTest",
+        "@TestPropertySource"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：Testing Spring Boot Applications",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/testing/spring-boot-applications.html"
+        },
+        {
+          "label": "API 文档：JsonTest",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/json/JsonTest.html"
+        }
+      ],
+      "tags": [
+        "测试",
+        "json",
+        "切片"
+      ]
+    },
+    {
+      "id": "rest-client-test",
+      "name": "@RestClientTest",
+      "category": "test",
+      "subcategory": "HTTP 客户端",
+      "package": "org.springframework.boot.test.autoconfigure.web.client.RestClientTest",
+      "level": "进阶",
+      "since": "Spring Boot 1.4.0",
+      "tagline": "测外部 HTTP 调用",
+      "plain": "专门测用 RestTemplate、RestClient 调外部服务的客户端：只装配你指定的客户端组件，并自动配好 MockRestServiceServer，不用真的发请求。让外部依赖在单元测试里完全可控，不会因为对方服务挂了导致测试失败。",
+      "keyPoints": [
+        "只装配指定的客户端组件及其依赖",
+        "自动配置 MockRestServiceServer 假扮远端服务",
+        "直接注入 RestTemplate 的场景需要 @AutoConfigureWebClient"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要装配的客户端组件类"
+        },
+        {
+          "name": "components",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "value 的别名"
+        },
+        {
+          "name": "properties",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "测试专用配置"
+        }
+      ],
+      "exampleTitle": "断言请求地址并伪造响应",
+      "example": "package com.example.demo.client;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.autoconfigure.web.client.RestClientTest;\nimport org.springframework.boot.web.client.RestTemplateBuilder;\nimport org.springframework.http.MediaType;\nimport org.springframework.test.web.client.MockRestServiceServer;\nimport org.springframework.web.client.RestTemplate;\nimport static org.assertj.core.api.Assertions.assertThat;\nimport static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;\nimport static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;\n// 不出网：MockRestServiceServer 伪造远端响应\n@RestClientTest(GithubClient.class)\nclass GithubClientTest {\n    @Autowired\n    GithubClient client;\n    @Autowired\n    MockRestServiceServer server;\n    @Test\n    void fetchesRepoName() {\n        server.expect(requestTo(\"https://api.github.com/repos/spring-projects/spring-boot\"))\n                .andRespond(withSuccess(\"spring-boot\", MediaType.TEXT_PLAIN));\n        assertThat(client.repoName()).isEqualTo(\"spring-boot\");\n    }\n}\nclass GithubClient {\n    private final RestTemplate restTemplate;\n    GithubClient(RestTemplateBuilder builder) {\n        this.restTemplate = builder.build();\n    }\n    String repoName() {\n        return restTemplate.getForObject(\n                \"https://api.github.com/repos/spring-projects/spring-boot\", String.class);\n    }\n}",
+      "notes": [
+        "客户端必须能用 RestTemplateBuilder / RestClient.Builder 构造，才会被自动接管。",
+        "测试结束可以调用 server.verify() 确认所有期望都发生了。",
+        "要测真实端口和真实 HTTP，请用 @SpringBootTest(webEnvironment = RANDOM_PORT)。"
+      ],
+      "related": [
+        "@SpringBootTest",
+        "@MockitoBean",
+        "@TestConfiguration"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：Testing Spring Boot Applications",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/testing/spring-boot-applications.html"
+        },
+        {
+          "label": "API 文档：RestClientTest",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/client/RestClientTest.html"
+        }
+      ],
+      "tags": [
+        "测试",
+        "http-client",
+        "mock"
+      ]
+    },
+    {
+      "id": "test-configuration",
+      "name": "@TestConfiguration",
+      "category": "test",
+      "subcategory": "测试配置",
+      "package": "org.springframework.boot.test.context.TestConfiguration",
+      "level": "进阶",
+      "since": "Spring Boot 1.4.0",
+      "tagline": "只在测试里生效的配置类",
+      "plain": "一种专供测试使用的 @Configuration：里面定义的 bean 只在当前测试类（或嵌套类）里生效，不会污染主应用上下文。它不会阻止 @SpringBootConfiguration 的自动查找，所以可以放心写成测试类的静态嵌套类，用 @Import 或嵌套方式引入。",
+      "keyPoints": [
+        "测试专属配置，不影响主应用上下文",
+        "常写成测试类的静态嵌套类，自动被发现",
+        "顶层单独写的需要 @Import 才生效"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "配置类名称提示"
+        },
+        {
+          "name": "proxyBeanMethods",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否代理 @Bean 方法"
+        }
+      ],
+      "exampleTitle": "用固定时钟替换真实时钟",
+      "example": "package com.example.demo;\n\nimport java.time.Clock;\nimport java.time.Instant;\nimport java.time.ZoneOffset;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.boot.test.context.TestConfiguration;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Import;\n\nimport static org.assertj.core.api.Assertions.assertThat;\n\n@SpringBootTest\n@Import(TestBeans.class)\nclass ClockServiceTest {\n\n    @Autowired\n    Clock clock;\n\n    @Test\n    void usesFixedClock() {\n        assertThat(clock.instant()).isNotNull();\n    }\n\n    // 测试专用配置，只对当前测试生效\n    @TestConfiguration\n    static class TestBeans {\n\n        @Bean\n        Clock fixedClock() {\n            return Clock.fixed(Instant.parse(\"2024-01-01T00:00:00Z\"), ZoneOffset.UTC);\n        }\n    }\n}",
+      "notes": [
+        "嵌套在测试类里的静态配置类会被自动识别，不需要再写 @Import。",
+        "单独写在测试包顶层的 @TestConfiguration 不会自动生效，必须 @Import。",
+        "它和 @Configuration 一样可以定义 @Bean，但不会被主应用组件扫描到。"
+      ],
+      "related": [
+        "@SpringBootTest",
+        "@Configuration",
+        "@ImportAutoConfiguration"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：Testing Spring Boot Applications",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/testing/spring-boot-applications.html"
+        },
+        {
+          "label": "API 文档：TestConfiguration",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/context/TestConfiguration.html"
+        }
+      ],
+      "tags": [
+        "测试",
+        "配置",
+        "bean"
+      ]
+    },
+    {
+      "id": "mock-bean",
+      "name": "@MockBean",
+      "category": "test",
+      "subcategory": "Mock 测试",
+      "package": "org.springframework.boot.test.mock.mockito.MockBean",
+      "level": "入门",
+      "since": "Spring Boot 1.4.0",
+      "tagline": "替换容器 bean 为 mock（已废弃）",
+      "plain": "把容器里已有的 bean 替换成 Mockito mock，没有就新建一个，测试里用来模拟依赖。注意：Boot 3.4 起它已被废弃，计划在 4.0 移除，官方建议改用 @MockitoBean（普通 mock）或 @MockitoSpyBean（包真实对象）。老项目里还会见到它。",
+      "keyPoints": [
+        "按类型或名称替换 / 新增 mock bean",
+        "只影响当前测试类的上下文",
+        "已废弃：Boot 3.4 起请改用 @MockitoBean"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要 mock 的类型"
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "要 mock 的 bean 名称"
+        },
+        {
+          "name": "classes",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要 mock 的类型（value 的别名）"
+        },
+        {
+          "name": "answer",
+          "type": "Answers",
+          "default": "RETURNS_DEFAULTS",
+          "desc": "mock 的默认 Answer"
+        },
+        {
+          "name": "reset",
+          "type": "MockReset",
+          "default": "AFTER",
+          "desc": "mock 重置时机"
+        },
+        {
+          "name": "serializable",
+          "type": "boolean",
+          "default": "false",
+          "desc": "mock 是否可序列化"
+        },
+        {
+          "name": "extraInterfaces",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "mock 额外实现的接口"
+        }
+      ],
+      "exampleTitle": "用 @MockBean 模拟服务依赖",
+      "example": "package com.example.demo;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.boot.test.mock.mockito.MockBean;\nimport static org.assertj.core.api.Assertions.assertThat;\nimport static org.mockito.BDDMockito.given;\n@SpringBootTest\nclass GreetingTest {\n    // 老写法：把容器里的 bean 换成 mock（已废弃）\n    @MockBean\n    GreetingService greetingService;\n    @Autowired\n    GreetingFacade facade;\n    @Test\n    void greets() {\n        given(greetingService.greet(\"Sam\")).willReturn(\"Hi Sam\");\n        assertThat(facade.hello(\"Sam\")).isEqualTo(\"Hi Sam\");\n    }\n}\n@Component\nclass GreetingFacade {\n    private final GreetingService greetingService;\n    GreetingFacade(GreetingService greetingService) {\n        this.greetingService = greetingService;\n    }\n    String hello(String name) {\n        return greetingService.greet(name);\n    }\n}\ninterface GreetingService {\n    String greet(String name);\n}",
+      "notes": [
+        "Boot 3.4 起 @MockBean 标记为废弃，4.0 会移除，新代码不要再用。",
+        "替代写法：字段上加 @MockitoBean；需要包真实逻辑时用 @MockitoSpyBean。",
+        "同一类型别同时用 @MockBean 和 @MockitoBean，容器里会出现两个覆盖。"
+      ],
+      "related": [
+        "@MockitoBean",
+        "@MockitoSpyBean",
+        "@SpringBootTest"
+      ],
+      "versionNote": "官方 Javadoc 标注 @Deprecated(since = \"3.4.0\", forRemoval = true)，并说明 for removal in 4.0.0、in favor of @MockitoBean（Spy 场景用 @MockitoSpyBean）。",
+      "docs": [
+        {
+          "label": "API 文档：MockBean（已废弃）",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/mock/mockito/MockBean.html"
+        }
+      ],
+      "tags": [
+        "测试",
+        "mock",
+        "已废弃"
+      ]
+    },
+    {
+      "id": "mockito-bean",
+      "name": "@MockitoBean",
+      "category": "test",
+      "subcategory": "Mock 测试",
+      "package": "org.springframework.test.context.bean.override.mockito.MockitoBean",
+      "level": "入门",
+      "since": "Spring Framework 6.2",
+      "tagline": "现代写法：把 bean 换成 mock",
+      "plain": "Spring Framework 6.2 引入的 bean 覆盖注解：测试时把容器里对应类型的 bean 替换成 Mockito mock，容器里没有就创建一个。它是 @MockBean 的正式替代品，支持字段、参数、类型级别，还能控制 reset、answers、序列化等行为。",
+      "keyPoints": [
+        "替换已有 bean，没有则新建 mock",
+        "支持字段 / 类型级（含复合注解元注解），按 types 或 name 精确指定",
+        "reset 默认 AFTER，每个测试方法后重置 mock 状态"
+      ],
+      "attributes": [
+        {
+          "name": "types",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要覆盖的类型"
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "要覆盖的 bean 名称"
+        },
+        {
+          "name": "reset",
+          "type": "MockReset",
+          "default": "AFTER",
+          "desc": "mock 重置时机"
+        },
+        {
+          "name": "enforceOverride",
+          "type": "boolean",
+          "default": "false",
+          "desc": "true 时容器里没有对应 bean 会直接失败"
+        }
+      ],
+      "exampleTitle": "替换网关并模拟异常",
+      "example": "package com.example.demo;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.test.context.bean.override.mockito.MockitoBean;\nimport static org.assertj.core.api.Assertions.assertThatThrownBy;\nimport static org.mockito.ArgumentMatchers.anyLong;\nimport static org.mockito.BDDMockito.given;\n@SpringBootTest\nclass PaymentServiceTest {\n    // 容器里的 PaymentGateway 会被替换成 mock\n    @MockitoBean\n    PaymentGateway gateway;\n    @Autowired\n    PaymentService service;\n    @Test\n    void declinesPayment() {\n        given(gateway.charge(anyLong()))\n                .willThrow(new IllegalStateException(\"declined\"));\n        assertThatThrownBy(() -> service.pay(100L))\n                .hasMessage(\"declined\");\n    }\n}\n@Service\nclass PaymentService {\n    private final PaymentGateway gateway;\n    PaymentService(PaymentGateway gateway) {\n        this.gateway = gateway;\n    }\n    void pay(long amount) {\n        gateway.charge(amount);\n    }\n}\ninterface PaymentGateway {\n    void charge(long amount);\n}",
+      "notes": [
+        "需要 Spring Framework 6.2+（Boot 3.4+），更低版本没有这个注解。",
+        "默认覆盖不存在的 bean 也能成功创建 mock；想严格校验用 enforceOverride = true。",
+        "和 @MockBean 二选一，别在同一测试里混用。"
+      ],
+      "related": [
+        "@MockitoSpyBean",
+        "@MockBean",
+        "@SpringBootTest"
+      ],
+      "versionNote": "@MockitoBean 是 Spring Framework 6.2 引入的 bean 覆盖注解；Boot 3.4 起官方把 @MockBean 标记为废弃并指向它（替代普通 mock）。",
+      "docs": [
+        {
+          "label": "Framework 参考：@MockitoBean",
+          "url": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-mockitobean.html"
+        },
+        {
+          "label": "Framework API：MockitoBean",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/bean/override/mockito/MockitoBean.html"
+        }
+      ],
+      "tags": [
+        "测试",
+        "mock",
+        "boot-3.4"
+      ]
+    },
+    {
+      "id": "mockito-spy-bean",
+      "name": "@MockitoSpyBean",
+      "category": "test",
+      "subcategory": "Mock 测试",
+      "package": "org.springframework.test.context.bean.override.mockito.MockitoSpyBean",
+      "level": "进阶",
+      "since": "Spring Framework 6.2",
+      "tagline": "包一层 spy，保留真实逻辑",
+      "plain": "把容器里的真实 bean 包成 Mockito spy：默认仍然执行真实方法，只在你打桩或 verify 的地方被拦下来。适合「大部分逻辑要真跑，只想验证某个方法有没有被调用」的场景，比全量 mock 更接近真实行为。",
+      "keyPoints": [
+        "默认调用真实方法，可局部打桩",
+        "用 verify 检查方法被调用次数和参数",
+        "reset 默认 AFTER，测试方法执行后重置"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "String",
+          "default": "",
+          "desc": "要包装的 bean 名称"
+        },
+        {
+          "name": "reset",
+          "type": "MockReset",
+          "default": "AFTER",
+          "desc": "spy 重置时机"
+        },
+        {
+          "name": "value",
+          "type": "String",
+          "default": "",
+          "desc": "要包装的 bean 名称（name 的别名）"
+        },
+        {
+          "name": "types",
+          "type": "Class<?>[]",
+          "default": "{}",
+          "desc": "要包装的类型"
+        },
+        {
+          "name": "contextName",
+          "type": "String",
+          "default": "",
+          "desc": "所在上下文名称"
+        }
+      ],
+      "exampleTitle": "验证真实服务里某个方法被调用",
+      "example": "package com.example.demo;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.test.context.bean.override.mockito.MockitoSpyBean;\nimport static org.mockito.Mockito.times;\nimport static org.mockito.Mockito.verify;\n@SpringBootTest\nclass ReportServiceTest {\n    // 真实 bean 包成 spy，默认仍执行真实逻辑\n    @MockitoSpyBean\n    ReportFormatter formatter;\n    @Autowired\n    ReportService service;\n    @Test\n    void formatsOnce() {\n        service.render(\"q1\");\n        verify(formatter, times(1)).format(\"q1\");\n    }\n}\n@Component\nclass ReportFormatter {\n    String format(String quarter) {\n        return \"report:\" + quarter;\n    }\n}\n@Service\nclass ReportService {\n    private final ReportFormatter formatter;\n    ReportService(ReportFormatter formatter) {\n        this.formatter = formatter;\n    }\n    String render(String quarter) {\n        return formatter.format(quarter);\n    }\n}",
+      "notes": [
+        "spy 会走真实逻辑，外部依赖（数据库、HTTP）仍然需要自己控制。",
+        "Mockito 5 默认用 inline mock maker，final 类和方法也能 spy；若项目显式切回 subclass mock maker 则不行。",
+        "只需要造桩、不关心真实逻辑时用 @MockitoBean 更直接。"
+      ],
+      "related": [
+        "@MockitoBean",
+        "@MockBean",
+        "@SpringBootTest"
+      ],
+      "versionNote": "@MockitoSpyBean 与 @MockitoBean 同为 Spring Framework 6.2 引入的 bean 覆盖注解，用于替代已废弃的 @MockBean（spy 场景）。",
+      "docs": [
+        {
+          "label": "Framework 参考：@MockitoBean / @MockitoSpyBean",
+          "url": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-mockitobean.html"
+        },
+        {
+          "label": "Framework API：MockitoSpyBean",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/bean/override/mockito/MockitoSpyBean.html"
+        }
+      ],
+      "tags": [
+        "测试",
+        "spy",
+        "verify"
+      ]
+    },
+    {
+      "id": "auto-configure-mock-mvc",
+      "name": "@AutoConfigureMockMvc",
+      "category": "test",
+      "subcategory": "Web 切片",
+      "package": "org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc",
+      "level": "进阶",
+      "since": "Spring Boot 1.4.0",
+      "tagline": "给测试自动配好 MockMvc",
+      "plain": "@SpringBootTest 默认不配 MockMvc；加上它就会按当前应用上下文自动配置 MockMvc，注入后可直接发模拟请求。addFilters 控制过滤器链（含 Security）是否生效，print 控制每次请求后是否打印请求响应细节，排查 403、404 很方便。",
+      "keyPoints": [
+        "不用起真实服务器就能发请求",
+        "addFilters = true 时 Security 过滤器链生效",
+        "print / printOnlyOnFailure 控制调试输出"
+      ],
+      "attributes": [
+        {
+          "name": "print",
+          "type": "MockMvcPrint",
+          "default": "DEFAULT",
+          "desc": "打印 MvcResult 的方式"
+        },
+        {
+          "name": "webDriverEnabled",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否配置 WebDriver"
+        },
+        {
+          "name": "webClientEnabled",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否配置 WebTestClient"
+        },
+        {
+          "name": "printOnlyOnFailure",
+          "type": "boolean",
+          "default": "true",
+          "desc": "只在失败时打印"
+        },
+        {
+          "name": "addFilters",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否应用注册的过滤器"
+        }
+      ],
+      "exampleTitle": "在完整上下文里测接口",
+      "example": "package com.example.demo;\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.test.web.servlet.MockMvc;\n\nimport static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;\n\n@SpringBootTest\n// @SpringBootTest 默认不配 MockMvc，加它才有\n@AutoConfigureMockMvc\nclass HelloApiTest {\n\n    @Autowired\n    MockMvc mockMvc;\n\n    @Test\n    void hello() throws Exception {\n        mockMvc.perform(get(\"/hello\"))\n                .andExpect(status().isOk())\n                .andExpect(content().string(\"hello\"));\n    }\n}",
+      "notes": [
+        "只测 MVC 层时 @WebMvcTest 更轻，它自带 MockMvc。",
+        "默认 webEnvironment = MOCK 才能用；起真实端口后应改用 TestRestTemplate。",
+        "想看请求响应细节可以设 print = MockMvcPrint.SYSTEM_OUT。"
+      ],
+      "related": [
+        "@SpringBootTest",
+        "@WebMvcTest",
+        "@WithMockUser"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Boot 参考：Testing Spring Boot Applications",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/testing/spring-boot-applications.html"
+        },
+        {
+          "label": "API 文档：AutoConfigureMockMvc",
+          "url": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/servlet/AutoConfigureMockMvc.html"
+        }
+      ],
+      "tags": [
+        "测试",
+        "mockmvc",
+        "web"
+      ]
+    },
+    {
+      "id": "active-profiles",
+      "name": "@ActiveProfiles",
+      "category": "test",
+      "subcategory": "测试环境",
+      "package": "org.springframework.test.context.ActiveProfiles",
+      "level": "入门",
+      "since": "Spring Framework 3.1",
+      "tagline": "指定测试激活的 profile",
+      "plain": "声明加载测试上下文时激活哪些 Spring profile，等价于设置 spring.profiles.active。常用来让测试读 application-test.yml、换测试数据源或关掉某些自动配置。写在测试类上只影响这个测试，不污染生产配置。",
+      "keyPoints": [
+        "等价于 spring.profiles.active，但只作用在测试上下文",
+        "profiles 是 value 的别名，可写多个",
+        "声明后 JVM 系统属性 spring.profiles.active 不再生效"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "要激活的 profile"
+        },
+        {
+          "name": "profiles",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "value 的别名"
+        }
+      ],
+      "exampleTitle": "让测试使用 test profile",
+      "example": "package com.example.demo;\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.beans.factory.annotation.Value;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.test.context.ActiveProfiles;\n\nimport static org.assertj.core.api.Assertions.assertThat;\n\n@SpringBootTest\n// 激活 test profile，读取 application-test.yml\n@ActiveProfiles(\"test\")\nclass ProfileAwareTest {\n\n    @Value(\"${app.name}\")\n    String appName;\n\n    @Test\n    void usesTestProfile() {\n        assertThat(appName).isEqualTo(\"test-app\");\n    }\n}",
+      "notes": [
+        "只在测试类上生效，不影响生产运行。",
+        "active profile 会参与测试上下文缓存 key，不同 profile 的上下文分开缓存。",
+        "声明后系统属性 spring.profiles.active 会被忽略，排查配置时留意。"
+      ],
+      "related": [
+        "@TestPropertySource",
+        "@SpringBootTest",
+        "@ConfigurationProperties"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Framework 参考：@ActiveProfiles",
+          "url": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-activeprofiles.html"
+        },
+        {
+          "label": "Framework API：ActiveProfiles",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/ActiveProfiles.html"
+        }
+      ],
+      "tags": [
+        "测试",
+        "profile",
+        "配置"
+      ]
+    },
+    {
+      "id": "test-property-source",
+      "name": "@TestPropertySource",
+      "category": "test",
+      "subcategory": "测试环境",
+      "package": "org.springframework.test.context.TestPropertySource",
+      "level": "入门",
+      "since": "Spring Framework 4.1",
+      "tagline": "测试专用配置项注入",
+      "plain": "给当前测试的 Environment 添加额外属性：可以内联写在注解的 properties 里，也可以指向属性文件（locations）。它的优先级比系统属性、application.yml 都高，用来在测试里临时改配置最方便，而且不会影响其他测试。",
+      "keyPoints": [
+        "properties 内联属性优先级高于 locations 文件",
+        "locations 可指向测试专用配置文件",
+        "继承行为由 inheritLocations / inheritProperties 控制"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "locations 的别名"
+        },
+        {
+          "name": "locations",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "属性文件位置"
+        },
+        {
+          "name": "properties",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "内联键值对，如 app.retry=0"
+        },
+        {
+          "name": "inheritLocations",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否继承父类 / 父接口的 locations"
+        },
+        {
+          "name": "inheritProperties",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否继承父类 / 父接口的 properties"
+        }
+      ],
+      "exampleTitle": "测试里把重试次数改成 0",
+      "example": "package com.example.demo;\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Value;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.test.context.TestPropertySource;\n\nimport static org.assertj.core.api.Assertions.assertThat;\n\n@SpringBootTest\n// 临时覆盖配置：重试次数设为 0\n@TestPropertySource(properties = {\"app.mode=test\", \"app.retry=0\"})\nclass RetryConfigTest {\n\n    @Value(\"${app.retry}\")\n    int retry;\n\n    @Test\n    void noRetryInTest() {\n        assertThat(retry).isZero();\n    }\n}",
+      "notes": [
+        "内联属性优先级最高，但 @DynamicPropertySource 还在它之上。",
+        "路径写成 classpath:/test.properties 或 file:/path/to/test.properties。",
+        "只适合测试临时覆盖，别把它当长期配置管理手段。"
+      ],
+      "related": [
+        "@ActiveProfiles",
+        "@SpringBootTest",
+        "@ConfigurationProperties"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Framework 参考：@TestPropertySource",
+          "url": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-testpropertysource.html"
+        },
+        {
+          "label": "Framework API：TestPropertySource",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/TestPropertySource.html"
+        }
+      ],
+      "tags": [
+        "测试",
+        "配置",
+        "environment"
+      ]
+    },
+    {
+      "id": "dirties-context",
+      "name": "@DirtiesContext",
+      "category": "test",
+      "subcategory": "测试环境",
+      "package": "org.springframework.test.annotation.DirtiesContext",
+      "level": "进阶",
+      "since": "Spring Framework 2.0",
+      "tagline": "弄脏上下文就强制重建",
+      "plain": "告诉测试框架：这个测试改动了上下文里的状态（改了单例 bean、内嵌数据库数据等），跑完或跑之前请关闭并重建 ApplicationContext。它能保证测试互不影响，但重建上下文很慢，能不用就不用。",
+      "keyPoints": [
+        "标记上下文已脏，需要从缓存移除并重建",
+        "methodMode / classMode 控制重建时机",
+        "优先考虑事务回滚等手段替代它"
+      ],
+      "attributes": [
+        {
+          "name": "methodMode",
+          "type": "MethodMode",
+          "default": "AFTER_METHOD",
+          "desc": "方法级重建时机"
+        },
+        {
+          "name": "classMode",
+          "type": "ClassMode",
+          "default": "AFTER_CLASS",
+          "desc": "类级重建时机"
+        },
+        {
+          "name": "hierarchyMode",
+          "type": "HierarchyMode",
+          "default": "EXHAUSTIVE",
+          "desc": "作用于上下文层级的范围"
+        }
+      ],
+      "exampleTitle": "类结束后重建上下文",
+      "example": "package com.example.demo;\n\nimport java.util.concurrent.atomic.AtomicInteger;\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.stereotype.Component;\nimport org.springframework.test.annotation.DirtiesContext;\n\nimport static org.assertj.core.api.Assertions.assertThat;\n\n@SpringBootTest\n// 这个类跑完就关闭并重建上下文\n@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)\nclass MutableStateTest {\n\n    @Autowired\n    Counter counter;\n\n    @Test\n    void increments() {\n        counter.increment();\n        assertThat(counter.value()).isEqualTo(1);\n    }\n}\n\n@Component\nclass Counter {\n    private final AtomicInteger value = new AtomicInteger();\n\n    void increment() {\n        value.incrementAndGet();\n    }\n\n    int value() {\n        return value.get();\n    }\n}",
+      "notes": [
+        "重建代价高，标多了会让整个测试套件明显变慢。",
+        "方法级用 methodMode = BEFORE_METHOD / AFTER_METHOD。",
+        "能靠事务回滚或重置数据解决的问题，就别用它。"
+      ],
+      "related": [
+        "@SpringBootTest",
+        "@TestPropertySource",
+        "@ActiveProfiles"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Framework 参考：@DirtiesContext",
+          "url": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-dirtiescontext.html"
+        },
+        {
+          "label": "Framework API：DirtiesContext",
+          "url": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/annotation/DirtiesContext.html"
+        }
+      ],
+      "tags": [
+        "测试",
+        "上下文",
+        "缓存"
+      ]
+    },
+    {
+      "id": "enable-web-security",
+      "name": "@EnableWebSecurity",
+      "category": "security",
+      "subcategory": "Web 安全",
+      "package": "org.springframework.security.config.annotation.web.configuration.EnableWebSecurity",
+      "level": "入门",
+      "since": "Spring Security 3.2",
+      "tagline": "打开 Spring Security 的 Web 支持",
+      "plain": "加在 @Configuration 类上，开启 Spring Security 的 Web 安全支持：让安全过滤器链、登录登出、请求授权这些能力接入 MVC 请求。典型写法是再声明一个 SecurityFilterChain bean，用它定义哪些路径放行、哪些要登录，取代过去继承 WebSecurityConfigurerAdapter 的老写法。",
+      "keyPoints": [
+        "开启 Web 安全，注册 springSecurityFilterChain 过滤器",
+        "配合 SecurityFilterChain bean 定义授权规则",
+        "非 Web 项目不需要它，方法级安全用 @EnableMethodSecurity"
+      ],
+      "attributes": [],
+      "exampleTitle": "放行公开路径，其余要求登录",
+      "example": "package com.example.demo.security;\n\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.security.config.annotation.web.builders.HttpSecurity;\nimport org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;\nimport org.springframework.security.web.SecurityFilterChain;\n\nimport static org.springframework.security.config.Customizer.withDefaults;\n\n@Configuration\n// 自定义过滤链：公开路径放行，其余要登录\n@EnableWebSecurity\nclass SecurityConfig {\n\n    @Bean\n    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n        http\n                .authorizeHttpRequests(auth -> auth\n                        .requestMatchers(\"/public/**\").permitAll()\n                        .anyRequest().authenticated())\n                .formLogin(withDefaults())\n                .httpBasic(withDefaults());\n        return http.build();\n    }\n}",
+      "notes": [
+        "Security 6 里没有 WebSecurityConfigurerAdapter 了，改成声明 SecurityFilterChain bean。",
+        "它只管 Web 请求；方法级注解要另外加 @EnableMethodSecurity。",
+        "一个应用只需一处 @EnableWebSecurity，重复加没有意义。"
+      ],
+      "related": [
+        "@EnableMethodSecurity",
+        "@PreAuthorize",
+        "@WithMockUser"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring Security 参考：Java Configuration",
+          "url": "https://docs.spring.io/spring-security/reference/servlet/configuration/java.html"
+        }
+      ],
+      "tags": [
+        "安全",
+        "web",
+        "过滤器链"
+      ]
+    },
+    {
+      "id": "enable-method-security",
+      "name": "@EnableMethodSecurity",
+      "category": "security",
+      "subcategory": "方法安全",
+      "package": "org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity",
+      "level": "入门",
+      "since": "Spring Security 5.6",
+      "tagline": "开启方法级权限校验",
+      "plain": "加在 @Configuration 类上，开启方法级安全：@PreAuthorize、@PostAuthorize、@PreFilter、@PostFilter 才会生效。prePostEnabled 默认就是 true。注意 Spring Boot 的 Security starter 默认并不开启方法级授权，想用这些注解必须显式加它。",
+      "keyPoints": [
+        "替代已废弃的 @EnableGlobalMethodSecurity",
+        "prePostEnabled 默认 true，@PreAuthorize 系列开箱可用",
+        "securedEnabled / jsr250Enabled 分别打开 @Secured 与 JSR-250"
+      ],
+      "attributes": [
+        {
+          "name": "prePostEnabled",
+          "type": "boolean",
+          "default": "true",
+          "desc": "是否启用 @PreAuthorize / @PostAuthorize 等"
+        },
+        {
+          "name": "securedEnabled",
+          "type": "boolean",
+          "default": "false",
+          "desc": "是否启用 @Secured"
+        },
+        {
+          "name": "jsr250Enabled",
+          "type": "boolean",
+          "default": "false",
+          "desc": "是否启用 JSR-250 的 @RolesAllowed 等"
+        },
+        {
+          "name": "mode",
+          "type": "AdviceMode",
+          "default": "PROXY",
+          "desc": "代理方式，默认 PROXY"
+        },
+        {
+          "name": "offset",
+          "type": "int",
+          "default": "0",
+          "desc": "安全拦截器的排序偏移"
+        }
+      ],
+      "exampleTitle": "开方法安全并保护一个方法",
+      "example": "package com.example.demo.security;\n\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.security.access.prepost.PreAuthorize;\nimport org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;\nimport org.springframework.stereotype.Service;\n\n@Configuration\n@EnableMethodSecurity\nclass MethodSecurityConfig {\n    // prePostEnabled 默认就是 true，这里不用显式写\n}\n\n@Service\nclass DocumentService {\n\n    @PreAuthorize(\"hasRole('ADMIN')\")\n    String adminOnly() {\n        return \"ok\";\n    }\n}",
+      "notes": [
+        "Boot 的 Security starter 默认不开方法级授权，只加注解不生效时先检查这里。",
+        "官方文档明确它取代 @EnableGlobalMethodSecurity，老项目可以照迁移小节改。",
+        "需要 @Secured 或 JSR-250 时分别设 securedEnabled / jsr250Enabled = true。"
+      ],
+      "related": [
+        "@PreAuthorize",
+        "@PostAuthorize",
+        "@Secured",
+        "@RolesAllowed"
+      ],
+      "versionNote": "官方文档：@EnableMethodSecurity 取代 @EnableGlobalMethodSecurity；且 Spring Boot Starter Security 默认不开启方法级授权，必须显式声明。",
+      "docs": [
+        {
+          "label": "Spring Security 参考：Method Security",
+          "url": "https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html"
+        }
+      ],
+      "tags": [
+        "安全",
+        "方法安全",
+        "权限"
+      ]
+    },
+    {
+      "id": "pre-authorize",
+      "name": "@PreAuthorize",
+      "category": "security",
+      "subcategory": "方法安全",
+      "package": "org.springframework.security.access.prepost.PreAuthorize",
+      "level": "入门",
+      "since": "Spring Security 3.0",
+      "tagline": "方法执行前先校验权限",
+      "plain": "在方法（或类、接口）执行之前，用 SpEL 表达式判断当前用户有没有权限。表达式可以调用 hasRole、hasAuthority，也能直接引用方法参数（#参数名）和 authentication 对象。不满足就抛 AccessDeniedException，方法体根本不会执行。",
+      "keyPoints": [
+        "调用前求值，不通过直接抛 AccessDeniedException",
+        "value 是 SpEL：hasRole、hasAuthority、#参数名、authentication",
+        "写在方法、类或接口上都有效，需要先开 @EnableMethodSecurity"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "—",
+          "desc": "权限校验用的 SpEL 表达式（必填）"
+        }
+      ],
+      "exampleTitle": "按角色和参数本人校验",
+      "example": "package com.example.demo.security;\n\nimport java.util.List;\nimport org.springframework.security.access.prepost.PreAuthorize;\nimport org.springframework.stereotype.Service;\n\n@Service\nclass OrderService {\n\n    @PreAuthorize(\"hasRole('ADMIN')\")\n    List<String> allOrders() {\n        return List.of(\"order-1\", \"order-2\");\n    }\n\n    @PreAuthorize(\"hasAuthority('order:write') and #userId == authentication.name\")\n    void cancel(String userId) {\n        // 只有本人或显式持有 order:write 权限的人能进\n    }\n}",
+      "notes": [
+        "hasRole(\"ADMIN\") 会自动补 ROLE_ 前缀，库里存的是 ROLE_ADMIN；hasAuthority 则精确匹配。",
+        "方法参数名可用 #参数名 引用，前提是编译时保留了参数名（Spring Boot 默认开着 -parameters）。",
+        "URL 级放行用 authorizeHttpRequests，方法级才用它，两者配合使用。"
+      ],
+      "related": [
+        "@PostAuthorize",
+        "@EnableMethodSecurity",
+        "@Secured"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring Security 参考：Method Security",
+          "url": "https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html"
+        }
+      ],
+      "tags": [
+        "安全",
+        "方法安全",
+        "spel"
+      ]
+    },
+    {
+      "id": "post-authorize",
+      "name": "@PostAuthorize",
+      "category": "security",
+      "subcategory": "方法安全",
+      "package": "org.springframework.security.access.prepost.PostAuthorize",
+      "level": "进阶",
+      "since": "Spring Security 3.0",
+      "tagline": "拿到返回值后再校验",
+      "plain": "等方法执行完、拿到返回值之后再校验权限，因此表达式里可以用 returnObject 检查「这条数据属不属于当前用户」。常用于只允许本人查看自己的订单、资料这类场景：查得到但没权限，一样返回 403。",
+      "keyPoints": [
+        "调用后求值，可引用 returnObject 检查返回值",
+        "不通过抛 AccessDeniedException",
+        "适合「按数据归属」判断，而不是按接口入口判断"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String",
+          "default": "—",
+          "desc": "校验返回值用的 SpEL 表达式（必填）"
+        }
+      ],
+      "exampleTitle": "只允许本人查看自己的资料",
+      "example": "package com.example.demo.security;\n\nimport org.springframework.security.access.prepost.PostAuthorize;\nimport org.springframework.stereotype.Service;\n\n@Service\nclass ProfileService {\n\n    @PostAuthorize(\"returnObject.owner == authentication.name\")\n    Profile find(String id) {\n        // 这里没有按用户过滤，靠返回后的校验兜底\n        return new Profile(id, \"sam\");\n    }\n}\n\nrecord Profile(String id, String owner) {\n}",
+      "notes": [
+        "returnObject 是方法返回值，集合过滤场景应该用 @PostFilter。",
+        "校验失败对外表现为 403，方法其实已经执行过，有副作用的方法要小心。",
+        "必须先有 @EnableMethodSecurity，prePostEnabled 默认已开。"
+      ],
+      "related": [
+        "@PreAuthorize",
+        "@EnableMethodSecurity",
+        "@Secured"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring Security 参考：Method Security",
+          "url": "https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html"
+        }
+      ],
+      "tags": [
+        "安全",
+        "方法安全",
+        "返回值"
+      ]
+    },
+    {
+      "id": "secured",
+      "name": "@Secured",
+      "category": "security",
+      "subcategory": "方法安全",
+      "package": "org.springframework.security.access.annotation.Secured",
+      "level": "进阶",
+      "tagline": "老式角色校验注解",
+      "plain": "较老的方法级校验注解：属性里列一组角色名，当前用户至少有其中一个才能调用。需要 @EnableMethodSecurity(securedEnabled = true) 才会生效。官方已把它标为 legacy，推荐改用表达能力更强的 @PreAuthorize。",
+      "keyPoints": [
+        "value 写完整权限名，如 ROLE_ADMIN",
+        "必须显式开启 securedEnabled = true",
+        "legacy 选项，新代码优先 @PreAuthorize"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "—",
+          "desc": "允许的角色 / 权限名列表（必填）"
+        }
+      ],
+      "exampleTitle": "开启后给方法加角色限制",
+      "example": "package com.example.demo.security;\n\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.security.access.annotation.Secured;\nimport org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;\nimport org.springframework.stereotype.Service;\n\n@Configuration\n@EnableMethodSecurity(securedEnabled = true)\nclass SecuredConfig {\n}\n\n@Service\nclass ReportService {\n\n    // 先开 securedEnabled，@Secured 才会生效\n    @Secured(\"ROLE_ADMIN\")\n    String secretReport() {\n        return \"report\";\n    }\n}",
+      "notes": [
+        "值要写完整权限名，官方示例是 ROLE_USER 这种带前缀的写法。",
+        "不开启 securedEnabled 时注解会被直接忽略，排查权限问题先看这里。",
+        "官方文档：@Secured is a legacy option，推荐用 @PreAuthorize 取代。"
+      ],
+      "related": [
+        "@PreAuthorize",
+        "@EnableMethodSecurity",
+        "@RolesAllowed"
+      ],
+      "versionNote": "Spring Security 官方文档已把 @Secured 标为 legacy 选项，并明确推荐改用 @PreAuthorize。",
+      "docs": [
+        {
+          "label": "Spring Security 参考：Method Security",
+          "url": "https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html"
+        }
+      ],
+      "tags": [
+        "安全",
+        "方法安全",
+        "legacy"
+      ]
+    },
+    {
+      "id": "roles-allowed",
+      "name": "@RolesAllowed",
+      "category": "security",
+      "subcategory": "方法安全",
+      "package": "jakarta.annotation.security.RolesAllowed",
+      "level": "进阶",
+      "tagline": "JSR-250 标准角色注解",
+      "plain": "JSR-250 标准注解，不属于 Spring 专有：列出允许调用方法的角色。需要 @EnableMethodSecurity(jsr250Enabled = true) 才会生效，而且默认会补 ROLE_ 前缀，所以写 ADMIN 实际比对 ROLE_ADMIN。同族的还有 @PermitAll 和 @DenyAll。",
+      "keyPoints": [
+        "标准 JSR-250 注解，不绑定 Spring 实现",
+        "需要显式开启 jsr250Enabled = true",
+        "角色默认加 ROLE_ 前缀，ADMIN 即 ROLE_ADMIN"
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "type": "String[]",
+          "default": "—",
+          "desc": "允许的角色列表（必填）"
+        }
+      ],
+      "exampleTitle": "开启 JSR-250 后限制方法",
+      "example": "package com.example.demo.security;\n\nimport jakarta.annotation.security.RolesAllowed;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;\nimport org.springframework.stereotype.Service;\n\n@Configuration\n@EnableMethodSecurity(jsr250Enabled = true)\nclass Jsr250Config {\n}\n\n@Service\nclass BillingService {\n\n    // 先开 jsr250Enabled，JSR-250 注解才会生效\n    @RolesAllowed({\"ADMIN\", \"BILLING\"})\n    String invoice() {\n        return \"invoice\";\n    }\n}",
+      "notes": [
+        "默认角色前缀是 ROLE_（见 Jsr250AuthorizationManager），所以 \"ADMIN\" 对应 ROLE_ADMIN。",
+        "类上也能标，表示该类所有方法都要求这些角色。",
+        "同族的 @PermitAll / @DenyAll 也在 jsr250Enabled 打开后生效。"
+      ],
+      "related": [
+        "@PreAuthorize",
+        "@EnableMethodSecurity",
+        "@Secured"
+      ],
+      "versionNote": "JSR-250 标准注解；Boot 3 起 Jakarta EE 使用 jakarta 包（官方迁移指南：Jakarta EE now uses jakarta packages rather than javax），包名由 javax.annotation.security 变为 jakarta.annotation.security。",
+      "docs": [
+        {
+          "label": "Spring Security 参考：Method Security",
+          "url": "https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html"
+        },
+        {
+          "label": "Boot 3.0 迁移指南（jakarta 包）",
+          "url": "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide"
+        }
+      ],
+      "tags": [
+        "安全",
+        "方法安全",
+        "jsr250"
+      ]
+    },
+    {
+      "id": "authentication-principal",
+      "name": "@AuthenticationPrincipal",
+      "category": "security",
+      "subcategory": "参数解析",
+      "package": "org.springframework.security.core.annotation.AuthenticationPrincipal",
+      "level": "进阶",
+      "since": "Spring Security 4.0",
+      "tagline": "把当前登录用户注入方法参数",
+      "plain": "控制器方法里不用再手动从 SecurityContext 取用户：在参数上加它，Spring Security 会把 Authentication.getPrincipal() 解析成这个参数。默认注入完整 principal（比如 UserDetails），expression 可以只取某个属性，errorOnInvalidType 控制类型不匹配时的行为。",
+      "keyPoints": [
+        "自动注入当前 Authentication 的 principal",
+        "expression 可按属性名取局部值，如 username",
+        "匿名访问时注入 null，注意空指针"
+      ],
+      "attributes": [
+        {
+          "name": "expression",
+          "type": "String",
+          "default": "",
+          "desc": "SpEL 表达式，取 principal 的某个属性"
+        },
+        {
+          "name": "errorOnInvalidType",
+          "type": "boolean",
+          "default": "false",
+          "desc": "类型不匹配时是否抛 ClassCastException"
+        }
+      ],
+      "exampleTitle": "在接口里直接拿到当前用户",
+      "example": "package com.example.demo.web;\n\nimport org.springframework.security.core.annotation.AuthenticationPrincipal;\nimport org.springframework.security.core.userdetails.UserDetails;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\nclass MeController {\n\n    @GetMapping(\"/me\")\n    // 直接注入当前登录用户，不用手摸 SecurityContext\n    String me(@AuthenticationPrincipal UserDetails user) {\n        return user.getUsername();\n    }\n\n    @GetMapping(\"/me/only-name\")\n    String onlyName(@AuthenticationPrincipal(expression = \"username\") String username) {\n        return username;\n    }\n}",
+      "notes": [
+        "匿名请求也能进控制器时参数是 null，直接调用会 NPE，必要时用 Optional 包一层。",
+        "自定义 UserDetails 实现类也可以直接声明成参数类型。",
+        "需要 Spring MVC 的安全参数解析器，@EnableWebSecurity 打开后即可用。"
+      ],
+      "related": [
+        "@WithMockUser",
+        "@EnableWebSecurity",
+        "@PreAuthorize"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring Security 参考：Authentication 架构",
+          "url": "https://docs.spring.io/spring-security/reference/servlet/authentication/architecture.html"
+        },
+        {
+          "label": "Spring Security 参考：Method Security",
+          "url": "https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html"
+        }
+      ],
+      "tags": [
+        "安全",
+        "参数",
+        "principal"
+      ]
+    },
+    {
+      "id": "with-mock-user",
+      "name": "@WithMockUser",
+      "category": "security",
+      "subcategory": "安全测试",
+      "package": "org.springframework.security.test.context.support.WithMockUser",
+      "level": "入门",
+      "since": "Spring Security 4.0",
+      "tagline": "测试里伪造一个登录用户",
+      "plain": "测试方法或测试类上用它，框架会往 SecurityContext 里塞一个假的已登录用户，不用真的走登录流程。可以指定用户名、密码、角色或权限。配合 MockMvc 测需要认证的接口最常用，能直接验证 200 还是 403。",
+      "keyPoints": [
+        "为测试方法的 SecurityContext 伪造登录态",
+        "roles 会自动补 ROLE_ 前缀，authorities 精确匹配",
+        "可标在方法或类上，类上对全部测试生效"
+      ],
+      "attributes": [
+        {
+          "name": "username",
+          "type": "String",
+          "default": "",
+          "desc": "用户名，默认 user"
+        },
+        {
+          "name": "password",
+          "type": "String",
+          "default": "password",
+          "desc": "密码"
+        },
+        {
+          "name": "roles",
+          "type": "String[]",
+          "default": "{USER}",
+          "desc": "角色，自动加 ROLE_ 前缀，默认 USER"
+        },
+        {
+          "name": "authorities",
+          "type": "String[]",
+          "default": "{}",
+          "desc": "完整权限名，不加前缀"
+        },
+        {
+          "name": "value",
+          "type": "String",
+          "default": "user",
+          "desc": "username 的便捷别名，默认 user"
+        },
+        {
+          "name": "setupBefore",
+          "type": "TestExecutionEvent",
+          "default": "TEST_METHOD",
+          "desc": "SecurityContext 设置的时机"
+        }
+      ],
+      "exampleTitle": "用管理员身份测受保护接口",
+      "example": "package com.example.demo.security;\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.security.test.context.support.WithMockUser;\nimport org.springframework.test.web.servlet.MockMvc;\n\nimport static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;\n\n@SpringBootTest\n@AutoConfigureMockMvc\nclass AdminApiTest {\n\n    @Autowired\n    MockMvc mockMvc;\n\n    @Test\n    // 伪造管理员身份，受保护接口应放行\n    @WithMockUser(username = \"admin\", roles = \"ADMIN\")\n    void adminCanAccess() throws Exception {\n        mockMvc.perform(get(\"/admin/users\"))\n                .andExpect(status().isOk());\n    }\n}",
+      "notes": [
+        "roles = \"ADMIN\" 实际生成 ROLE_ADMIN；要精确控制权限名用 authorities。",
+        "依赖 spring-security-test，Boot 项目加 test 依赖即可，@SpringBootTest 会自动注册监听器。",
+        "想测未登录状态可以用 @WithAnonymousUser，或干脆不加注解。"
+      ],
+      "related": [
+        "@SpringBootTest",
+        "@AutoConfigureMockMvc",
+        "@EnableWebSecurity"
+      ],
+      "versionNote": null,
+      "docs": [
+        {
+          "label": "Spring Security 参考：Testing with MockMvc - Authentication",
+          "url": "https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/authentication.html"
+        }
+      ],
+      "tags": [
+        "安全",
+        "测试",
+        "mock"
+      ]
+    }
+  ]
+}
