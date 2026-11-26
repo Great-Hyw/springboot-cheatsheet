@@ -1,0 +1,1772 @@
+{
+  "generatedBy": "content-linux-b",
+  "tool": "linux",
+  "modules": [
+    {
+      "id": "linux-process",
+      "label": "进程与系统",
+      "desc": "看进程、管服务、查内存和负载，排查机器变慢的常用命令。"
+    },
+    {
+      "id": "linux-network",
+      "label": "网络与远程",
+      "desc": "配网卡、测连通、传文件和远程登录，网络问题先从这里查。"
+    },
+    {
+      "id": "linux-disk",
+      "label": "磁盘与压缩",
+      "desc": "看磁盘还剩多少、找出大目录，以及打包压缩和解压文件。"
+    }
+  ],
+  "items": [
+    {
+      "id": "linux-ps",
+      "tool": "linux",
+      "module": "linux-process",
+      "name": "ps",
+      "level": "入门",
+      "tagline": "看当前有哪些进程",
+      "plain": "机器变慢、端口被占、想确认服务到底起没起来时，先 ps 看进程。它只输出某一瞬间的快照，最常用的是 ps aux 看所有用户，或 ps -ef 看父子关系和完整命令。列里的 PID 就是后面 kill 要用的号码。",
+      "syntax": "ps [选项]",
+      "keyPoints": [
+        "aux 看所有用户的进程，-ef 看父子关系和完整命令。",
+        "PID 是进程号，PPID 是父进程号，kill 时用 PID。",
+        "STAT 列里 Z 是僵尸进程，T 是已暂停，S 是睡眠。",
+        "过滤结果：ps aux | grep nginx，别忘 grep -v grep。"
+      ],
+      "options": [
+        {
+          "flag": "-e",
+          "desc": "显示系统里所有进程（UNIX 风格）"
+        },
+        {
+          "flag": "-f",
+          "desc": "完整格式，带 UID、PID、PPID 和完整命令"
+        },
+        {
+          "flag": "-u",
+          "desc": "只看指定用户的进程，如 -u root"
+        },
+        {
+          "flag": "-o",
+          "desc": "自定义输出列，如 -o pid,cmd"
+        },
+        {
+          "flag": "--sort",
+          "desc": "按指定字段排序，减号表示倒序"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "看所有进程，BSD 风格最常用",
+          "code": "ps aux"
+        },
+        {
+          "desc": "看父子关系和完整命令",
+          "code": "ps -ef"
+        },
+        {
+          "desc": "只看 root 用户的进程",
+          "code": "ps -u root"
+        },
+        {
+          "desc": "按内存占用从高到低排",
+          "code": "ps aux --sort=-%mem | head"
+        }
+      ],
+      "pitfalls": [
+        "ps 是一瞬间的快照，进程变化快时要反复看或改用 top。",
+        "ps aux | grep 名字会把 grep 自己列出来，记得加 grep -v grep。"
+      ],
+      "related": [
+        "linux-top",
+        "linux-kill",
+        "linux-pkill"
+      ],
+      "docs": [
+        {
+          "label": "man7: ps(1)",
+          "url": "https://man7.org/linux/man-pages/man1/ps.1.html"
+        }
+      ],
+      "tags": [
+        "进程",
+        "排查",
+        "PID"
+      ]
+    },
+    {
+      "id": "linux-top",
+      "tool": "linux",
+      "module": "linux-process",
+      "name": "top",
+      "level": "进阶",
+      "tagline": "实时看进程和系统负载",
+      "plain": "top 像终端里的任务管理器，默认每 3 秒刷新一次，按 CPU 占用排序。CPU 飙高、内存见底、系统卡顿时用它看是谁在吃资源；顶部的 load average 和 %Cpu(s) 先看，wa 高说明在等磁盘。top -b -n 1 输出一次快照，适合写进脚本。",
+      "syntax": "top [选项]",
+      "keyPoints": [
+        "顶部 load average 三个值分别对应 1、5、15 分钟平均负载。",
+        "交互键 P 按 CPU 排序，M 按内存排序，k 杀进程，q 退出。",
+        "%Cpu(s) 里 wa 高是在等磁盘 I/O，不是 CPU 算不过来。",
+        "top -b -n 1 输出一次就退出，适合放到脚本里采集。"
+      ],
+      "options": [
+        {
+          "flag": "-d",
+          "desc": "刷新间隔秒数，如 -d 2"
+        },
+        {
+          "flag": "-p",
+          "desc": "只看指定 PID 的进程"
+        },
+        {
+          "flag": "-b",
+          "desc": "批处理模式，把输出直接打到管道或文件"
+        },
+        {
+          "flag": "-n",
+          "desc": "刷新指定次数后退出"
+        },
+        {
+          "flag": "-u",
+          "desc": "只看指定用户的进程"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "每 2 秒刷新并只看一个 PID",
+          "code": "top -d 2 -p 1234"
+        },
+        {
+          "desc": "输出一次快照存文件",
+          "code": "top -b -n 1 > top.txt"
+        },
+        {
+          "desc": "只看 www-data 用户的进程",
+          "code": "top -u www-data"
+        }
+      ],
+      "pitfalls": [
+        "top 里按 k 杀进程要先确认选中的 PID，误杀可能直接搞挂服务。",
+        "容器里 top 只看到本容器的进程，数量和宿主机对不上。"
+      ],
+      "related": [
+        "linux-ps",
+        "linux-kill",
+        "linux-free",
+        "linux-uptime"
+      ],
+      "docs": [
+        {
+          "label": "man7: top(1)",
+          "url": "https://man7.org/linux/man-pages/man1/top.1.html"
+        }
+      ],
+      "tags": [
+        "进程",
+        "负载",
+        "监控"
+      ]
+    },
+    {
+      "id": "linux-kill",
+      "tool": "linux",
+      "module": "linux-process",
+      "name": "kill",
+      "level": "入门",
+      "tagline": "给进程发信号结束它",
+      "plain": "进程卡死、服务停不下来时，先 ps 查到 PID，再用 kill 发信号。默认发 SIGTERM(15)，进程有机会保存数据再退出；只有不听话的才用 kill -9，它不给任何清理机会。kill 只认 PID 或作业号，不认进程名。",
+      "syntax": "kill [信号] PID...",
+      "keyPoints": [
+        "默认信号是 SIGTERM(15)，先试它，进程能清理现场。",
+        "kill -9 是 SIGKILL，强制终止，跳过所有清理逻辑。",
+        "kill -l 列出信号名和编号，-s 可以指定信号名。",
+        "kill %1 能结束当前 shell 的第 1 个后台作业。"
+      ],
+      "options": [
+        {
+          "flag": "-s",
+          "desc": "指定信号，如 -s TERM 或 -s 9"
+        },
+        {
+          "flag": "-l",
+          "desc": "列出所有信号名和编号"
+        },
+        {
+          "flag": "-9",
+          "desc": "快捷写法，直接发送 SIGKILL 强杀"
+        },
+        {
+          "flag": "--verbose",
+          "desc": "打印实际被发信号的 PID，便于核对"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "先温和地让进程退出",
+          "code": "kill 1234"
+        },
+        {
+          "desc": "进程不响应时强制杀死",
+          "code": "kill -9 1234"
+        },
+        {
+          "desc": "列出所有可用信号",
+          "code": "kill -l"
+        },
+        {
+          "desc": "杀掉当前 shell 的第 1 个后台作业",
+          "code": "kill %1"
+        }
+      ],
+      "pitfalls": [
+        "kill -9 跳过清理逻辑，可能留下写了一半的文件或没释放的锁。",
+        "PID 会被系统复用，杀之前用 ps -p 1234 确认是目标进程。"
+      ],
+      "related": [
+        "linux-pkill",
+        "linux-ps",
+        "linux-top"
+      ],
+      "docs": [
+        {
+          "label": "man7: kill(1)",
+          "url": "https://man7.org/linux/man-pages/man1/kill.1.html"
+        }
+      ],
+      "tags": [
+        "进程",
+        "信号",
+        "终止"
+      ]
+    },
+    {
+      "id": "linux-pkill",
+      "tool": "linux",
+      "module": "linux-process",
+      "name": "pkill",
+      "level": "进阶",
+      "tagline": "按名字批量结束进程",
+      "plain": "不想挨个查 PID 时用 pkill，它按进程名、完整命令行或用户匹配后直接发信号。改完代码要重启一堆同名 worker、清掉测试遗留进程时很方便。默认同样发 SIGTERM，建议先 pgrep -a 看会命中谁，再决定要不要真杀。",
+      "syntax": "pkill [选项] 进程名",
+      "keyPoints": [
+        "pkill 是 pgrep 的姊妹命令，先 pgrep -a 名字看命中再动手。",
+        "-f 匹配完整命令行，适合 java -jar 这类同名进程。",
+        "-u 只动指定用户的进程，避免误伤别人的任务。",
+        "默认发 SIGTERM，要强杀写 pkill -9 进程名。"
+      ],
+      "options": [
+        {
+          "flag": "-f",
+          "desc": "匹配完整命令行，而不只是进程名"
+        },
+        {
+          "flag": "-u",
+          "desc": "只结束指定用户的进程"
+        },
+        {
+          "flag": "-x",
+          "desc": "进程名必须完全相等才匹配"
+        },
+        {
+          "flag": "-9",
+          "desc": "发送 SIGKILL 强制结束"
+        },
+        {
+          "flag": "-e",
+          "desc": "显示被结束的进程名，方便核对"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "先确认会命中哪些进程",
+          "code": "pgrep -a nginx"
+        },
+        {
+          "desc": "按进程名批量结束",
+          "code": "pkill nginx"
+        },
+        {
+          "desc": "强制结束 deploy 用户的所有 java 进程",
+          "code": "pkill -u deploy -9 java"
+        }
+      ],
+      "pitfalls": [
+        "匹配是正则子串，pkill ssh 可能把 sshd 一起杀掉，先 pgrep -a 确认。",
+        "pkill -f java 会命中所有命令行含 java 的进程，生产机上别乱用。"
+      ],
+      "related": [
+        "linux-ps",
+        "linux-kill",
+        "linux-top"
+      ],
+      "docs": [
+        {
+          "label": "man7: pkill(1)",
+          "url": "https://man7.org/linux/man-pages/man1/pkill.1.html"
+        }
+      ],
+      "tags": [
+        "进程",
+        "批量",
+        "信号"
+      ]
+    },
+    {
+      "id": "linux-jobs",
+      "tool": "linux",
+      "module": "linux-process",
+      "name": "jobs",
+      "level": "入门",
+      "tagline": "查看当前终端里的后台任务",
+      "plain": "命令末尾加 & 或按 Ctrl+Z 挂起后，任务就归当前 shell 管；jobs 列出这些后台作业和编号。它只看得到本 shell 启动的作业，换个终端就查不到。关掉终端时作业默认收到 SIGHUP 一起退出，长期任务要交给 nohup 或 systemd。",
+      "syntax": "jobs [选项] [作业号]",
+      "keyPoints": [
+        "只显示当前 shell 的作业，不是系统里所有进程。",
+        "%1 这种作业号可以用在 fg、bg、kill 里。",
+        "Ctrl+Z 是把作业挂起（停止状态），用 bg 让它后台继续。",
+        "终端关闭时作业默认收到 SIGHUP，任务随之退出。"
+      ],
+      "options": [
+        {
+          "flag": "-l",
+          "desc": "列出作业时同时显示 PID"
+        },
+        {
+          "flag": "-p",
+          "desc": "只输出作业的 PID"
+        },
+        {
+          "flag": "-r",
+          "desc": "只列正在运行的作业"
+        },
+        {
+          "flag": "-s",
+          "desc": "只列已停止（挂起）的作业"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "列后台作业并显示 PID",
+          "code": "jobs -l"
+        },
+        {
+          "desc": "只列正在运行的作业",
+          "code": "jobs -r"
+        },
+        {
+          "desc": "让挂起的作业在后台继续跑",
+          "code": "bg %1"
+        },
+        {
+          "desc": "把第 1 个作业调回前台",
+          "code": "fg %1"
+        }
+      ],
+      "pitfalls": [
+        "jobs 的作业号只在当前 shell 有效，换窗口就没了。",
+        "终端关闭后后台作业可能被 SIGHUP 杀掉，长期任务用 nohup。"
+      ],
+      "related": [
+        "linux-nohup",
+        "linux-ps",
+        "linux-kill"
+      ],
+      "docs": [
+        {
+          "label": "GNU Bash 手册：作业控制内建命令",
+          "url": "https://www.gnu.org/software/bash/manual/html_node/Job-Control-Builtins.html"
+        }
+      ],
+      "tags": [
+        "后台任务",
+        "终端",
+        "作业控制"
+      ]
+    },
+    {
+      "id": "linux-nohup",
+      "tool": "linux",
+      "module": "linux-process",
+      "name": "nohup",
+      "level": "入门",
+      "tagline": "关掉终端任务也能继续跑",
+      "plain": "SSH 上去跑长任务，网络一断终端退出，普通后台任务会收到 SIGHUP 跟着死掉。nohup 让命令忽略这个信号，输出默认写到 nohup.out，关掉终端后任务还在。它本身不负责后台运行，通常要自己在命令末尾加 &。",
+      "syntax": "nohup 命令 [参数...] &",
+      "keyPoints": [
+        "nohup 让命令忽略 SIGHUP，终端断开不会跟着退出。",
+        "输出默认追加到当前目录的 nohup.out，最好自己重定向。",
+        "要后台跑得配合 &，否则命令还是占着终端。",
+        "长期服务交给 systemd，nohup 只适合临时救急。"
+      ],
+      "options": [
+        {
+          "flag": "--help",
+          "desc": "显示帮助信息后退出"
+        },
+        {
+          "flag": "--version",
+          "desc": "显示 nohup 版本号后退出"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "后台跑脚本，输出写到日志",
+          "code": "nohup ./backup.sh > backup.log 2>&1 &"
+        },
+        {
+          "desc": "后台跑 Python 训练任务",
+          "code": "nohup python train.py &"
+        },
+        {
+          "desc": "查看 nohup 支持的选项",
+          "code": "nohup --help"
+        }
+      ],
+      "pitfalls": [
+        "nohup 只忽略 SIGHUP，不负责后台运行，不加 & 仍占着终端。",
+        "默认输出写 nohup.out，多个任务同目录跑会互相追加，自己重定向更稳。"
+      ],
+      "related": [
+        "linux-jobs",
+        "linux-ps",
+        "linux-uptime"
+      ],
+      "docs": [
+        {
+          "label": "man7: nohup(1)",
+          "url": "https://man7.org/linux/man-pages/man1/nohup.1.html"
+        }
+      ],
+      "tags": [
+        "后台",
+        "长任务",
+        "终端"
+      ]
+    },
+    {
+      "id": "linux-systemctl",
+      "tool": "linux",
+      "module": "linux-process",
+      "name": "systemctl",
+      "level": "进阶",
+      "tagline": "用 systemd 管理服务",
+      "plain": "Ubuntu、Debian、CentOS 这些发行版用 systemd 管服务，systemctl 就是遥控器：启停、看状态、设开机自启、查失败的服务。改完 unit 文件要 daemon-reload 才生效。容器里通常没有 systemd，直接跑 systemctl 会报错。",
+      "syntax": "systemctl [选项] 子命令 服务名",
+      "keyPoints": [
+        "enable 只设开机自启，不启动服务；要一起启动加 --now。",
+        "status 看运行状态和最近日志，restart 先停再起。",
+        "改完 unit 文件必须 daemon-reload，否则 restart 还是旧配置。",
+        "is-active 查是否在跑，--failed 只看启动失败的单元。"
+      ],
+      "options": [
+        {
+          "flag": "--now",
+          "desc": "enable/disable 时同时启动或停止服务"
+        },
+        {
+          "flag": "--no-pager",
+          "desc": "不调用分页器，适合脚本和日志采集"
+        },
+        {
+          "flag": "--failed",
+          "desc": "只列出启动失败的服务"
+        },
+        {
+          "flag": "--type",
+          "desc": "只看指定类型，如 --type=service"
+        },
+        {
+          "flag": "--user",
+          "desc": "操作用户级 systemd 实例"
+        },
+        {
+          "flag": "--all",
+          "desc": "包括未激活的单元一起列出"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "看服务当前状态",
+          "code": "systemctl status nginx"
+        },
+        {
+          "desc": "启动并设置开机自启",
+          "code": "systemctl enable --now nginx"
+        },
+        {
+          "desc": "重启服务",
+          "code": "systemctl restart nginx"
+        },
+        {
+          "desc": "列出启动失败的服务",
+          "code": "systemctl --failed"
+        }
+      ],
+      "pitfalls": [
+        "enable 只设开机自启，不会立刻启动，要同时启动加 --now。",
+        "改完 unit 文件不执行 daemon-reload，restart 用的还是旧配置。"
+      ],
+      "related": [
+        "linux-ps",
+        "linux-top",
+        "linux-kill"
+      ],
+      "docs": [
+        {
+          "label": "systemd 手册：systemctl",
+          "url": "https://www.freedesktop.org/software/systemd/man/latest/systemctl.html"
+        }
+      ],
+      "tags": [
+        "服务",
+        "systemd",
+        "开机自启"
+      ]
+    },
+    {
+      "id": "linux-free",
+      "tool": "linux",
+      "module": "linux-process",
+      "name": "free",
+      "level": "入门",
+      "tagline": "看内存用了多少",
+      "plain": "内存告急、服务被 OOM 杀掉时，free 看总量、已用和剩余。重点看 available 那一列，它才是应用真正能拿到的内存，buff/cache 是可回收的缓存，不该算成被占用。加 -h 用易读单位，加 -s 3 每 3 秒刷新一次。",
+      "syntax": "free [选项]",
+      "keyPoints": [
+        "重点看 available，它才是应用实际可用的内存。",
+        "buff/cache 是可回收的缓存，别当成被进程吃掉了。",
+        "free 列小不等于内存紧张，available 才是判断依据。",
+        "-h 易读单位，-s 3 每 3 秒刷新，-c 5 刷 5 次后退出。"
+      ],
+      "options": [
+        {
+          "flag": "-h",
+          "desc": "自动换算成 GiB、MiB 等易读单位"
+        },
+        {
+          "flag": "-m",
+          "desc": "以 MiB 为单位显示"
+        },
+        {
+          "flag": "-g",
+          "desc": "以 GiB 为单位显示"
+        },
+        {
+          "flag": "-s",
+          "desc": "每 N 秒刷新一次，如 -s 3"
+        },
+        {
+          "flag": "-t",
+          "desc": "多显示一行总计"
+        },
+        {
+          "flag": "-c",
+          "desc": "刷新 N 次后退出，配合 -s 使用"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "人类可读地看内存",
+          "code": "free -h"
+        },
+        {
+          "desc": "每秒刷新一次，共看 5 次",
+          "code": "free -h -s 1 -c 5"
+        },
+        {
+          "desc": "以 MB 为单位显示",
+          "code": "free -m"
+        }
+      ],
+      "pitfalls": [
+        "别只看 free 列，buff/cache 可回收，真正要看 available。",
+        "内存不够先查容器限额或进程泄漏，别急着加内存条。"
+      ],
+      "related": [
+        "linux-top",
+        "linux-uptime",
+        "linux-ps"
+      ],
+      "docs": [
+        {
+          "label": "man7: free(1)",
+          "url": "https://man7.org/linux/man-pages/man1/free.1.html"
+        }
+      ],
+      "tags": [
+        "内存",
+        "监控",
+        "排查"
+      ]
+    },
+    {
+      "id": "linux-uptime",
+      "tool": "linux",
+      "module": "linux-process",
+      "name": "uptime",
+      "level": "入门",
+      "tagline": "开机多久和最近负载",
+      "plain": "uptime 一行给出当前时间、开机时长、登录用户数和 1/5/15 分钟平均负载。负载要和核数一起比：4 核机器负载 4 左右算跑满，长期高于核数说明在排队。它只是快速体检，定位具体进程还要 top 或 ps。",
+      "syntax": "uptime [选项]",
+      "keyPoints": [
+        "输出依次是时间、开机时长、登录用户数、三个平均负载。",
+        "load average 要和 CPU 核数比，长期高于核数说明排队。",
+        "负载高但 CPU 空闲，多半是 I/O 或磁盘在拖后腿。",
+        "重启后 uptime 变短，可用来确认机器是否意外重启过。"
+      ],
+      "options": [
+        {
+          "flag": "-p",
+          "desc": "以人类可读方式显示已运行时长"
+        },
+        {
+          "flag": "-s",
+          "desc": "显示系统启动时间"
+        },
+        {
+          "flag": "--help",
+          "desc": "显示帮助信息"
+        },
+        {
+          "flag": "--version",
+          "desc": "显示版本号后退出"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "看开机时长和负载",
+          "code": "uptime"
+        },
+        {
+          "desc": "只输出已运行的时长",
+          "code": "uptime -p"
+        },
+        {
+          "desc": "看系统启动时间",
+          "code": "uptime -s"
+        }
+      ],
+      "pitfalls": [
+        "load average 要和 CPU 核数一起看，4 核机器负载 8 已明显排队。",
+        "uptime 只给三个平均值，定位是谁造成的还得靠 top。"
+      ],
+      "related": [
+        "linux-top",
+        "linux-free",
+        "linux-ps"
+      ],
+      "docs": [
+        {
+          "label": "man7: uptime(1)",
+          "url": "https://man7.org/linux/man-pages/man1/uptime.1.html"
+        }
+      ],
+      "tags": [
+        "负载",
+        "开机时长",
+        "监控"
+      ]
+    },
+    {
+      "id": "linux-ip",
+      "tool": "linux",
+      "module": "linux-network",
+      "name": "ip",
+      "level": "入门",
+      "tagline": "看和改网卡与路由",
+      "plain": "新系统里用 ip 代替 ifconfig：ip addr 看地址，ip route 看路由，ip link 看网卡状态。加 -br 输出更简洁，加 -s 看收发包统计。注意 ip 命令的改动默认不持久，重启就丢，要写进网络配置或 Netplan 才长期生效。",
+      "syntax": "ip [选项] 对象 命令",
+      "keyPoints": [
+        "ip addr 看地址，ip route 看路由，ip link 看网卡。",
+        "ip -br addr 一行一个网卡，比默认输出好扫读。",
+        "ip -s link 看每个网卡的收发包和错误统计。",
+        "ip 的改动默认不持久，重启后恢复，要写进配置文件。"
+      ],
+      "options": [
+        {
+          "flag": "-br",
+          "desc": "简洁输出，只显示关键字段"
+        },
+        {
+          "flag": "-s",
+          "desc": "显示收发包和错误统计"
+        },
+        {
+          "flag": "-4",
+          "desc": "只看 IPv4 地址和路由"
+        },
+        {
+          "flag": "-6",
+          "desc": "只看 IPv6 地址和路由"
+        },
+        {
+          "flag": "-n",
+          "desc": "在指定网络命名空间里执行"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "简洁列出所有网卡和地址",
+          "code": "ip -br addr"
+        },
+        {
+          "desc": "看路由表",
+          "code": "ip route"
+        },
+        {
+          "desc": "看网卡收发包统计",
+          "code": "ip -s link"
+        },
+        {
+          "desc": "查看指定网卡的地址",
+          "code": "ip addr show eth0"
+        }
+      ],
+      "pitfalls": [
+        "ip 的改动默认不持久，重启就没了，要写进网络配置。",
+        "改默认路由或地址可能把自己的 SSH 连接搞断，先留好控制台。"
+      ],
+      "related": [
+        "linux-ping",
+        "linux-ss",
+        "linux-ssh"
+      ],
+      "docs": [
+        {
+          "label": "man7: ip(8)",
+          "url": "https://man7.org/linux/man-pages/man8/ip.8.html"
+        }
+      ],
+      "tags": [
+        "网卡",
+        "路由",
+        "网络排查"
+      ]
+    },
+    {
+      "id": "linux-ping",
+      "tool": "linux",
+      "module": "linux-network",
+      "name": "ping",
+      "level": "入门",
+      "tagline": "测主机通不通",
+      "plain": "怀疑网络断、DNS 配错、服务连不上时，先 ping 目标看通不通。默认一直发，用 -c 4 只发四个包方便看统计。ping 通只说明 ICMP 能到，不代表端口开着；很多云主机和防火墙默认禁 ping，ping 不通不等于服务挂了。",
+      "syntax": "ping [选项] 主机名或IP",
+      "keyPoints": [
+        "默认一直发，-c 4 只发 4 个包后停下看统计。",
+        "能 ping 通只说明 ICMP 可达，不代表目标端口开放。",
+        "-W 设置等待回应的超时，弱网下可适当调大。",
+        "ping 域名不通但 IP 通，通常是 DNS 的问题。"
+      ],
+      "options": [
+        {
+          "flag": "-c",
+          "desc": "发送指定数量的包后停止"
+        },
+        {
+          "flag": "-i",
+          "desc": "发包间隔秒数，默认 1 秒"
+        },
+        {
+          "flag": "-W",
+          "desc": "等待回应的超时秒数"
+        },
+        {
+          "flag": "-s",
+          "desc": "指定发送的包大小（字节）"
+        },
+        {
+          "flag": "-4",
+          "desc": "强制使用 IPv4"
+        },
+        {
+          "flag": "-6",
+          "desc": "强制使用 IPv6"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "只发 4 个包看统计",
+          "code": "ping -c 4 example.com"
+        },
+        {
+          "desc": "每 0.5 秒发一个包",
+          "code": "ping -i 0.5 example.com"
+        },
+        {
+          "desc": "用 IPv6 测连通",
+          "code": "ping -6 example.com"
+        }
+      ],
+      "pitfalls": [
+        "ping 通只说明 ICMP 能到，不代表端口开放或服务正常。",
+        "很多云主机默认禁 ping，ping 不通先查安全组再下结论。"
+      ],
+      "related": [
+        "linux-ip",
+        "linux-ssh",
+        "linux-curl"
+      ],
+      "docs": [
+        {
+          "label": "man7: ping(8)",
+          "url": "https://man7.org/linux/man-pages/man8/ping.8.html"
+        }
+      ],
+      "tags": [
+        "连通性",
+        "网络",
+        "排查"
+      ]
+    },
+    {
+      "id": "linux-curl",
+      "tool": "linux",
+      "module": "linux-network",
+      "name": "curl",
+      "level": "进阶",
+      "tagline": "用命令行发 HTTP 请求",
+      "plain": "调试接口、下载文件、看响应头都用 curl。默认把响应打到终端，-o 存文件，-I 只看响应头，-L 跟随重定向。调 API 时用 -X 指定方法、-H 加请求头、-d 带请求体。它默认不把 4xx/5xx 当失败，脚本里请加 --fail。",
+      "syntax": "curl [选项] URL",
+      "keyPoints": [
+        "-L 跟随重定向，-I 只看响应头，-o 存到文件。",
+        "-X 指定方法，-H 加请求头，-d 发送请求体。",
+        "默认把 4xx/5xx 当成功，脚本里要加 --fail。",
+        "-s 安静模式配合 -S，出错时仍打印错误信息。"
+      ],
+      "options": [
+        {
+          "flag": "-L",
+          "desc": "跟随 3xx 重定向"
+        },
+        {
+          "flag": "-I",
+          "desc": "只请求响应头，使用 HEAD 方法"
+        },
+        {
+          "flag": "-o",
+          "desc": "把响应体保存到指定文件"
+        },
+        {
+          "flag": "-s",
+          "desc": "安静模式，不显示进度和错误"
+        },
+        {
+          "flag": "-X",
+          "desc": "指定 HTTP 方法，如 -X POST"
+        },
+        {
+          "flag": "-H",
+          "desc": "添加请求头，可以重复使用多个"
+        },
+        {
+          "flag": "--fail",
+          "desc": "HTTP 状态码不小于 400 时返回非零退出码"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "只看响应头",
+          "code": "curl -I https://example.com"
+        },
+        {
+          "desc": "跟随重定向并保存到文件",
+          "code": "curl -L -o page.html https://example.com"
+        },
+        {
+          "desc": "发带 JSON 请求体的 POST",
+          "code": "curl -X POST -H 'Content-Type: application/json' -d '{\"name\":\"tom\"}' https://example.com/api"
+        },
+        {
+          "desc": "脚本里失败就报错",
+          "code": "curl -sS --fail https://example.com/api"
+        }
+      ],
+      "pitfalls": [
+        "curl 默认不跟随重定向，也不把 4xx/5xx 当失败，要加 -L 和 --fail。",
+        "-X POST 不会自动加请求头，发 JSON 要自己带 Content-Type。"
+      ],
+      "related": [
+        "linux-wget",
+        "linux-ping",
+        "linux-ssh"
+      ],
+      "docs": [
+        {
+          "label": "curl 官方手册",
+          "url": "https://curl.se/docs/manpage.html"
+        }
+      ],
+      "tags": [
+        "HTTP",
+        "接口调试",
+        "下载"
+      ]
+    },
+    {
+      "id": "linux-wget",
+      "tool": "linux",
+      "module": "linux-network",
+      "name": "wget",
+      "level": "入门",
+      "tagline": "命令行下载文件",
+      "plain": "wget 适合下载大文件：支持断点续传，网络断了重跑 -c 接着下，还能递归抓整站。用 -O 指定保存名，-P 指定目录，-q 安静模式适合脚本。它默认会覆盖同名文件，选项习惯和 curl 不一样，别混着记。",
+      "syntax": "wget [选项] URL",
+      "keyPoints": [
+        "-c 断点续传，断了重跑接着下，不从头再来。",
+        "-O 指定保存文件名，-P 指定保存目录。",
+        "-r 递归下载整站，配合 --limit-rate 限制速度。",
+        "默认会跟随重定向，也会覆盖同名文件。"
+      ],
+      "options": [
+        {
+          "flag": "-O",
+          "desc": "保存为指定文件名"
+        },
+        {
+          "flag": "-c",
+          "desc": "断点续传，接着上次的进度继续"
+        },
+        {
+          "flag": "-q",
+          "desc": "安静模式，不输出下载进度"
+        },
+        {
+          "flag": "-r",
+          "desc": "递归下载整站或目录"
+        },
+        {
+          "flag": "-P",
+          "desc": "保存到指定目录"
+        },
+        {
+          "flag": "--limit-rate",
+          "desc": "限制下载速度，如 --limit-rate=1m"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "下载并改名保存",
+          "code": "wget -O spring.zip https://example.com/spring.zip"
+        },
+        {
+          "desc": "断点续传大文件",
+          "code": "wget -c https://example.com/big.iso"
+        },
+        {
+          "desc": "静默下载到指定目录",
+          "code": "wget -q -P /tmp/downloads https://example.com/file.tar.gz"
+        }
+      ],
+      "pitfalls": [
+        "wget 默认覆盖同名文件，重要文件先确认再下载。",
+        "-O 后面跟文件名，指向已存在文件时会直接截断。"
+      ],
+      "related": [
+        "linux-curl",
+        "linux-rsync",
+        "linux-ping"
+      ],
+      "docs": [
+        {
+          "label": "man7: wget(1)",
+          "url": "https://man7.org/linux/man-pages/man1/wget.1.html"
+        }
+      ],
+      "tags": [
+        "下载",
+        "文件",
+        "断点续传"
+      ]
+    },
+    {
+      "id": "linux-ss",
+      "tool": "linux",
+      "module": "linux-network",
+      "name": "ss",
+      "level": "入门",
+      "tagline": "看谁在监听端口",
+      "plain": "服务起不来、端口被占时用 ss 查 socket，它已经取代 netstat。ss -tlnp 看 TCP 监听和对应进程，-u 看 UDP，-s 看连接数汇总。看进程名需要 root 权限，普通用户跑 -p 只显示自己的进程。",
+      "syntax": "ss [选项]",
+      "keyPoints": [
+        "-t TCP、-u UDP、-l 只看监听、-n 不解析服务名。",
+        "-p 显示占用 socket 的进程，通常要 root。",
+        "ss -tlnp 是查端口占用的标准组合。",
+        "-s 输出连接数汇总，快速判断连接是否堆积。"
+      ],
+      "options": [
+        {
+          "flag": "-t",
+          "desc": "只看 TCP 连接"
+        },
+        {
+          "flag": "-u",
+          "desc": "只看 UDP 连接"
+        },
+        {
+          "flag": "-l",
+          "desc": "只看监听状态的 socket"
+        },
+        {
+          "flag": "-n",
+          "desc": "直接显示端口号，不做服务名解析"
+        },
+        {
+          "flag": "-p",
+          "desc": "显示占用 socket 的进程"
+        },
+        {
+          "flag": "-s",
+          "desc": "显示连接数汇总统计"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "看 TCP 监听和进程",
+          "code": "ss -tlnp"
+        },
+        {
+          "desc": "看 UDP 监听",
+          "code": "ss -ulnp"
+        },
+        {
+          "desc": "看连接数汇总",
+          "code": "ss -s"
+        },
+        {
+          "desc": "查 8080 端口谁在用",
+          "code": "ss -tlnp | grep 8080"
+        }
+      ],
+      "pitfalls": [
+        "看别的用户进程需要 root，普通用户跑 -p 只能看到自己的。",
+        "ss 只显示当前时刻的连接，抓瞬时短连接要配合循环或抓包。"
+      ],
+      "related": [
+        "linux-ip",
+        "linux-curl",
+        "linux-ssh"
+      ],
+      "docs": [
+        {
+          "label": "man7: ss(8)",
+          "url": "https://man7.org/linux/man-pages/man8/ss.8.html"
+        }
+      ],
+      "tags": [
+        "端口",
+        "连接",
+        "网络排查"
+      ]
+    },
+    {
+      "id": "linux-ssh",
+      "tool": "linux",
+      "module": "linux-network",
+      "name": "ssh",
+      "level": "进阶",
+      "tagline": "远程登录另一台机器",
+      "plain": "ssh 登录远程主机执行命令，也能通过 -L 做本地端口转发。常用 -p 指定端口、-i 指定私钥、-v 打印握手过程排查连不上。免密登录要先 ssh-copy-id 把公钥放到对方 authorized_keys，并保证目录和文件权限正确。",
+      "syntax": "ssh [选项] 用户名@主机",
+      "keyPoints": [
+        "-p 指定端口，-i 指定私钥，-v 打印调试信息。",
+        "-L 把本地端口转发到远端，-N 只建隧道不执行命令。",
+        "首次连接会记录主机指纹，之后变了会告警。",
+        "免密登录要先把公钥装到对方 authorized_keys。"
+      ],
+      "options": [
+        {
+          "flag": "-p",
+          "desc": "指定远端 SSH 端口"
+        },
+        {
+          "flag": "-i",
+          "desc": "指定登录用的私钥文件"
+        },
+        {
+          "flag": "-v",
+          "desc": "打印调试信息，可叠加 -vv 看更多"
+        },
+        {
+          "flag": "-L",
+          "desc": "本地端口转发，如 -L 8080:localhost:80"
+        },
+        {
+          "flag": "-N",
+          "desc": "只建立连接，不执行远程命令"
+        },
+        {
+          "flag": "-o",
+          "desc": "传入配置项，如 -o StrictHostKeyChecking=no"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "用指定端口和私钥登录",
+          "code": "ssh -p 2222 -i ~/.ssh/id_ed25519 deploy@10.0.0.5"
+        },
+        {
+          "desc": "本地 8080 转发到远端 80",
+          "code": "ssh -L 8080:localhost:80 deploy@10.0.0.5"
+        },
+        {
+          "desc": "只建隧道不执行命令",
+          "code": "ssh -N -L 3306:db.internal:3306 jump@10.0.0.5"
+        },
+        {
+          "desc": "排查连接失败原因",
+          "code": "ssh -vv deploy@10.0.0.5"
+        }
+      ],
+      "pitfalls": [
+        "主机重装后报 REMOTE HOST IDENTIFICATION HAS CHANGED，先确认是不是自己换的机器。",
+        "私钥权限过宽会被拒绝，chmod 600 私钥、700 ~/.ssh 再连。"
+      ],
+      "related": [
+        "linux-scp",
+        "linux-rsync",
+        "linux-ip"
+      ],
+      "docs": [
+        {
+          "label": "OpenSSH 手册：ssh(1)",
+          "url": "https://man.openbsd.org/ssh.1"
+        }
+      ],
+      "tags": [
+        "远程登录",
+        "隧道",
+        "运维"
+      ]
+    },
+    {
+      "id": "linux-scp",
+      "tool": "linux",
+      "module": "linux-network",
+      "name": "scp",
+      "level": "入门",
+      "tagline": "在主机之间拷文件",
+      "plain": "scp 走 SSH 通道在本地和远程之间复制文件，老机器上都默认装着。拷目录加 -r，指定端口用大写 -P，指定私钥用 -i。它没有断点续传，大文件或大量小文件更适合 rsync。",
+      "syntax": "scp [选项] 源 目标",
+      "keyPoints": [
+        "本地和远程路径写法一样，远程写成 用户@主机:路径。",
+        "-r 复制整个目录，-P 指定端口（大写 P）。",
+        "-i 指定私钥，-p 保留修改时间和权限。",
+        "没有断点续传，断了大文件要从头再传。"
+      ],
+      "options": [
+        {
+          "flag": "-r",
+          "desc": "递归复制整个目录"
+        },
+        {
+          "flag": "-P",
+          "desc": "指定远端端口（注意是大写 P）"
+        },
+        {
+          "flag": "-i",
+          "desc": "指定登录用的私钥文件"
+        },
+        {
+          "flag": "-p",
+          "desc": "保留文件的修改时间和权限"
+        },
+        {
+          "flag": "-C",
+          "desc": "传输时压缩，对文本文件有效"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "把本地文件拷到远端",
+          "code": "scp app.jar deploy@10.0.0.5:/opt/app/"
+        },
+        {
+          "desc": "从远端拉回整个目录",
+          "code": "scp -r deploy@10.0.0.5:/var/log/app ./logs"
+        },
+        {
+          "desc": "指定端口和私钥拷文件",
+          "code": "scp -P 2222 -i ~/.ssh/id_ed25519 app.jar deploy@10.0.0.5:/opt/"
+        }
+      ],
+      "pitfalls": [
+        "端口是大写 -P，小写 -p 是保留文件时间，写错会连不上。",
+        "scp 没有断点续传，大文件中途断了要重来，优先用 rsync。"
+      ],
+      "related": [
+        "linux-ssh",
+        "linux-rsync",
+        "linux-ip"
+      ],
+      "docs": [
+        {
+          "label": "OpenSSH 手册：scp(1)",
+          "url": "https://man.openbsd.org/scp.1"
+        }
+      ],
+      "tags": [
+        "传文件",
+        "远程",
+        "运维"
+      ]
+    },
+    {
+      "id": "linux-rsync",
+      "tool": "linux",
+      "module": "linux-network",
+      "name": "rsync",
+      "level": "进阶",
+      "tagline": "增量同步文件",
+      "plain": "rsync 只传有变化的部分，适合备份、发布和迁移大目录。日常用 rsync -avz 源 目标，加 -n 先演练看会动哪些文件，--delete 让目标端和源保持一致。源路径末尾有没有斜杠语义不同，这一点最容易搞错。",
+      "syntax": "rsync [选项] 源 目标",
+      "keyPoints": [
+        "只传差异部分，重复同步很快，适合反复发布。",
+        "源路径末尾加斜杠是同步目录内容，不加是同步目录本身。",
+        "-n 演练模式只打印动作，确认无误再去掉 -n。",
+        "--delete 删除目标端多余文件，让两边完全一致。"
+      ],
+      "options": [
+        {
+          "flag": "-a",
+          "desc": "归档模式，递归并保留权限、时间等属性"
+        },
+        {
+          "flag": "-v",
+          "desc": "输出同步了哪些文件"
+        },
+        {
+          "flag": "-z",
+          "desc": "传输时压缩，省带宽但费 CPU"
+        },
+        {
+          "flag": "-n",
+          "desc": "演练模式，只显示会做什么不真执行"
+        },
+        {
+          "flag": "-P",
+          "desc": "显示进度并支持断点续传"
+        },
+        {
+          "flag": "--delete",
+          "desc": "删除目标端多余的文件，保持完全一致"
+        },
+        {
+          "flag": "-e",
+          "desc": "指定远程 shell，如 -e ssh"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "本地目录增量同步到远端",
+          "code": "rsync -avz ./dist/ deploy@10.0.0.5:/var/www/app/"
+        },
+        {
+          "desc": "先演练看会动哪些文件",
+          "code": "rsync -avzn ./dist/ deploy@10.0.0.5:/var/www/app/"
+        },
+        {
+          "desc": "让远端和本地完全一致",
+          "code": "rsync -avz --delete ./dist/ deploy@10.0.0.5:/var/www/app/"
+        }
+      ],
+      "pitfalls": [
+        "源路径末尾的斜杠决定同步目录内容还是目录本身，写错会多一层目录。",
+        "--delete 会删掉目标端多余文件，先用 -n 演练并确认路径。"
+      ],
+      "related": [
+        "linux-scp",
+        "linux-ssh",
+        "linux-wget"
+      ],
+      "docs": [
+        {
+          "label": "man7: rsync(1)",
+          "url": "https://man7.org/linux/man-pages/man1/rsync.1.html"
+        }
+      ],
+      "tags": [
+        "同步",
+        "备份",
+        "增量"
+      ]
+    },
+    {
+      "id": "linux-df",
+      "tool": "linux",
+      "module": "linux-disk",
+      "name": "df",
+      "level": "入门",
+      "tagline": "看磁盘还剩多少",
+      "plain": "磁盘写满、服务报 No space left 时先 df -h 看各分区用量。它统计的是文件系统整体，不是某个目录。使用率 100% 但 du 算出来没那么多，常见于已删除却仍被进程占用的文件；inode 用尽也会写不进东西，用 df -i 查。",
+      "syntax": "df [选项] [路径]",
+      "keyPoints": [
+        "df 统计文件系统整体，想查目录用 du。",
+        "使用率高但 du 对不上，常见于已删除仍被进程占用的文件。",
+        "inode 用尽也会写不进数据，df -i 才看得出来。",
+        "-T 显示文件系统类型，-h 用易读单位。"
+      ],
+      "options": [
+        {
+          "flag": "-h",
+          "desc": "用 GiB、MiB 等易读单位显示"
+        },
+        {
+          "flag": "-T",
+          "desc": "显示文件系统类型"
+        },
+        {
+          "flag": "-i",
+          "desc": "显示 inode 使用情况"
+        },
+        {
+          "flag": "-H",
+          "desc": "按 1000 进制换算单位"
+        },
+        {
+          "flag": "-a",
+          "desc": "包括伪文件系统一起显示"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "人类可读地看各分区",
+          "code": "df -h"
+        },
+        {
+          "desc": "看文件系统类型",
+          "code": "df -hT"
+        },
+        {
+          "desc": "看 inode 使用情况",
+          "code": "df -i"
+        }
+      ],
+      "pitfalls": [
+        "df 看文件系统整体，du 看目录占用，两者对不上很常见。",
+        "使用率没满也可能写不进去，inode 用尽时 df -i 才看得出来。"
+      ],
+      "related": [
+        "linux-du",
+        "linux-tar",
+        "linux-gzip"
+      ],
+      "docs": [
+        {
+          "label": "man7: df(1)",
+          "url": "https://man7.org/linux/man-pages/man1/df.1.html"
+        }
+      ],
+      "tags": [
+        "磁盘",
+        "空间",
+        "排查"
+      ]
+    },
+    {
+      "id": "linux-du",
+      "tool": "linux",
+      "module": "linux-disk",
+      "name": "du",
+      "level": "进阶",
+      "tagline": "找出哪个目录占空间",
+      "plain": "磁盘满了要知道是谁占的：du -sh * 看当前目录各项大小，du -h --max-depth=1 /var 看 /var 下各子目录。它靠遍历文件统计，目录大就慢；统计的是占用的磁盘块，和文件逻辑大小可能不同。先定位再删，别直接 rm。",
+      "syntax": "du [选项] [路径]",
+      "keyPoints": [
+        "-s 只显示总计，-h 用易读单位，两者常一起用。",
+        "--max-depth=1 只看下一层，避免刷屏。",
+        "统计的是磁盘块占用，和 ls 显示的逻辑大小可能不同。",
+        "配合 sort -hr 从大到小排，快速找大目录。"
+      ],
+      "options": [
+        {
+          "flag": "-h",
+          "desc": "用易读单位显示大小"
+        },
+        {
+          "flag": "-s",
+          "desc": "只显示每个参数的总计"
+        },
+        {
+          "flag": "-a",
+          "desc": "连每个文件的大小也列出来"
+        },
+        {
+          "flag": "--max-depth",
+          "desc": "限制统计深度，如 --max-depth=1"
+        },
+        {
+          "flag": "-c",
+          "desc": "最后多输出一行总计"
+        },
+        {
+          "flag": "-x",
+          "desc": "不跨文件系统统计"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "看当前目录各项占用",
+          "code": "du -sh *"
+        },
+        {
+          "desc": "看 /var 下一层占用排行",
+          "code": "du -h --max-depth=1 /var | sort -hr | head"
+        },
+        {
+          "desc": "只看某个目录总大小",
+          "code": "du -sh /var/log"
+        },
+        {
+          "desc": "统计并从大到小排",
+          "code": "du -ah . | sort -hr | head -20"
+        }
+      ],
+      "pitfalls": [
+        "du 统计占用的磁盘块，和文件逻辑大小可能不一样。",
+        "目录里文件很多时 du 很慢，先定位大目录再细看。"
+      ],
+      "related": [
+        "linux-df",
+        "linux-tar",
+        "linux-rsync"
+      ],
+      "docs": [
+        {
+          "label": "man7: du(1)",
+          "url": "https://man7.org/linux/man-pages/man1/du.1.html"
+        }
+      ],
+      "tags": [
+        "磁盘",
+        "目录",
+        "排查"
+      ]
+    },
+    {
+      "id": "linux-tar",
+      "tool": "linux",
+      "module": "linux-disk",
+      "name": "tar",
+      "level": "进阶",
+      "tagline": "打包和解包归档文件",
+      "plain": "tar 把一堆文件打成一个归档，常配合 gzip 用：tar -czf 打包，tar -xzf 解包，tar -tzf 只看清单不解压。注意 -f 后面必须紧跟归档文件名，选项顺序写错会被当成文件名。解压会覆盖同名文件，动手前先 -t 看一眼内容。",
+      "syntax": "tar [选项] 归档文件 [文件...]",
+      "keyPoints": [
+        "-c 创建归档，-x 解压，-t 只列清单。",
+        "-z 表示用 gzip 压缩或解压，-f 指定归档文件名。",
+        "-C 先切换到指定目录再打包或解压，适合指定落点。",
+        "解压会覆盖同名文件，先 tar -tzf 看清单再动手。"
+      ],
+      "options": [
+        {
+          "flag": "-c",
+          "desc": "创建归档文件"
+        },
+        {
+          "flag": "-x",
+          "desc": "从归档里解压"
+        },
+        {
+          "flag": "-t",
+          "desc": "列出归档内容，不解压"
+        },
+        {
+          "flag": "-z",
+          "desc": "用 gzip 压缩或解压"
+        },
+        {
+          "flag": "-f",
+          "desc": "指定归档文件名，后面要紧跟文件名"
+        },
+        {
+          "flag": "-v",
+          "desc": "显示正在处理的文件"
+        },
+        {
+          "flag": "-C",
+          "desc": "处理前切换到指定目录"
+        },
+        {
+          "flag": "--exclude",
+          "desc": "打包时排除匹配的文件"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "把目录打包成 gz",
+          "code": "tar -czf logs.tar.gz /var/log/app"
+        },
+        {
+          "desc": "看包里的文件清单",
+          "code": "tar -tzf logs.tar.gz"
+        },
+        {
+          "desc": "解压到指定目录",
+          "code": "tar -xzf logs.tar.gz -C /opt/restore"
+        },
+        {
+          "desc": "打包时排除日志文件",
+          "code": "tar -czf app.tar.gz --exclude='*.log' app/"
+        }
+      ],
+      "pitfalls": [
+        "-f 后面必须紧跟归档文件名，选项顺序写错会把文件名当选项。",
+        "解压默认覆盖同名文件，动手前先 tar -tzf 看清单。"
+      ],
+      "related": [
+        "linux-gzip",
+        "linux-zip",
+        "linux-df"
+      ],
+      "docs": [
+        {
+          "label": "man7: tar(1)",
+          "url": "https://man7.org/linux/man-pages/man1/tar.1.html"
+        }
+      ],
+      "tags": [
+        "打包",
+        "归档",
+        "压缩"
+      ]
+    },
+    {
+      "id": "linux-gzip",
+      "tool": "linux",
+      "module": "linux-disk",
+      "name": "gzip",
+      "level": "入门",
+      "tagline": "压缩单个文件",
+      "plain": "gzip 把单个文件压成 .gz，默认原地替换并删掉原文件，要保留原文件加 -k。它不能一次压多个文件成一个包，多文件先用 tar 打包。解压用 gzip -d 或 gunzip，看压缩比用 -l，压缩级别 -1 到 -9，默认 -6。",
+      "syntax": "gzip [选项] 文件...",
+      "keyPoints": [
+        "默认原地替换并删掉原文件，要保留加 -k。",
+        "只能压单个文件，多文件先 tar 打包再压。",
+        "-d 解压，等价于用 gunzip；-l 看压缩比。",
+        "-1 到 -9 调压缩级别，默认 -6，越高越慢。"
+      ],
+      "options": [
+        {
+          "flag": "-d",
+          "desc": "解压 .gz 文件"
+        },
+        {
+          "flag": "-k",
+          "desc": "保留原文件，不删除"
+        },
+        {
+          "flag": "-9",
+          "desc": "最高压缩级别，1 到 9 可调"
+        },
+        {
+          "flag": "-l",
+          "desc": "列出压缩前后大小和压缩比"
+        },
+        {
+          "flag": "-c",
+          "desc": "结果写到标准输出，不改动原文件"
+        },
+        {
+          "flag": "-r",
+          "desc": "递归处理目录下的所有文件"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "压缩单个文件，保留原文件",
+          "code": "gzip -k access.log"
+        },
+        {
+          "desc": "解压 .gz 文件",
+          "code": "gzip -d access.log.gz"
+        },
+        {
+          "desc": "看压缩比",
+          "code": "gzip -l access.log.gz"
+        },
+        {
+          "desc": "最高级别压缩",
+          "code": "gzip -9 big.sql"
+        }
+      ],
+      "pitfalls": [
+        "gzip 默认原地替换并删掉原文件，要保留记得加 -k。",
+        "gzip 只能压单个文件，把多个文件打成一个包要用 tar。"
+      ],
+      "related": [
+        "linux-tar",
+        "linux-zip",
+        "linux-unzip"
+      ],
+      "docs": [
+        {
+          "label": "GNU gzip 手册：调用 gzip",
+          "url": "https://www.gnu.org/software/gzip/manual/html_node/Invoking-gzip.html"
+        }
+      ],
+      "tags": [
+        "压缩",
+        "解压",
+        "单文件"
+      ]
+    },
+    {
+      "id": "linux-zip",
+      "tool": "linux",
+      "module": "linux-disk",
+      "name": "zip",
+      "level": "入门",
+      "tagline": "打包成 zip 文件",
+      "plain": "要给 Windows 同事发压缩包，用 zip 最省事，对方双击就能开。压目录必须加 -r，否则子目录会被跳过；-9 压得更小但更慢，-e 可以加密码。zip 是往已有压缩包里追加或更新文件，不像 tar 那样一次成型。",
+      "syntax": "zip [选项] 压缩包名 文件...",
+      "keyPoints": [
+        "压目录必须加 -r，否则子目录会被跳过。",
+        "-9 最高压缩级别，-e 设置密码，-q 少输出。",
+        "-x 排除匹配的文件，适合跳过 node_modules。",
+        "对已存在的压缩包再跑 zip 是追加或更新，不是重做。"
+      ],
+      "options": [
+        {
+          "flag": "-r",
+          "desc": "递归压缩目录及其内容"
+        },
+        {
+          "flag": "-9",
+          "desc": "最高压缩级别，更慢但更小"
+        },
+        {
+          "flag": "-e",
+          "desc": "给压缩包设置密码"
+        },
+        {
+          "flag": "-q",
+          "desc": "安静模式，不打印压缩过程"
+        },
+        {
+          "flag": "-x",
+          "desc": "排除匹配的文件"
+        },
+        {
+          "flag": "-d",
+          "desc": "从压缩包里删除指定文件"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "递归压缩目录",
+          "code": "zip -r site.zip site/"
+        },
+        {
+          "desc": "压缩时排除缓存目录",
+          "code": "zip -r app.zip app/ -x '*/node_modules/*'"
+        },
+        {
+          "desc": "给压缩包加密码",
+          "code": "zip -e secret.zip report.pdf"
+        },
+        {
+          "desc": "最高压缩级别",
+          "code": "zip -9 -r backup.zip data/"
+        }
+      ],
+      "pitfalls": [
+        "压目录不加 -r 会把子目录整个跳过，只留下目录项。",
+        "zip 的压缩包可以被别人再次追加，传敏感数据前先确认内容。"
+      ],
+      "related": [
+        "linux-unzip",
+        "linux-tar",
+        "linux-gzip"
+      ],
+      "docs": [
+        {
+          "label": "Info-ZIP：Zip 手册",
+          "url": "https://infozip.sourceforge.net/Zip.html"
+        }
+      ],
+      "tags": [
+        "压缩",
+        "打包",
+        "跨平台"
+      ]
+    },
+    {
+      "id": "linux-unzip",
+      "tool": "linux",
+      "module": "linux-disk",
+      "name": "unzip",
+      "level": "入门",
+      "tagline": "解压 zip 文件",
+      "plain": "收到 .zip 用 unzip 解开：-l 先看清单，-d 解到指定目录，-q 安静模式。同名文件已存在时它会交互询问，脚本里要用 -o 覆盖或 -n 跳过。unzip 6.0 不能指定文件名编码，Windows 打的 GBK 文件名包可能出现乱码，需要时用支持编码转换的工具处理。",
+      "syntax": "unzip [选项] 压缩包名",
+      "keyPoints": [
+        "-l 先看包内清单，确认内容再解压。",
+        "-d 指定解压目录，不存在会自动创建。",
+        "同名文件默认交互询问，脚本里用 -o 覆盖或 -n 跳过。",
+        "Windows 打包的 GBK 文件名包可能乱码，unzip 6.0 无法指定编码。"
+      ],
+      "options": [
+        {
+          "flag": "-l",
+          "desc": "只列出包内文件，不解压"
+        },
+        {
+          "flag": "-d",
+          "desc": "解压到指定目录"
+        },
+        {
+          "flag": "-o",
+          "desc": "覆盖同名文件，不再询问"
+        },
+        {
+          "flag": "-n",
+          "desc": "不覆盖已存在的文件"
+        },
+        {
+          "flag": "-q",
+          "desc": "安静模式，减少输出"
+        }
+      ],
+      "examples": [
+        {
+          "desc": "先看包里有什么",
+          "code": "unzip -l release.zip"
+        },
+        {
+          "desc": "解压到指定目录",
+          "code": "unzip release.zip -d /opt/app"
+        },
+        {
+          "desc": "覆盖同名文件不再询问",
+          "code": "unzip -o release.zip"
+        },
+        {
+          "desc": "安静解压，少输出",
+          "code": "unzip -q release.zip"
+        }
+      ],
+      "pitfalls": [
+        "-o 会无提示覆盖同名文件，覆盖前先 unzip -l 看清单。",
+        "Windows 打包的中文名容易乱码，unzip 本身无法指定文件名编码。"
+      ],
+      "related": [
+        "linux-zip",
+        "linux-tar",
+        "linux-gzip"
+      ],
+      "docs": [
+        {
+          "label": "Info-ZIP：UnZip 手册",
+          "url": "https://infozip.sourceforge.net/UnZip.html"
+        }
+      ],
+      "tags": [
+        "解压",
+        "zip",
+        "文件"
+      ]
+    }
+  ]
+}

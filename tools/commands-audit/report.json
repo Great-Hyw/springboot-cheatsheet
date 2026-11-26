@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "tool": "commands-audit",
+  "generatedAt": "2026-11-26T14:25:21.831Z",
+  "options": {
+    "skipLinks": true,
+    "sampleRatio": 0.42,
+    "concurrency": 6
+  },
+  "summary": {
+    "files": 3,
+    "items": 79,
+    "errors": 0,
+    "warnings": 0,
+    "infos": 4,
+    "verdict": "pass",
+    "byCode": {
+      "EXAMPLE_NOT_DEMONSTRATING_NAME": 3,
+      "LINKS_SKIPPED": 1
+    },
+    "linkFailed": 0,
+    "linkTotal": 80,
+    "sample": "34/79"
+  },
+  "files": [
+    "commands-linux-a.json",
+    "commands-linux-b.json",
+    "commands-git.json"
+  ],
+  "perFile": {
+    "commands-linux-a.json": {
+      "errors": 0,
+      "warnings": 0,
+      "infos": 0
+    },
+    "commands-linux-b.json": {
+      "errors": 0,
+      "warnings": 0,
+      "infos": 3
+    },
+    "commands-git.json": {
+      "errors": 0,
+      "warnings": 0,
+      "infos": 0
+    },
+    "general": {
+      "errors": 0,
+      "warnings": 0,
+      "infos": 1
+    }
+  },
+  "byCode": {
+    "EXAMPLE_NOT_DEMONSTRATING_NAME": 3,
+    "LINKS_SKIPPED": 1
+  },
+  "linkChecks": [],
+  "cachedLinks": 0,
+  "manualFocus": {
+    "destructive": []
+  },
+  "sample": [
+    {
+      "file": "commands-linux-a.json",
+      "id": "linux-chmod",
+      "name": "chmod",
+      "module": "linux-perm",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-a.json",
+      "id": "linux-sed",
+      "name": "sed",
+      "module": "linux-text",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-a.json",
+      "id": "linux-umask",
+      "name": "umask",
+      "module": "linux-perm",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-a.json",
+      "id": "linux-find",
+      "name": "find",
+      "module": "linux-file",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-a.json",
+      "id": "linux-mkdir",
+      "name": "mkdir",
+      "module": "linux-file",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-a.json",
+      "id": "linux-cut",
+      "name": "cut",
+      "module": "linux-text",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-a.json",
+      "id": "linux-pwd",
+      "name": "pwd",
+      "module": "linux-file",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-a.json",
+      "id": "linux-cat",
+      "name": "cat",
+      "module": "linux-text",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-a.json",
+      "id": "linux-less",
+      "name": "less",
+      "module": "linux-text",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-a.json",
+      "id": "linux-sudo",
+      "name": "sudo",
+      "module": "linux-perm",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-a.json",
+      "id": "linux-head",
+      "name": "head",
+      "module": "linux-text",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-b.json",
+      "id": "linux-ping",
+      "name": "ping",
+      "module": "linux-network",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-b.json",
+      "id": "linux-jobs",
+      "name": "jobs",
+      "module": "linux-process",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-b.json",
+      "id": "linux-rsync",
+      "name": "rsync",
+      "module": "linux-network",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-b.json",
+      "id": "linux-pkill",
+      "name": "pkill",
+      "module": "linux-process",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-b.json",
+      "id": "linux-ip",
+      "name": "ip",
+      "module": "linux-network",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-b.json",
+      "id": "linux-ss",
+      "name": "ss",
+      "module": "linux-network",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-b.json",
+      "id": "linux-free",
+      "name": "free",
+      "module": "linux-process",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-b.json",
+      "id": "linux-ps",
+      "name": "ps",
+      "module": "linux-process",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-b.json",
+      "id": "linux-curl",
+      "name": "curl",
+      "module": "linux-network",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-linux-b.json",
+      "id": "linux-du",
+      "name": "du",
+      "module": "linux-disk",
+      "tool": "linux"
+    },
+    {
+      "file": "commands-git.json",
+      "id": "git-rebase",
+      "name": "git rebase",
+      "module": "git-branch",
+      "tool": "git"
+    },
+    {
+      "file": "commands-git.json",
+      "id": "git-restore",
+      "name": "git restore",
+      "module": "git-undo",
+      "tool": "git"
+    },
+    {
+      "file": "commands-git.json",
+      "id": "git-reflog",
+      "name": "git reflog",
+      "module": "git-history",
+      "tool": "git"
+    },
+    {
+      "file": "commands-git.json",
+      "id": "git-switch",
+      "name": "git switch",
+      "module": "git-branch",
+      "tool": "git"
+    },
+    {
+      "file": "commands-git.json",
+      "id": "git-stash",
+      "name": "git stash",
+      "module": "git-undo",
+      "tool": "git"
+    },
+    {
+      "file": "commands-git.json",
+      "id": "git-worktree",
+      "name": "git worktree",
+      "module": "git-history",
+      "tool": "git"
+    },
+    {
+      "file": "commands-git.json",
+      "id": "git-blame",
+      "name": "git blame",
+      "module": "git-history",
+      "tool": "git"
+    },
+    {
+      "file": "commands-git.json",
+      "id": "git-add",
+      "name": "git add",
+      "module": "git-basic",
+      "tool": "git"
+    },
+    {
+      "file": "commands-git.json",
+      "id": "git-branch",
+      "name": "git branch",
+      "module": "git-branch",
+      "tool": "git"
+    },
+    {
+      "file": "commands-git.json",
+      "id": "git-status",
+      "name": "git status",
+      "module": "git-basic",
+      "tool": "git"
+    },
+    {
+      "file": "commands-git.json",
+      "id": "git-rm",
+      "name": "git rm",
+      "module": "git-undo",
+      "tool": "git"
+    },
+    {
+      "file": "commands-git.json",
+      "id": "git-help",
+      "name": "git help",
+      "module": "git-setup",
+      "tool": "git"
+    },
+    {
+      "file": "commands-git.json",
+      "id": "git-clone",
+      "name": "git clone",
+      "module": "git-setup",
+      "tool": "git"
+    }
+  ],
+  "issues": [
+    {
+      "severity": "info",
+      "code": "EXAMPLE_NOT_DEMONSTRATING_NAME",
+      "file": "commands-linux-b.json",
+      "id": "linux-pkill",
+      "message": "examples[0].code 未直接演示「pkill」本身：「pgrep -a nginx」"
+    },
+    {
+      "severity": "info",
+      "code": "EXAMPLE_NOT_DEMONSTRATING_NAME",
+      "file": "commands-linux-b.json",
+      "id": "linux-jobs",
+      "message": "examples[2].code 未直接演示「jobs」本身：「bg %1」"
+    },
+    {
+      "severity": "info",
+      "code": "EXAMPLE_NOT_DEMONSTRATING_NAME",
+      "file": "commands-linux-b.json",
+      "id": "linux-jobs",
+      "message": "examples[3].code 未直接演示「jobs」本身：「fg %1」"
+    },
+    {
+      "severity": "info",
+      "code": "LINKS_SKIPPED",
+      "file": "",
+      "id": "",
+      "message": "已按 --skip-links 跳过链接与 flag 真实性检查"
+    }
+  ]
+}

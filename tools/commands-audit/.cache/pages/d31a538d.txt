@@ -1,0 +1,557 @@
+SOURCE: https://infozip.sourceforge.net/Zip.html
+STATUS: 200
+
+ 
+ 
+
+
+ Info-ZIP's Zip 
+ 
+
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+
+ 
+
+ 
+
+ 
+
+ Zip 3.0
+ 
+
+
+
+ 
+Zip is a compression and file packaging/archive utility. Although highly
+compatible both with PKWARE's PKZIP and PKUNZIP utilities for MS-DOS and
+with Info-ZIP's own UnZip , our primary objectives
+have been portability and other-than-MSDOS functionality. Features not
+found in the PKWARE version include:
+
+
+ 
+
+ 
+ creating zipfiles in a pipe or on a device
+ 
+ VMS and OS/2 extended file attributes
+ 
+ conversion between Unix, MS-DOS and Macintosh text file formats
+ 
+ the ability to run on most of your favorite operating systems.
+
+ 
+
+ 
+Plus it's free , as is the source code .
+ Whoa .
+
+
+ 
+Zip is useful for packaging a set of files for distribution, for
+archiving files, and for saving disk space by temporarily compressing
+unused files or directories.
+Zip puts one or more compressed files into a single ZIP archive,
+along with information about the files (name, path, date, time of last
+modification, protection, and check information to verify file
+integrity). An entire directory structure can be packed into a ZIP
+archive with a single command.
+
+
+ 
+Zip has one compression method (deflation) and can also store files
+without compression. Zip automatically chooses the better of the two
+for each file. Compression ratios of 2:1 to 3:1 are common for text files.
+
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+ All known vulnerabilities are fixed in Zip 2.32.
+ (Let's hope it stays that way.)
+ 
+ 
+ 
+
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+ Zip 2.3 and (presumably) all previous versions have a buffer-overrun
+ vulnerability relating to deep directory paths that could potentially
+ lead to local privilege escalation (e.g., in the case of automated,
+ Zip-based backups).
+ See the FAQ
+ page for details.
+ 
+ 
+ 
+
+ 
+ 
+
+ 
+
+ Contents of This Page:
+
+
+ 
+
+ 
+ Latest Release 
+ 
+ Future Plans 
+ 
+ Downloads 
+ 
+ Other Stuff 
+
+ 
+
+ 
+ 
+ 
+ 
+
+
+ 
+
+ Latest Release
+
+
+ 
+New features in Zip 3.0 , released 7 July 2008:
+
+
+ 
+
+ 
+ large-file support (i.e., > 2GB)
+ 
+ support for more than 65536 files per archive
+ 
+ multi-part archive support
+ 
+ bzip2 compression support
+ 
+ Unicode (UTF-8) filename and (partial) comment support
+ 
+ difference mode (for incremental backups)
+ 
+ filesystem-synch mode
+ 
+ cross-archive copy mode
+ 
+ extended progress info and logging
+ 
+ improved archive-fixing support
+ 
+ improved streaming and piping
+ 
+ improved command-line parser
+ 
+ improved Unix FIFO support
+ 
+ Unix 32-bit UIDs/GIDs ( requires UnZip 6.0 to restore )
+
+ 
+
+ 
+ 
+ 
+ 
+
+
+ 
+
+ Future Plans
+
+
+ 
+ Frequently Asked Questions 
+page for details.
+ -->
+
+
+ 
+The next major release of Zip will be version 3.1 , with AES encryption,
+complete Unicode-comments support, extended attributes, and perhaps some
+other things.
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+ 
+
+ Downloads
+
+
+ 
+
+ 
+ NEW RELEASE : Most binaries are contributed by third parties,
+ so there's no fixed schedule for when any of them might appear. Those
+ binaries typically provided by Info-ZIP team members (DOS, Win32, OS/2,
+ Linux, FreeBSD, VMS) have already started showing up and should be fully
+ available within a few weeks, though we make no promises. Please be
+ patient, and feel free to grab the sources and compile your own! (Yes,
+ even you. Free, downloadable compilers exist for all major OSes!) 
+ 
+
+ 
+ 
+ NOTE : If you find a broken link, please tell us about it . Thanks! 
+ 
+ -->
+
+ 
+Ready-to-run binary versions of Zip are available for numerous platforms
+and operating systems, but for most systems, only older binaries are available.
+The three primary CTAN sites (and their many mirrors) contain a snapshot of
+these binaries, current as of roughly 2004 (i.e., UnZip 5.51 and Zip 2.3
+timeframe):
+
+
+ 
+
+ 
+ tug.ctan.org (US)
+ [FROZEN] 
+ 
+ 
+ ftp.tex.ac.uk (UK)
+ [FROZEN] 
+ 
+ 
+ ftp.dante.de (Germany)
+ [FROZEN] 
+ 
+
+ 
+
+ 
+Here's a quick guide to the directory structure of the old ftp site:
+
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ Binaries for this OS... 
+ ...can be found in this directory 
+ 
+
+ 
+ AmigaDOS 
+ AMIGA 
+ 
+
+ 
+ AOS/VS 
+ AOSVS/beta 
+ 
+
+ 
+ Atari TOS/MiNT 
+ ATARI 
+ 
+
+ 
+ BeOS 
+ BEOS 
+ 
+
+ 
+ Human68K (X68000) 
+ HUMAN68K 
+ 
+
+ 
+ Macintosh 
+ MACOS (also see Dirk Haase page) 
+ 
+
+ 
+ MS-DOS / PC-DOS / DR-DOS / FreeDOS 
+ MSDOS 
+ 
+
+ 
+ MVS ("OS/390 Base") / OS/390 OpenEdition 
+ MVS 
+ 
+
+ 
+ Novell Netware 
+ NOVELL (also see HrZip and HrUnZip page) 
+ 
+
+ 
+ OS/2 
+ OS2 
+ 
+
+ 
+ QDOS / SMSQ 
+ QDOS 
+ 
+
+ 
+ RISC OS (e.g., Acorn Archimedes) 
+ RISCOS 
+ 
+
+ 
+ Tandem NSK D30 (should also be OK on D20, D40) 
+ TANDEM (also see Info-ZIP for Tandem page) 
+ 
+
+ 
+ Unix :
+ 
+
+ 
+ 
+ AIX 3.2.5 through 5L 
+ UNIX/AIX 
+ 
+
+ 
+ 
+ CLIX (Intergraph) 
+ UNIX/CLIX 
+ 
+
+ 
+ 
+ ConvexOS 
+ UNIX/CONVEX 
+ 
+
+ 
+ 
+ Digital Unix (OSF/1, Compaq Tru64) / Ultrix 
+ UNIX/DEC 
+ 
+
+ 
+ 
+ FreeBSD 
+ UNIX/FREEBSD 
+ 
+
+ 
+ 
+ HP-UX (PA-RISC) / MPE/iX (HP 3000) 
+ UNIX/HP 
+ 
+
+ 
+ 
+ Linux 
+ UNIX/LINUX 
+ 
+
+ 
+ 
+ NetBSD 
+ ftp.netbsd.org 
+ 
+
+ 
+ 
+ QNX 
+ UNIX/QNX 
+ 
+
+ 
+ 
+ SCO Unix 
+ UNIX/SCO 
+ 
+
+ 
+ 
+ SGI Irix 
+ UNIX/SGI 
+ 
+
+ 
+ 
+ Solaris / SunOS 
+ UNIX/SUN 
+ 
+
+ 
+ VM/CMS 
+ VMCMS 
+ 
+
+ 
+ VMS 
+ VMS 
+ 
+
+ 
+ Windows 3.x 
+ WIN16 
+ 
+
+ 
+ Windows 9x / ME / NT / 2000 / XP / etc. 
+ WIN32 
+ 
+
+ 
+ 
+ 
+
+ 
+ 
+
+
+ 
+As of 2009, the latest sources and binaries for Zip, UnZip, WiZ and
+MacZip (including encryption code) are available at ftp.info-zip.org 
+and at Info-ZIP's
+SourceForge site .
+ 
+ -->
+
+
+ 
+ 
+ 
+ 
+
+
+ 
+
+ Other Stuff
+
+
+ 
+Technical information on zipfiles and other assorted Info-ZIP documentation
+is available from:
+
+
+ 
+
+ 
+ www.info-zip.org (Kentucky, US) or local mirror
+
+ 
+
+ 
+Technical information and documentation for deflate/inflate and
+ zlib are available from :
+
+
+ 
+
+ 
+ the zlib home page 
+ 
+ 
+
+ 
+
+ 
+Further information on where to (possibly) find Info-ZIP stuff is available in:
+
+
+ 
+
+ 
+ the Info-ZIP " WHERE " file (ASCII text)
+
+ 
+
+ 
+Information about commercial use, modification and redistribution of Zip, 
+UnZip, WiZ and MacZip is available in:
+
+
+ 
+
+ 
+ the Info-ZIP license 
+
+ 
+
+ 
+It's basically BSD-like, but note that there may still be a few remaining 
+files in some of the packages that are covered by different licenses.
+
+
+ 
+
+ 
+
+ 
+ Return to the
+ Info-ZIP Home Page .
+
+
+ 
+
+ 
+Last updated 4 October 2008. Web page occasionally maintained by Greg Roelofs.
+Please direct Info-ZIP queries (availability, ports, bugs, etc.) to
+ Zip-Bug .
+ 
+
+ 
+ 
+ 
+ 
+ Copyright � 1995-2008 
+ Greg Roelofs .
+
+ Zip is maintained by Ed Gordon.
+ 
+ 
+ 
+ 
+ 
+ Primary ftp site hosted
+ by LEO .
+ -->
+ 
+ 
+ 
+
+ 
+
+ 

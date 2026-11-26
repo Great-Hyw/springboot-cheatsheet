@@ -1,11 +1,14 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
-  { path: '/', name: 'home', component: () => import('../views/HomeView.vue'), meta: { title: 'Spring Boot 注解与知识速查' } },
+  { path: '/', name: 'home', component: () => import('../views/HomeView.vue'), meta: { title: 'Spring Boot 注解与命令速查' } },
   { path: '/annotations', name: 'annotations', component: () => import('../views/AnnotationsView.vue'), meta: { title: '注解速查' } },
   { path: '/annotations/:id', name: 'annotation-detail', component: () => import('../views/AnnotationDetailView.vue'), meta: { title: '注解详情' } },
   { path: '/knowledge', name: 'knowledge', component: () => import('../views/KnowledgeView.vue'), meta: { title: '知识库' } },
   { path: '/knowledge/:id', name: 'knowledge-detail', component: () => import('../views/KnowledgeDetailView.vue'), meta: { title: '知识文章' } },
+  { path: '/commands', name: 'commands', component: () => import('../views/CommandHomeView.vue'), meta: { title: '命令速查' } },
+  { path: '/commands/:tool/:id', name: 'command-detail', component: () => import('../views/CommandDetailView.vue'), meta: { title: '命令详情' } },
+  { path: '/commands/:tool', name: 'command-list', component: () => import('../views/CommandListView.vue'), meta: { title: '命令速查' } },
   { path: '/favorites', name: 'favorites', component: () => import('../views/FavoritesView.vue'), meta: { title: '我的收藏' } },
   { path: '/about', name: 'about', component: () => import('../views/AboutView.vue'), meta: { title: '关于与内容核查' } },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('../views/NotFoundView.vue'), meta: { title: '页面不存在' } },

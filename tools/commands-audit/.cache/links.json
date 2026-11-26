@@ -1,0 +1,407 @@
+{
+ "https://man7.org/linux/man-pages/man1/mkdir.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701122680,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/rm.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701122753,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/ls.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701122813,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/pwd.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701122836,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/ln.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701122952,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/touch.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701122957,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/cat.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123096,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/mv.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123101,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/head.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123192,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/cp.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123247,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/tail.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123283,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/find.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123565,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/sed.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123568,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/cut.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123603,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/grep.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123608,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/wc.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123719,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/less.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123863,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/chown.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123868,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/bash.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123920,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/sort.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123924,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/chmod.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701123935,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/su.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701124140,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/gawk.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701124146,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man8/useradd.8.html": {
+  "status": 200,
+  "fetchedAt": 1795701124182,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/kill.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701124384,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/awk.1p.html": {
+  "status": 200,
+  "fetchedAt": 1795701124399,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/pkill.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701124459,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man5/sudoers.5.html": {
+  "status": 200,
+  "fetchedAt": 1795701124558,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/nohup.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701124713,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man8/sudo.8.html": {
+  "status": 200,
+  "fetchedAt": 1795701124717,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/free.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701124759,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/ps.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701124851,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/uptime.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701124940,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man8/ip.8.html": {
+  "status": 200,
+  "fetchedAt": 1795701124956,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/top.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701124996,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man8/ss.8.html": {
+  "status": 200,
+  "fetchedAt": 1795701125306,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man8/ping.8.html": {
+  "status": 200,
+  "fetchedAt": 1795701125347,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/rsync.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701125814,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/df.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701126149,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/wget.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701126279,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/du.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701126478,
+  "error": null
+ },
+ "https://www.freedesktop.org/software/systemd/man/latest/systemctl.html": {
+  "status": 200,
+  "fetchedAt": 1795701126744,
+  "error": null
+ },
+ "https://man.openbsd.org/scp.1": {
+  "status": 200,
+  "fetchedAt": 1795701127047,
+  "error": null
+ },
+ "https://man7.org/linux/man-pages/man1/tar.1.html": {
+  "status": 200,
+  "fetchedAt": 1795701127144,
+  "error": null
+ },
+ "https://infozip.sourceforge.net/Zip.html": {
+  "status": 200,
+  "fetchedAt": 1795701127841,
+  "error": null
+ },
+ "https://curl.se/docs/manpage.html": {
+  "status": 200,
+  "fetchedAt": 1795701127978,
+  "error": null
+ },
+ "https://infozip.sourceforge.net/UnZip.html": {
+  "status": 200,
+  "fetchedAt": 1795701128060,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-init": {
+  "status": 200,
+  "fetchedAt": 1795701129034,
+  "error": null
+ },
+ "https://www.gnu.org/software/bash/manual/html_node/Job-Control-Builtins.html": {
+  "status": 0,
+  "fetchedAt": 1795701129235,
+  "error": "timeout"
+ },
+ "https://git-scm.com/docs/git-status": {
+  "status": 200,
+  "fetchedAt": 1795701130381,
+  "error": null
+ },
+ "https://git-scm.com/docs": {
+  "status": 200,
+  "fetchedAt": 1795701130498,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-add": {
+  "status": 200,
+  "fetchedAt": 1795701130514,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-clone": {
+  "status": 200,
+  "fetchedAt": 1795701130579,
+  "error": null
+ },
+ "https://www.gnu.org/software/gzip/manual/html_node/Invoking-gzip.html": {
+  "status": 0,
+  "fetchedAt": 1795701131495,
+  "error": "timeout"
+ },
+ "https://git-scm.com/docs/git-diff": {
+  "status": 200,
+  "fetchedAt": 1795701132682,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-commit": {
+  "status": 200,
+  "fetchedAt": 1795701132808,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-show": {
+  "status": 200,
+  "fetchedAt": 1795701133045,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-branch": {
+  "status": 200,
+  "fetchedAt": 1795701133476,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-log": {
+  "status": 200,
+  "fetchedAt": 1795701133581,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-switch": {
+  "status": 200,
+  "fetchedAt": 1795701133609,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-config": {
+  "status": 200,
+  "fetchedAt": 1795701133952,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-cherry-pick": {
+  "status": 200,
+  "fetchedAt": 1795701134113,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-remote": {
+  "status": 200,
+  "fetchedAt": 1795701134781,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-rebase": {
+  "status": 200,
+  "fetchedAt": 1795701134792,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-merge": {
+  "status": 200,
+  "fetchedAt": 1795701134917,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-fetch": {
+  "status": 200,
+  "fetchedAt": 1795701135021,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-pull": {
+  "status": 200,
+  "fetchedAt": 1795701135292,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-push": {
+  "status": 200,
+  "fetchedAt": 1795701135503,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-restore": {
+  "status": 200,
+  "fetchedAt": 1795701135641,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-reset": {
+  "status": 200,
+  "fetchedAt": 1795701135851,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-clean": {
+  "status": 200,
+  "fetchedAt": 1795701135886,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-stash": {
+  "status": 200,
+  "fetchedAt": 1795701135919,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-rm": {
+  "status": 200,
+  "fetchedAt": 1795701136265,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-reflog": {
+  "status": 200,
+  "fetchedAt": 1795701136627,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-revert": {
+  "status": 200,
+  "fetchedAt": 1795701136759,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-bisect": {
+  "status": 200,
+  "fetchedAt": 1795701136847,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-blame": {
+  "status": 200,
+  "fetchedAt": 1795701136890,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-tag": {
+  "status": 200,
+  "fetchedAt": 1795701137244,
+  "error": null
+ },
+ "https://git-scm.com/docs/git-worktree": {
+  "status": 200,
+  "fetchedAt": 1795701138024,
+  "error": null
+ },
+ "https://man.openbsd.org/ssh.1": {
+  "status": 200,
+  "fetchedAt": 1795701141275,
+  "error": null
+ },
+ "https://rsync.samba.org/how-rsync-works.html": {
+  "status": 0,
+  "fetchedAt": 1795701151201,
+  "error": "timeout"
+ }
+}

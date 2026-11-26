@@ -290,7 +290,7 @@ const knowledgeIds = new Map()
 const files = fs.existsSync(DATA_DIR)
   ? fs
       .readdirSync(DATA_DIR)
-      .filter((f) => f.endsWith('.json') && f !== 'audit-summary.json')
+      .filter((f) => f.endsWith('.json') && f !== 'audit-summary.json' && !f.startsWith('commands-'))
       .sort()
   : []
 if (!files.length) {

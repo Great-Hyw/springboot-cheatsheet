@@ -1,6 +1,6 @@
-# Spring Boot 注解与知识速查
+# Spring Boot 注解与命令速查
 
-一个用 Vue 3 写的静态速查站：把 Spring Boot 常用注解、容易踩的坑和背后原理，用尽量说人话的方式讲清楚。所有注解的包名、属性、默认值都对照真实依赖（Spring Boot 3.5.16 / Spring Framework 6.2.19）反射提取的索引核对过，不是凭印象写的。
+一个用 Vue 3 写的静态速查站：Spring Boot 注解与原理用尽量说人话的方式讲清楚；Linux 与 Git 命令分成两个独立模块，各查各的。所有注解的包名、属性、默认值都对照真实依赖（Spring Boot 3.5.16 / Spring Framework 6.2.19）反射提取的索引核对过；命令的选项与示例对照官方 man / git 文档，不是凭印象写的。
 
 ## 本地运行
 
@@ -14,19 +14,21 @@ npm run build      # 产物输出到 dist/
 npx vite preview --port 4173 --host 127.0.0.1   # 预览构建结果
 ```
 
-`dist/` 是纯静态文件，且使用 hash 路由，直接双击 `dist/index.html` 也能打开；部署到任意静态托管（Nginx、GitHub Pages、对象存储）都不需要额外配置 rewrite。
+`dist/` 是纯静态文件（`base: './'` + hash 路由），直接双击 `dist/index.html` 也能打开；部署到任意静态托管（Nginx、GitHub Pages、对象存储、子路径）都不需要额外配置 rewrite。
 
 ## 内容规模
 
 - 注解卡片：核心容器、AOP、Web/REST、参数校验、数据访问、异步定时、Spring Boot、测试、安全共 9 个分类
 - 知识文章：IoC/Bean 生命周期/AOP/循环依赖、MVC 请求流程/全局异常、事务/JPA vs MyBatis、自动配置/启动流程/配置优先级、异步线程池/定时任务/打包部署/日志、Actuator、版本升级等
 - 每张卡片包含：一句话讲清、关键点、可用属性表（真实属性 + 默认值）、可运行示例、易错提示、相关注解、官方文档链接
-- 当前版本：**144 条注解 + 20 篇知识文章**；核查结论为「可发布」：自动审计 0 错误 / 0 存疑，人工抽查 45.1%（74/164），215 个官方页面链接全部 HTTP 200。详见 `docs/QA-REPORT.md`
+- 命令速查：Linux（文件/文本/权限/进程/网络/磁盘 6 组）与 Git（配置/基础/分支/远程/撤销/历史 6 组）两个独立入口，互不混排
+- 每条命令包含：一句话用途、语法、真实选项、可直接敲的示例、容易踩的坑、相关命令、官方文档链接
+- 当前版本：**144 条注解 + 20 篇知识文章 + 79 条命令**；核查结论均为「可发布」：注解模块自动审计 0 错误 / 0 存疑、人工抽查 45.1%（74/164）、215 个官方链接全部 HTTP 200；命令模块自动审计 0 错误、79/79 通读 + 58 条深度核对、4 条事实错误已修、80 个官方链接 78 个 HTTP 200（2 个 gnu.org 页面本机网络不可达，非链接错误）。详见 `docs/QA-REPORT.md` 与 `docs/COMMAND-QA-REPORT.md`
 
 ## 数据从哪来、怎么保证不瞎写
 
 ```
-tools/annotation-audit/     # 反射提取真实注解索引
+tools/annotation-audit/     # 反射提取真实注解索引（仅用于注解模块）
 ├── pom.xml                 # 拉取 Boot 3.5.16 的真实依赖 jar
 ├── AnnotationIndex.java    # 扫描 jar 里所有注解，输出 target/retention/属性/默认值
 ├── lib/                    # 115 个依赖 jar
@@ -38,10 +40,11 @@ tools/annotation-audit/     # 反射提取真实注解索引
 三道校验：
 
 ```bash
-npm run validate              # 结构 + 包名/属性/默认值对照真实索引 + 长度/来源白名单
-node tools/audit.mjs          # 独立审计：示例里的注解、@Target 用法、链接、重复条目
-npm run render-check          # 无头 Chrome 打开构建产物，查控制台错误和手机横向溢出
-node scripts/render-check.mjs --all   # 额外把所有详情页扫一遍
+npm run validate                 # 注解：结构 + 包名/属性/默认值对照真实索引 + 长度/来源白名单
+node tools/audit.mjs             # 注解独立审计：示例注解、@Target 用法、链接、重复条目
+node scripts/validate-commands.mjs  # 命令：模块归属/数量、真实选项格式、示例、来源域名、两模块互不污染
+npm run render-check             # 无头 Chrome 打开构建产物，查控制台错误和手机横向溢出
+node scripts/render-check.mjs --all  # 额外把所有注解/文章/命令详情页扫一遍
 ```
 
 `npm run audit:summary` 会从真实 JSON 现场统计数量，生成 `src/data/audit-summary.json`，供「关于」页展示核查数据，避免页面出现手填的假数字。
@@ -58,12 +61,15 @@ src/
 ├── utils/          # highlight.js 封装
 └── views/          # 首页、注解列表/详情、知识列表/文章、收藏、关于、404
 docs/
-├── CONTENT-SPEC.md # 内容规范（作者契约）
-└── QA-REPORT.md    # 独立核查报告（问题清单 + 人工抽查记录）
+├── CONTENT-SPEC.md      # 注解 + 知识文章的内容规范（作者契约）
+├── COMMAND-SPEC.md      # Linux / Git 命令模块的内容规范（作者契约）
+├── QA-REPORT.md         # 注解与知识的独立核查报告
+└── COMMAND-QA-REPORT.md # 命令模块的独立核查报告
 scripts/
-├── validate-data.mjs       # 数据校验
-├── render-check.mjs        # 页面渲染检查
-└── build-audit-summary.mjs # 核查数据汇总
+├── validate-data.mjs        # 注解与知识数据校验
+├── validate-commands.mjs    # 命令数据校验（含两模块隔离检查）
+├── render-check.mjs         # 页面渲染检查
+└── build-audit-summary.mjs  # 核查数据汇总
 ```
 
 ## 技术栈
@@ -72,4 +78,6 @@ Vue 3 + Vite + Vue Router（hash 模式）+ marked + DOMPurify + highlight.js + 
 
 ## 版本口径
 
-正文以 **Spring Boot 3.5.x / Spring Framework 6.2.x** 为准（`jakarta.*` 命名空间，对应主流生产版本）。与 Boot 4.x 相关的差异只写官方文档能证实的部分，并在对应条目的 `versionNote` 中标注。
+注解与知识文章以 **Spring Boot 3.5.x / Spring Framework 6.2.x** 为准（`jakarta.*` 命名空间，对应主流生产版本）。与 Boot 4.x 相关的差异只写官方文档能证实的部分，并在对应条目的 `versionNote` 中标注。
+
+命令模块以 **GNU/Linux man 页（man7.org）与 git-scm.com 官方文档**为准，选项表按 GNU 工具写；`sed -i`、`stat` 等 GNU/BSD 行为差异会在「容易踩的坑」里单独提示。

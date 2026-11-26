@@ -12,5 +12,5 @@
   "auditErrors": 0,
   "auditWarnings": 0,
   "fixedIssues": 23,
-  "verdict": "可发布：自动审计 0 错误 / 0 存疑，人工抽查 45.1%（74/164），215/215 官方链接 HTTP 200"
+  "verdict": "自动脚本全量核查 + 40% 人工抽查（详见 docs/QA-REPORT.md）"
 }

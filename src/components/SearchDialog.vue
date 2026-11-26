@@ -9,10 +9,16 @@ const activeIndex = ref(0)
 const groups = computed(() => {
   const list = []
   if (results.value.annotations.length) {
-    list.push({ type: 'annotation', label: '注解', rows: results.value.annotations })
+    list.push({ key: 'annotation', type: 'annotation', label: '注解', rows: results.value.annotations })
   }
   if (results.value.knowledge.length) {
-    list.push({ type: 'knowledge', label: '知识文章', rows: results.value.knowledge })
+    list.push({ key: 'knowledge', type: 'knowledge', label: '知识文章', rows: results.value.knowledge })
+  }
+  if (results.value.linux.length) {
+    list.push({ key: 'linux', type: 'command', tool: 'linux', label: 'Linux 命令', rows: results.value.linux })
+  }
+  if (results.value.git.length) {
+    list.push({ key: 'git', type: 'command', tool: 'git', label: 'Git 命令', rows: results.value.git })
   }
   return list
 })
@@ -55,13 +61,43 @@ function onInputKeydown(e) {
 function go(item) {
   closeSearch()
   // 用 location.hash 跳转，避免在弹层里依赖 router 实例
-  window.location.hash = item.type === 'annotation' ? `#/annotations/${item.id}` : `#/knowledge/${item.id}`
+  const path =
+    item.type === 'annotation'
+      ? `#/annotations/${item.id}`
+      : item.type === 'knowledge'
+        ? `#/knowledge/${item.id}`
+        : `#/commands/${item.tool}/${item.id}`
+  window.location.hash = path
 }
 
-function indexOfRow(type, rowIndex) {
+function hrefOf(item) {
+  return item.type === 'annotation'
+    ? `#/annotations/${item.id}`
+    : item.type === 'knowledge'
+      ? `#/knowledge/${item.id}`
+      : `#/commands/${item.tool}/${item.id}`
+}
+
+function iconOf(item) {
+  if (item.type === 'annotation') return '@'
+  if (item.type === 'knowledge') return '文'
+  return item.tool === 'linux' ? 'L' : 'G'
+}
+
+function titleOf(item) {
+  return item.type === 'annotation' ? item.title.replace(/^@/, '') : item.title
+}
+
+function badgeOf(item) {
+  if (item.type === 'annotation') return '注解'
+  if (item.type === 'knowledge') return '知识'
+  return item.toolLabel || item.tool
+}
+
+function indexOfRow(key, rowIndex) {
   let base = 0
   for (const g of groups.value) {
-    if (g.type === type) return base + rowIndex
+    if (g.key === key) return base + rowIndex
     base += g.rows.length
   }
   return -1
@@ -85,7 +121,7 @@ function closeOnOverlay(e) {
             ref="inputRef"
             v-model="query"
             type="search"
-            placeholder="搜注解名、包名、关键词或知识主题…"
+            placeholder="搜注解名、包名、命令或知识主题…"
             autocomplete="off"
             spellcheck="false"
             aria-label="搜索关键词"
@@ -96,23 +132,23 @@ function closeOnOverlay(e) {
 
         <div class="search-body">
           <template v-if="flatResults.length">
-            <template v-for="group in groups" :key="group.type">
+            <template v-for="group in groups" :key="group.key">
               <p class="search-group-label">{{ group.label }}</p>
               <a
                 v-for="(row, i) in group.rows"
                 :key="row.item.id"
                 class="search-item"
-                :class="{ active: activeIndex === indexOfRow(group.type, i) }"
-                :href="row.item.type === 'annotation' ? `#/annotations/${row.item.id}` : `#/knowledge/${row.item.id}`"
+                :class="{ active: activeIndex === indexOfRow(group.key, i) }"
+                :href="hrefOf(row.item)"
                 @click.prevent="go(row.item)"
-                @mouseenter="activeIndex = indexOfRow(group.type, i)"
+                @mouseenter="activeIndex = indexOfRow(group.key, i)"
               >
-                <span class="search-item__icon">{{ group.type === 'annotation' ? '@' : '文' }}</span>
+                <span class="search-item__icon" :class="{ 'search-item__icon--cmd': group.type === 'command' }">{{ iconOf(row.item) }}</span>
                 <span class="search-item__body">
-                  <span class="search-item__title">{{ group.type === 'annotation' ? row.item.title.replace(/^@/, '') : row.item.title }}</span>
+                  <span class="search-item__title">{{ titleOf(row.item) }}</span>
                   <span class="search-item__sub">{{ row.item.subtitle }}</span>
                 </span>
-                <span class="search-item__type">{{ group.type === 'annotation' ? '注解' : '知识' }}</span>
+                <span class="search-item__type">{{ badgeOf(row.item) }}</span>
               </a>
             </template>
           </template>

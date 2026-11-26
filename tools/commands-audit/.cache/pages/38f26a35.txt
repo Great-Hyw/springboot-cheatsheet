@@ -1,0 +1,853 @@
+SOURCE: https://man.openbsd.org/scp.1
+STATUS: 200
+
+ 
+ 
+ 
+ 
+ 
+ 
+ scp(1) - OpenBSD manual pages 
+ 
+ 
+ 
+ 
+ OpenBSD manual page server
+
+ 
+ 
+ 
+ Manual Page Search Parameters 
+ Search query:
+ 
+ 
+ man 
+ apropos 
+ 
+
+ 
+ All Sections 
+ 1 - General Commands 
+ 2 - System Calls 
+ 3 - Library Functions 
+ 3p - Perl Library 
+ 4 - Device Drivers 
+ 5 - File Formats 
+ 6 - Games 
+ 7 - Miscellaneous Information 
+ 8 - System Manager's Manual 
+ 9 - Kernel Developer's Manual 
+ 
+ 
+ All Architectures 
+ amd64 
+ alpha 
+ armv7 
+ arm64 
+ hppa 
+ i386 
+ landisk 
+ loongson 
+ luna88k 
+ macppc 
+ mips64 
+ octeon 
+ powerpc64 
+ riscv64 
+ sparc64 
+ amiga 
+ arc 
+ armish 
+ arm32 
+ atari 
+ aviion 
+ beagle 
+ cats 
+ hppa64 
+ hp300 
+ ia64 
+ mac68k 
+ mvme68k 
+ mvme88k 
+ mvmeppc 
+ palm 
+ pc532 
+ pegasos 
+ pmax 
+ powerpc 
+ sgi 
+ socppc 
+ solbourne 
+ sparc 
+ sun3 
+ vax 
+ wgrisc 
+ x68k 
+ zaurus 
+ 
+ 
+ OpenBSD-current 
+ OpenBSD-8.0 
+ OpenBSD-7.9 
+ OpenBSD-7.8 
+ OpenBSD-7.7 
+ OpenBSD-7.6 
+ OpenBSD-7.5 
+ OpenBSD-7.4 
+ OpenBSD-7.3 
+ OpenBSD-7.2 
+ OpenBSD-7.1 
+ OpenBSD-7.0 
+ OpenBSD-6.9 
+ OpenBSD-6.8 
+ OpenBSD-6.7 
+ OpenBSD-6.6 
+ OpenBSD-6.5 
+ OpenBSD-6.4 
+ OpenBSD-6.3 
+ OpenBSD-6.2 
+ OpenBSD-6.1 
+ OpenBSD-6.0 
+ OpenBSD-5.9 
+ OpenBSD-5.8 
+ OpenBSD-5.7 
+ OpenBSD-5.6 
+ OpenBSD-5.5 
+ OpenBSD-5.4 
+ OpenBSD-5.3 
+ OpenBSD-5.2 
+ OpenBSD-5.1 
+ OpenBSD-5.0 
+ OpenBSD-4.9 
+ OpenBSD-4.8 
+ OpenBSD-4.7 
+ OpenBSD-4.6 
+ OpenBSD-4.5 
+ OpenBSD-4.4 
+ OpenBSD-4.3 
+ OpenBSD-4.2 
+ OpenBSD-4.1 
+ OpenBSD-4.0 
+ OpenBSD-3.9 
+ OpenBSD-3.8 
+ OpenBSD-3.7 
+ OpenBSD-3.6 
+ OpenBSD-3.5 
+ OpenBSD-3.4 
+ OpenBSD-3.3 
+ OpenBSD-3.2 
+ OpenBSD-3.1 
+ OpenBSD-3.0 
+ OpenBSD-2.9 
+ OpenBSD-2.8 
+ OpenBSD-2.7 
+ OpenBSD-2.6 
+ OpenBSD-2.5 
+ OpenBSD-2.4 
+ OpenBSD-2.3 
+ OpenBSD-2.2 
+ 
+ 
+ 
+ 
+ 
+ SCP(1) General
+ Commands Manual SCP(1) 
+
+ 
+ 
+ NAME 
+
+ scp &#x2014;
+ OpenSSH secure file copy 
+
+ 
+ 
+ SYNOPSIS 
+
+ 
+ 
+ scp 
+ [ -346ABCOpqRrTv ] [ -c 
+ cipher ] [ -D 
+ sftp_server_path ] [ -F 
+ ssh_config ] [ -i 
+ identity_file ] [ -J 
+ destination ] [ -l 
+ limit ] [ -o 
+ ssh_option ] [ -P 
+ port ] [ -S 
+ program ] [ -X 
+ sftp_option ] source ...
+ target 
+ 
+
+ 
+ 
+ 
+ DESCRIPTION 
+
+ scp copies files between hosts on a
+ network.
+
+ scp uses the SFTP protocol over an
+ ssh(1) 
+ connection for data transfer, and uses the same authentication and provides
+ the same security as a login session.
+
+ scp will ask for passwords or passphrases
+ if they are needed for authentication.
+
+ The source and target 
+ may be specified as a local pathname, a remote host with optional path in
+ the form [user@]host:[path], or a URI in the form
+ scp:// [user@]host[:port][/path]. Local file names
+ can be made explicit using absolute or relative pathnames to avoid
+ scp treating file names containing &#x2018;:&#x2019;
+ as host specifiers.
+
+ When copying between two remote hosts, if the URI format is used,
+ a port cannot be specified on the
+ target if the -R option is
+ used.
+
+ The options are as follows:
+
+ 
+ -3 
+
+ Copies between two remote hosts are transferred through the local host.
+ This mode is the default, but see also the -R 
+ option for copying data directly between two remote hosts. Note that when
+ using the legacy SCP protocol (via the -O flag),
+ this option selects batch mode for the second host as
+ scp cannot ask for passwords or passphrases for
+ both hosts.
+
+ -4 
+
+ Forces scp to use IPv4 addresses only.
+
+ -6 
+
+ Forces scp to use IPv6 addresses only.
+
+ -A 
+
+ Allows forwarding of
+ ssh-agent(1) to the remote system. The default is not to forward an
+ authentication agent.
+
+ -B 
+
+ Selects batch mode (prevents asking for passwords or passphrases).
+
+ -C 
+
+ Compression enable. Passes the -C flag to
+ ssh(1) to
+ enable compression.
+
+ -c 
+ cipher 
+
+ Selects the cipher to use for encrypting the data transfer. This option is
+ directly passed to ssh(1) .
+
+ -D 
+ sftp_server_path 
+
+ Connect directly to a local SFTP server program rather than a remote one
+ via ssh(1) .
+ This option may be useful in debugging the client and server.
+
+ -F 
+ ssh_config 
+
+ Specifies an alternative per-user configuration file for
+ ssh . This option is directly passed to
+ ssh(1) .
+
+ -i 
+ identity_file 
+
+ Selects the file from which the identity (private key) for public key
+ authentication is read. This option is directly passed to
+ ssh(1) .
+
+ -J 
+ destination 
+
+ Connect to the target host by first making an scp 
+ connection to the jump host described by destination 
+ and then establishing a TCP forwarding to the ultimate destination from
+ there. Multiple jump hops may be specified separated by comma characters.
+ This is a shortcut to specify a ProxyJump 
+ configuration directive. This option is directly passed to
+ ssh(1) .
+
+ -l 
+ limit 
+
+ Limits the used bandwidth, specified in Kbit/s.
+
+ -O 
+
+ Use the legacy SCP protocol for file transfers instead of the SFTP
+ protocol. Forcing the use of the SCP protocol may be necessary for servers
+ that do not implement SFTP, for backwards-compatibility for particular
+ filename wildcard patterns and for expanding paths with a
+ &#x2018;~&#x2019; prefix for older SFTP servers.
+
+ -o 
+ ssh_option 
+
+ Can be used to pass options to ssh in the format
+ used in ssh_config(5) . This is useful for specifying options for which
+ there is no separate scp command-line flag. For
+ full details of the options listed below, and their possible values, see
+ ssh_config(5) .
+ 
+
+ 
+ 
+ AddKeysToAgent
+
+ &#x00A0;
+
+ AddressFamily
+
+ &#x00A0;
+
+ BatchMode
+
+ &#x00A0;
+
+ BindAddress
+
+ &#x00A0;
+
+ BindInterface
+
+ &#x00A0;
+
+ CASignatureAlgorithms
+
+ &#x00A0;
+
+ CanonicalDomains
+
+ &#x00A0;
+
+ CanonicalizeFallbackLocal
+
+ &#x00A0;
+
+ CanonicalizeHostname
+
+ &#x00A0;
+
+ CanonicalizeMaxDots
+
+ &#x00A0;
+
+ CanonicalizePermittedCNAMEs
+
+ &#x00A0;
+
+ CertificateFile
+
+ &#x00A0;
+
+ ChannelTimeout
+
+ &#x00A0;
+
+ CheckHostIP
+
+ &#x00A0;
+
+ Ciphers
+
+ &#x00A0;
+
+ ClearAllForwardings
+
+ &#x00A0;
+
+ Compression
+
+ &#x00A0;
+
+ ConnectTimeout
+
+ &#x00A0;
+
+ ConnectionAttempts
+
+ &#x00A0;
+
+ ControlMaster
+
+ &#x00A0;
+
+ ControlPath
+
+ &#x00A0;
+
+ ControlPersist
+
+ &#x00A0;
+
+ DynamicForward
+
+ &#x00A0;
+
+ EnableEscapeCommandline
+
+ &#x00A0;
+
+ EnableSSHKeysign
+
+ &#x00A0;
+
+ EscapeChar
+
+ &#x00A0;
+
+ ExitOnForwardFailure
+
+ &#x00A0;
+
+ FingerprintHash
+
+ &#x00A0;
+
+ ForkAfterAuthentication
+
+ &#x00A0;
+
+ ForwardAgent
+
+ &#x00A0;
+
+ ForwardX11
+
+ &#x00A0;
+
+ ForwardX11Timeout
+
+ &#x00A0;
+
+ ForwardX11Trusted
+
+ &#x00A0;
+
+ GSSAPIAuthentication
+
+ &#x00A0;
+
+ GSSAPIDelegateCredentials
+
+ &#x00A0;
+
+ GatewayPorts
+
+ &#x00A0;
+
+ GlobalKnownHostsFile
+
+ &#x00A0;
+
+ HashKnownHosts
+
+ &#x00A0;
+
+ Host
+
+ &#x00A0;
+
+ HostKeyAlgorithms
+
+ &#x00A0;
+
+ HostKeyAlias
+
+ &#x00A0;
+
+ HostbasedAcceptedAlgorithms
+
+ &#x00A0;
+
+ HostbasedAuthentication
+
+ &#x00A0;
+
+ Hostname
+
+ &#x00A0;
+
+ IPQoS
+
+ &#x00A0;
+
+ IdentitiesOnly
+
+ &#x00A0;
+
+ IdentityAgent
+
+ &#x00A0;
+
+ IdentityFile
+
+ &#x00A0;
+
+ IgnoreUnknown
+
+ &#x00A0;
+
+ Include
+
+ &#x00A0;
+
+ KbdInteractiveAuthentication
+
+ &#x00A0;
+
+ KbdInteractiveDevices
+
+ &#x00A0;
+
+ KexAlgorithms
+
+ &#x00A0;
+
+ KnownHostsCommand
+
+ &#x00A0;
+
+ LocalCommand
+
+ &#x00A0;
+
+ LocalForward
+
+ &#x00A0;
+
+ LogLevel
+
+ &#x00A0;
+
+ LogVerbose
+
+ &#x00A0;
+
+ MACs
+
+ &#x00A0;
+
+ NoHostAuthenticationForLocalhost
+
+ &#x00A0;
+
+ NumberOfPasswordPrompts
+
+ &#x00A0;
+
+ ObscureKeystrokeTiming
+
+ &#x00A0;
+
+ PKCS11Provider
+
+ &#x00A0;
+
+ PasswordAuthentication
+
+ &#x00A0;
+
+ PermitLocalCommand
+
+ &#x00A0;
+
+ PermitRemoteOpen
+
+ &#x00A0;
+
+ Port
+
+ &#x00A0;
+
+ PreferredAuthentications
+
+ &#x00A0;
+
+ ProxyCommand
+
+ &#x00A0;
+
+ ProxyJump
+
+ &#x00A0;
+
+ ProxyUseFdpass
+
+ &#x00A0;
+
+ PubkeyAcceptedAlgorithms
+
+ &#x00A0;
+
+ PubkeyAuthentication
+
+ &#x00A0;
+
+ RekeyLimit
+
+ &#x00A0;
+
+ RemoteCommand
+
+ &#x00A0;
+
+ RemoteForward
+
+ &#x00A0;
+
+ RequestTTY
+
+ &#x00A0;
+
+ RequiredRSASize
+
+ &#x00A0;
+
+ RevokedHostKeys
+
+ &#x00A0;
+
+ SecurityKeyProvider
+
+ &#x00A0;
+
+ SendEnv
+
+ &#x00A0;
+
+ ServerAliveCountMax
+
+ &#x00A0;
+
+ ServerAliveInterval
+
+ &#x00A0;
+
+ SessionType
+
+ &#x00A0;
+
+ SetEnv
+
+ &#x00A0;
+
+ StdinNull
+
+ &#x00A0;
+
+ StreamLocalBindMask
+
+ &#x00A0;
+
+ StreamLocalBindUnlink
+
+ &#x00A0;
+
+ StrictHostKeyChecking
+
+ &#x00A0;
+
+ SyslogFacility
+
+ &#x00A0;
+
+ TCPKeepAlive
+
+ &#x00A0;
+
+ Tag
+
+ &#x00A0;
+
+ Tunnel
+
+ &#x00A0;
+
+ TunnelDevice
+
+ &#x00A0;
+
+ UpdateHostKeys
+
+ &#x00A0;
+
+ User
+
+ &#x00A0;
+
+ UserKnownHostsFile
+
+ &#x00A0;
+
+ VerifyHostKeyDNS
+
+ &#x00A0;
+
+ VisualHostKey
+
+ &#x00A0;
+
+ XAuthLocation
+
+ &#x00A0;
+
+ 
+ 
+
+ 
+
+ -P 
+ port 
+
+ Specifies the port to connect to on the remote host. Note that this option
+ is written with a capital &#x2018;P&#x2019;, because
+ -p is already reserved for preserving the times
+ and mode bits of the file.
+
+ -p 
+
+ Preserves modification times, access times, and file mode bits from the
+ source file.
+
+ -q 
+
+ Quiet mode: disables the progress meter as well as warning and diagnostic
+ messages from ssh(1) .
+
+ -R 
+
+ Copies between two remote hosts are transferred through the local host by
+ default. This option instead copies between two remote hosts by connecting
+ to the origin host and executing scp there. This
+ requires that scp running on the origin host can
+ authenticate to the destination host without requiring a password.
+
+ -r 
+
+ Recursively copy entire directories. Note that scp 
+ follows symbolic links encountered in the tree traversal.
+
+ -S 
+ program 
+
+ Name of program to use for the encrypted connection.
+ The program must understand ssh(1) options.
+
+ -T 
+
+ Disable strict filename checking. By default when copying files from a
+ remote host to a local directory scp checks that
+ the received filenames match those requested on the command-line to
+ prevent the remote end from sending unexpected or unwanted files. Because
+ of differences in how various operating systems and shells interpret
+ filename wildcards, these checks may cause wanted files to be rejected.
+ This option disables these checks at the expense of fully trusting that
+ the server will not send unexpected filenames.
+
+ -v 
+
+ Verbose mode. Causes scp and
+ ssh(1) to
+ print debugging messages about their progress. This is helpful in
+ debugging connection, authentication, and configuration problems.
+
+ -X 
+ sftp_option 
+
+ Specify an option that controls aspects of SFTP protocol behaviour. The
+ valid options are:
+ 
+ nrequests = value 
+
+ Controls how many concurrent SFTP read or write requests may be in
+ progress at any point in time during a download or upload. By default
+ 64 requests may be active concurrently.
+
+ buffer = value 
+
+ Controls the maximum buffer size for a single SFTP read/write
+ operation used during download or upload. By default a 32KB buffer is
+ used.
+
+ 
+ 
+
+ 
+ 
+ 
+ EXIT
+ STATUS 
+
+ The scp utility exits&#x00A0;0 on success,
+ and&#x00A0;>0 if an error occurs.
+
+ 
+ 
+ SEE
+ ALSO 
+
+ sftp(1) , ssh(1) , ssh-add(1) , ssh-agent(1) ,
+ ssh-keygen(1) ,
+ ssh_config(5) ,
+ sftp-server(8) , sshd(8) 
+
+ 
+ 
+ HISTORY 
+
+ scp is based on the rcp program in
+ BSD source code from the Regents of the University
+ of California.
+
+ Since OpenSSH 9.0, scp has used the SFTP
+ protocol for transfers by default.
+
+ 
+ 
+ AUTHORS 
+
+ Timo Rinne 
+ < tri@iki.fi >
+ 
+
+ Tatu Ylonen 
+ < ylo@cs.hut.fi >
+
+ 
+ 
+ CAVEATS 
+
+ The legacy SCP protocol (selected by the
+ -O flag) requires execution of the remote user's
+ shell to perform glob(3) pattern matching. This requires careful quoting of any
+ characters that have special meaning to the remote shell, such as quote
+ characters.
+
+ 
+ 
+ OpenBSD-current 
+ September 3, 2026 
+ SCP(1) 
+
+ 
+ 

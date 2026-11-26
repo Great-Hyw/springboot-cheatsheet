@@ -10,11 +10,13 @@ import {
   knowledgeCategory,
   stats,
 } from '../data'
+import { COMMAND_TOOLS, commandStats, commands, getToolModules } from '../data/commands'
 
 const docCount = computed(
   () =>
     annotations.reduce((sum, a) => sum + a.docs.length, 0) +
-    knowledge.reduce((sum, k) => sum + (k.sources?.length || 0), 0),
+    knowledge.reduce((sum, k) => sum + (k.sources?.length || 0), 0) +
+    commands.reduce((sum, c) => sum + c.docs.length, 0),
 )
 
 const picks = computed(() =>
@@ -54,11 +56,12 @@ const pathSteps = [
       <span class="eyebrow">Spring Boot 3.5 · 说人话的速查手册</span>
       <h1>把 Spring Boot 的注解，<br />讲成<em>人话</em>。</h1>
       <p class="hero-sub">
-        不堆名词、不抄段子。每条注解都写清楚「解决什么问题、什么时候用、容易踩什么坑」，并附上官方文档出处；知识文章负责把散落的点串成线。放在手边，随时查。
+        不堆名词、不抄段子。每条注解都写清楚「解决什么问题、什么时候用、容易踩什么坑」，并附上官方文档出处；知识文章负责把散落的点串成线；Linux / Git 命令单独成册，不跟注解混在一起。放在手边，随时查。
       </p>
       <div class="hero-actions">
         <RouterLink class="btn btn-primary" to="/annotations">开始查注解 →</RouterLink>
         <RouterLink class="btn" to="/knowledge">读知识库</RouterLink>
+        <RouterLink class="btn" to="/commands">查 Linux / Git 命令</RouterLink>
       </div>
       <div class="hero-stats">
         <div class="hero-stat">
@@ -133,6 +136,32 @@ const pathSteps = [
           </div>
         </RouterLink>
       </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">顺手查命令 <small>Linux 和 Git 分成两本小抄</small></h2>
+        <RouterLink class="section-more" to="/commands">命令速查首页 →</RouterLink>
+      </div>
+      <div class="cmd-home-grid">
+        <RouterLink v-for="t in COMMAND_TOOLS" :key="t.id" class="cmd-home-card" :to="`/commands/${t.id}`">
+          <span class="cmd-tool-badge" :style="{ background: t.color }">{{ t.icon }}</span>
+          <div class="cmd-home-card__body">
+            <h3>
+              {{ t.label }}
+              <small>{{ commandStats.byTool[t.id] || 0 }} 条</small>
+            </h3>
+            <p>{{ t.desc }}</p>
+            <div class="cmd-home-tags">
+              <span v-for="m in getToolModules(t.id)" :key="m.id" class="tag">{{ m.label }}</span>
+            </div>
+          </div>
+          <span class="cmd-home-card__arrow">→</span>
+        </RouterLink>
+      </div>
+      <p class="cmd-home-note">
+        两个模块各自收录、各自检索：Linux 系统命令不会混进 Git 模块，Git 命令也不会混进 Linux 模块。
+      </p>
     </section>
 
     <section class="section">

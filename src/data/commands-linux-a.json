@@ -1,0 +1,1006 @@
+{
+  "generatedBy": "content-linux-a",
+  "tool": "linux",
+  "modules": [
+    {
+      "id": "linux-file",
+      "label": "文件与目录",
+      "desc": "在服务器上找文件、建目录、复制移动删除，日常操作全靠这一组"
+    },
+    {
+      "id": "linux-text",
+      "label": "查看与文本处理",
+      "desc": "查看日志、搜关键字、切字段做统计，处理文本文件的基本功"
+    },
+    {
+      "id": "linux-perm",
+      "label": "权限与用户",
+      "desc": "看懂文件权限、改属主、切换身份，避免误操作和权限报错"
+    }
+  ],
+  "items": [
+    {
+      "id": "linux-ls",
+      "tool": "linux",
+      "module": "linux-file",
+      "name": "ls",
+      "level": "入门",
+      "tagline": "列出目录里有什么",
+      "plain": "刚登服务器不知道文件在哪时先用它。ls 列出目录内容，默认按名称排成一列；加 -l 能看到权限、属主、大小和修改时间，加 -a 连点开头的隐藏文件一起显示。",
+      "syntax": "ls [选项] [目录或文件...]",
+      "keyPoints": [
+        "不加参数列当前目录；给路径就列那个目录的内容",
+        "-l 是长格式，-a 显示以点开头的隐藏文件，-h 让大小变成 K/M",
+        "-t 按修改时间排序，-S 按大小排序，-r 反转顺序",
+        "通配符由 shell 先展开：ls *.log 列出当前目录所有日志"
+      ],
+      "options": [
+        { "flag": "-l", "desc": "长格式：权限、属主、大小、修改时间" },
+        { "flag": "-a", "desc": "显示所有文件，包括点开头的隐藏文件" },
+        { "flag": "-h", "desc": "用 K/M/G 显示大小，通常和 -l 一起用" },
+        { "flag": "-t", "desc": "按修改时间从新到旧排序" },
+        { "flag": "-S", "desc": "按文件大小从大到小排序" },
+        { "flag": "-d", "desc": "只看目录本身，不展开里面的内容" }
+      ],
+      "examples": [
+        { "desc": "列出当前目录全部文件（含隐藏文件）", "code": "ls -la" },
+        { "desc": "按大小排序列出 /var/log 下的日志", "code": "ls -lhS /var/log" },
+        { "desc": "只看这个目录本身的信息", "code": "ls -ld /var/log/nginx" }
+      ],
+      "pitfalls": [
+        "ls 只列名字不看内容，要看文件内容得用 cat、less",
+        "ls -a 会把 . 和 .. 一起列出来，脚本解析时要跳过这两项"
+      ],
+      "related": ["linux-cd","linux-find","linux-cat"],
+      "docs": [
+        { "label": "man7: ls(1)", "url": "https://man7.org/linux/man-pages/man1/ls.1.html" }
+      ],
+      "tags": ["目录","列表","文件"]
+    },
+    {
+      "id": "linux-cd",
+      "tool": "linux",
+      "module": "linux-file",
+      "name": "cd",
+      "level": "入门",
+      "tagline": "切换当前所在目录",
+      "plain": "要进某个目录看文件，就得先 cd 过去。直接写目录路径即可，~ 是家目录，.. 是上一层；不带参数也回家目录，cd - 能快速跳回上一次待过的目录。",
+      "syntax": "cd [目录]",
+      "keyPoints": [
+        "cd /var/log 用绝对路径，cd logs 用相对路径",
+        "cd .. 上一级，cd ../.. 上两级，cd - 回到上一个目录",
+        "cd 不带参数回到 $HOME；~user 可去指定用户的家目录",
+        "cd 是 shell 内置命令，改的是当前 shell 自己的工作目录"
+      ],
+      "options": [
+        { "flag": "-L", "desc": "默认行为，跟随符号链接显示逻辑路径" },
+        { "flag": "-P", "desc": "切换前先解开符号链接，使用物理路径" },
+        { "flag": "-e", "desc": "配合 -P 使用，目录无法确定时返回失败" }
+      ],
+      "examples": [
+        { "desc": "进入日志目录", "code": "cd /var/log" },
+        { "desc": "回到上一次所在目录", "code": "cd -" },
+        { "desc": "回到当前用户家目录", "code": "cd" }
+      ],
+      "pitfalls": [
+        "cd 只在当前 shell 生效，另开会话或脚本里不会影响父 shell",
+        "路径含空格要加引号，如 cd \"my dir\""
+      ],
+      "related": ["linux-pwd","linux-ls","linux-mkdir"],
+      "docs": [
+        { "label": "man7: bash(1) 内置命令 cd", "url": "https://man7.org/linux/man-pages/man1/bash.1.html" }
+      ],
+      "tags": ["目录","切换","内置命令"]
+    },
+    {
+      "id": "linux-pwd",
+      "tool": "linux",
+      "module": "linux-file",
+      "name": "pwd",
+      "level": "入门",
+      "tagline": "显示当前所在目录的绝对路径",
+      "plain": "敲错地方想确认自己在哪、或写脚本要拿绝对路径时用它。pwd 打印当前工作目录的完整路径，输出从 / 开头，可以直接拼给别人或写进脚本里。",
+      "syntax": "pwd [选项]",
+      "keyPoints": [
+        "输出一定是绝对路径，从 / 开头，可直接复制给别人用",
+        "默认 -L，显示逻辑路径，进符号链接目录时按原写法显示",
+        "加 -P 解析掉符号链接，看到真实的物理路径",
+        "想拿路径可以 dir=$(pwd)，比手拼路径可靠"
+      ],
+      "options": [
+        { "flag": "-L", "desc": "显示逻辑路径，保留符号链接目录名（默认）" },
+        { "flag": "-P", "desc": "显示物理路径，把符号链接全部解开" },
+        { "flag": "--help", "desc": "打印用法摘要后退出" }
+      ],
+      "examples": [
+        { "desc": "看当前目录", "code": "pwd" },
+        { "desc": "看解析符号链接后的真实路径", "code": "pwd -P" },
+        { "desc": "在脚本里把路径存进变量", "code": "dir=$(pwd)" }
+      ],
+      "pitfalls": [
+        "在软链接目录里 pwd 和 pwd -P 结果不同，别把两者混用",
+        "cd 之后路径已经变了，别拿旧路径继续操作"
+      ],
+      "related": ["linux-cd","linux-ls","linux-find"],
+      "docs": [
+        { "label": "man7: pwd(1)", "url": "https://man7.org/linux/man-pages/man1/pwd.1.html" }
+      ],
+      "tags": ["路径","目录","内置命令"]
+    },
+    {
+      "id": "linux-mkdir",
+      "tool": "linux",
+      "module": "linux-file",
+      "name": "mkdir",
+      "level": "入门",
+      "tagline": "创建新目录",
+      "plain": "要按项目建多级目录、或临时建个放日志的文件夹时用它。mkdir 可以一次建一个或多个目录，-p 能把缺的父目录一起建出来，-m 还能直接指定新目录的权限。",
+      "syntax": "mkdir [选项] 目录...",
+      "keyPoints": [
+        "mkdir -p a/b/c 连父目录一起建，目录已存在也不报错",
+        "默认权限受 umask 影响，目录常见结果是 755 或 775",
+        "-m 直接给定权限，如 -m 700 建一个私有目录",
+        "一次可以给多个目录名，用空格分开即可"
+      ],
+      "options": [
+        { "flag": "-p", "desc": "递归创建父目录，目录已存在不报错" },
+        { "flag": "-m", "desc": "按给定权限创建，如 -m 750" },
+        { "flag": "-v", "desc": "每创建一个目录就打印一条信息" }
+      ],
+      "examples": [
+        { "desc": "建多级目录", "code": "mkdir -p /opt/app/logs/2026" },
+        { "desc": "建只有自己可读写的目录", "code": "mkdir -m 700 ~/private" },
+        { "desc": "一次建三个目录", "code": "mkdir html css js" }
+      ],
+      "pitfalls": [
+        "不加 -p 时父目录不存在会直接报错，建多级目录记得加",
+        "-m 给的是最终权限，不会再被 umask 削掉，误以为两者叠加"
+      ],
+      "related": ["linux-touch","linux-rm","linux-cd"],
+      "docs": [
+        { "label": "man7: mkdir(1)", "url": "https://man7.org/linux/man-pages/man1/mkdir.1.html" }
+      ],
+      "tags": ["目录","创建"]
+    },
+    {
+      "id": "linux-rm",
+      "tool": "linux",
+      "module": "linux-file",
+      "name": "rm",
+      "level": "入门",
+      "tagline": "删除文件或目录",
+      "plain": "清理临时文件、删掉旧日志时用它。rm 默认只删文件，删目录要加 -r；-f 表示强制不提示。删除后没有回收站，敲回车之前一定先确认路径对不对。",
+      "syntax": "rm [选项] 文件或目录...",
+      "keyPoints": [
+        "删空目录可以用 rm -d，删非空目录必须加 -r",
+        "-i 每个文件都问一次，-f 则完全不问，常和 -r 一起写",
+        "多个文件或通配符由 shell 展开，rm *.log 会删掉所有日志",
+        "删除结果不会进回收站，也没有撤销命令"
+      ],
+      "options": [
+        { "flag": "-r", "desc": "递归删除目录和里面的所有内容" },
+        { "flag": "-f", "desc": "强制删除，忽略不存在的文件且不提示" },
+        { "flag": "-i", "desc": "删除前逐个确认" },
+        { "flag": "-d", "desc": "删除空目录，作用等同 rmdir" },
+        { "flag": "--preserve-root", "desc": "拒绝删除根目录 /，默认开启" }
+      ],
+      "examples": [
+        { "desc": "删除构建产物目录", "code": "rm -rf ./build" },
+        { "desc": "删除日志前逐个确认", "code": "rm -i *.log" },
+        { "desc": "删除空目录", "code": "rm -d old-empty-dir" }
+      ],
+      "pitfalls": [
+        "rm -rf 不进回收站，删错只能靠备份恢复，执行前先用 ls 确认路径",
+        "目录变量为空时 rm -rf $DIR/* 可能变成删根目录，脚本里先判断变量"
+      ],
+      "related": ["linux-cp","linux-mv","linux-find"],
+      "docs": [
+        { "label": "man7: rm(1)", "url": "https://man7.org/linux/man-pages/man1/rm.1.html" }
+      ],
+      "tags": ["删除","危险","文件"]
+    },
+    {
+      "id": "linux-cp",
+      "tool": "linux",
+      "module": "linux-file",
+      "name": "cp",
+      "level": "进阶",
+      "tagline": "复制文件或目录",
+      "plain": "备份配置、把文件拷到别的目录时用它。cp 默认只复制单个文件，复制目录要加 -r；想连权限和时间戳一起保留就用 -a，这是备份场景最稳的写法。",
+      "syntax": "cp [选项] 源文件... 目标",
+      "keyPoints": [
+        "目标不存在就新建；目标已是目录时文件被复制进该目录",
+        "-a 等于 -dR --preserve=all，保留权限、属主、时间戳和链接",
+        "-i 覆盖前询问，-n 已存在就跳过，-u 只在源更新时覆盖",
+        "-r 递归复制目录；默认复制符号链接本身（-P 显式保持不跟随），-L 才跟随"
+      ],
+      "options": [
+        { "flag": "-r", "desc": "递归复制整个目录" },
+        { "flag": "-a", "desc": "归档模式，保留权限、属主、时间戳和链接" },
+        { "flag": "-i", "desc": "覆盖已有文件前先询问" },
+        { "flag": "-n", "desc": "目标已存在时不覆盖" },
+        { "flag": "-u", "desc": "只在源文件更新时覆盖目标" },
+        { "flag": "-p", "desc": "保留权限、属主和时间戳" },
+        { "flag": "-v", "desc": "显示复制了哪些文件" }
+      ],
+      "examples": [
+        { "desc": "备份一份配置", "code": "cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak" },
+        { "desc": "整个目录连权限一起复制", "code": "cp -a /etc/nginx /var/backups/nginx-2026" },
+        { "desc": "只在源更新时覆盖目标", "code": "cp -u app.jar /opt/app/app.jar" }
+      ],
+      "pitfalls": [
+        "cp 覆盖同名文件默认不提示，重要文件先备份或加 -i",
+        "默认复制的是链接本身；加 -L 才会跟随链接，备份时别误用"
+      ],
+      "related": ["linux-mv","linux-rm","linux-ln"],
+      "docs": [
+        { "label": "man7: cp(1)", "url": "https://man7.org/linux/man-pages/man1/cp.1.html" }
+      ],
+      "tags": ["复制","备份","文件"]
+    },
+    {
+      "id": "linux-mv",
+      "tool": "linux",
+      "module": "linux-file",
+      "name": "mv",
+      "level": "入门",
+      "tagline": "移动或重命名文件和目录",
+      "plain": "整理目录、给文件改名时用它。mv 不是复制，源文件会直接出现在新位置；同一目录内 mv 就是改名，跨目录就是移动，目标有同名文件时默认不提示就覆盖。",
+      "syntax": "mv [选项] 源文件... 目标",
+      "keyPoints": [
+        "同一目录 mv a.txt b.txt 是改名，跨目录是移动",
+        "目标已存在默认直接覆盖，-i 覆盖前问，-n 完全不覆盖",
+        "跨文件系统移动会先复制再删除，大文件会明显变慢",
+        "-v 打印移动过程，-u 只在源比目标新时才移动"
+      ],
+      "options": [
+        { "flag": "-i", "desc": "覆盖已有文件前询问" },
+        { "flag": "-n", "desc": "目标已存在时不做任何操作" },
+        { "flag": "-f", "desc": "直接覆盖，不询问（默认行为）" },
+        { "flag": "-v", "desc": "显示移动了哪些文件" },
+        { "flag": "-u", "desc": "只在源文件比目标新时才移动" }
+      ],
+      "examples": [
+        { "desc": "给配置文件加备份后缀", "code": "mv nginx.conf nginx.conf.bak" },
+        { "desc": "把整个目录移到备份盘", "code": "mv /data/app /backup/app" },
+        { "desc": "把多个日志移到归档目录", "code": "mv *.log /var/log/archive/" }
+      ],
+      "pitfalls": [
+        "mv 覆盖后原文件就没了，目标有同名文件时先确认再执行",
+        "目标目录不存在时 mv a b 只是把 a 改名成 b，容易误判成移动",
+        "正在被进程打开的文件也能移动，程序会找不到原来的路径"
+      ],
+      "related": ["linux-cp","linux-rm","linux-ls"],
+      "docs": [
+        { "label": "man7: mv(1)", "url": "https://man7.org/linux/man-pages/man1/mv.1.html" }
+      ],
+      "tags": ["移动","重命名","文件"]
+    },
+    {
+      "id": "linux-touch",
+      "tool": "linux",
+      "module": "linux-file",
+      "name": "touch",
+      "level": "入门",
+      "tagline": "创建空文件或更新文件时间",
+      "plain": "要快速建一个空占位文件、或让构建工具以为文件刚改过时用它。touch 在文件不存在时建空文件，存在时只把访问和修改时间刷成当前时间，文件内容不动。",
+      "syntax": "touch [选项] 文件...",
+      "keyPoints": [
+        "文件不存在就建空文件，已存在只更新时间、不改内容",
+        "-a 只改访问时间，-m 只改修改时间，都不写默认改两个",
+        "-d 指定时间：touch -d '2026-01-01 08:00' app.log",
+        "-c 文件不存在时不新建，只更新已有文件"
+      ],
+      "options": [
+        { "flag": "-a", "desc": "只更新访问时间（atime）" },
+        { "flag": "-m", "desc": "只更新修改时间（mtime）" },
+        { "flag": "-c", "desc": "文件不存在时不创建" },
+        { "flag": "-d", "desc": "用给定日期时间代替当前时间" },
+        { "flag": "-t", "desc": "用 [[CC]YY]MMDDhhmm 格式指定时间" },
+        { "flag": "-r", "desc": "用参考文件的时间来设置" }
+      ],
+      "examples": [
+        { "desc": "建一个空日志文件", "code": "touch app.log" },
+        { "desc": "把时间改成指定日期", "code": "touch -d '2026-01-01 08:00' app.log" },
+        { "desc": "只更新修改时间", "code": "touch -m app.log" }
+      ],
+      "pitfalls": [
+        "touch 会让构建工具认为文件刚改过，可能触发不必要的重编译",
+        "新建文件需要对目录有写权限，改已有文件时间还得有该文件的写权限"
+      ],
+      "related": ["linux-mkdir","linux-ln","linux-ls"],
+      "docs": [
+        { "label": "man7: touch(1)", "url": "https://man7.org/linux/man-pages/man1/touch.1.html" }
+      ],
+      "tags": ["文件","时间戳","创建"]
+    },
+    {
+      "id": "linux-find",
+      "tool": "linux",
+      "module": "linux-file",
+      "name": "find",
+      "level": "进阶",
+      "tagline": "按条件递归查找文件",
+      "plain": "忘了文件放哪、要按名字或时间批量找文件时用它。find 从指定目录往下递归，用 -name、-type、-mtime 等条件过滤，还能配合 -exec 直接处理找到的文件。",
+      "syntax": "find [路径...] [条件] [动作]",
+      "keyPoints": [
+        "find /var/log -name '*.log' 按名字查，模式要加引号防 shell 展开",
+        "-type f 只要普通文件，-type d 只要目录，-type l 只要链接",
+        "-mtime +7 找七天前改过的，-size +100M 找大于 100M 的",
+        "-exec 对结果执行命令，{} 代表文件名，结尾用 \\; 表示逐条执行",
+        "-delete 直接删除匹配项，先不加它跑一遍看结果"
+      ],
+      "options": [
+        { "flag": "-name", "desc": "按文件名匹配，支持通配符" },
+        { "flag": "-type", "desc": "按类型过滤：f 文件、d 目录、l 链接" },
+        { "flag": "-mtime", "desc": "按修改时间过滤，+7 表示七天以前" },
+        { "flag": "-size", "desc": "按大小过滤，+100M 表示大于 100M" },
+        { "flag": "-maxdepth", "desc": "限制向下递归的层数" },
+        { "flag": "-exec", "desc": "对每个匹配结果执行命令" },
+        { "flag": "-delete", "desc": "删除匹配到的文件或目录" }
+      ],
+      "examples": [
+        { "desc": "找 /var/log 下所有日志文件", "code": "find /var/log -type f -name '*.log'" },
+        { "desc": "删掉七天前的旧日志", "code": "find /var/log -type f -name '*.log' -mtime +7 -delete" },
+        { "desc": "找出大于 100M 的文件", "code": "find / -type f -size +100M 2>/dev/null" },
+        { "desc": "压缩找到的 jpg 文件", "code": "find . -type f -name '*.jpg' -exec gzip {} \\;" }
+      ],
+      "pitfalls": [
+        "find / -name 会扫整块盘，很慢，先尽量缩小查找目录",
+        "-delete 不提示直接删，先去掉它确认结果列表再执行",
+        "条件里的通配符不加引号会被 shell 先展开，结果不对"
+      ],
+      "related": ["linux-ls","linux-rm","linux-grep"],
+      "docs": [
+        { "label": "man7: find(1)", "url": "https://man7.org/linux/man-pages/man1/find.1.html" }
+      ],
+      "tags": ["查找","递归","批量"]
+    },
+    {
+      "id": "linux-ln",
+      "tool": "linux",
+      "module": "linux-file",
+      "name": "ln",
+      "level": "进阶",
+      "tagline": "创建硬链接或符号链接",
+      "plain": "想让多个路径指向同一份文件、或给常用目录做个快捷方式时用它。ln 默认建硬链接，加 -s 建符号链接；日常用软链接更多，源路径写错就会变成断链。",
+      "syntax": "ln [选项] 目标 链接名",
+      "keyPoints": [
+        "ln -s 源 链接名 建软链接，源可以是文件、目录或别的分区路径",
+        "不加 -s 是硬链接，只能指向同分区文件，删掉一个另一个还在",
+        "软链接里存的是路径字符串，源被删掉链接就失效",
+        "-r 生成相对路径的软链接，适合打包后整体迁移"
+      ],
+      "options": [
+        { "flag": "-s", "desc": "创建符号链接（软链接）" },
+        { "flag": "-f", "desc": "链接名已存在时先删除再创建" },
+        { "flag": "-n", "desc": "链接名是目录软链接时按普通文件处理" },
+        { "flag": "-r", "desc": "创建相对路径的符号链接" },
+        { "flag": "-v", "desc": "打印每个创建的链接" }
+      ],
+      "examples": [
+        { "desc": "给日志目录做个快捷方式", "code": "ln -s /var/log/nginx ~/nginx-logs" },
+        { "desc": "建相对路径软链接", "code": "ln -sr /opt/app/config ./config" },
+        { "desc": "强制覆盖已有链接", "code": "ln -sf /opt/app/app-v2.jar ./app.jar" }
+      ],
+      "pitfalls": [
+        "软链接源建议写绝对路径，相对路径是按链接所在目录解析的",
+        "删软链接用 rm 链接名，写成 rm 链接名/ 可能删到目标目录里的内容",
+        "硬链接不能跨分区，普通用户也不能拿它给目录建链接"
+      ],
+      "related": ["linux-cp","linux-mv","linux-ls"],
+      "docs": [
+        { "label": "man7: ln(1)", "url": "https://man7.org/linux/man-pages/man1/ln.1.html" }
+      ],
+      "tags": ["链接","软链接","快捷方式"]
+    },
+    {
+      "id": "linux-cat",
+      "tool": "linux",
+      "module": "linux-text",
+      "name": "cat",
+      "level": "入门",
+      "tagline": "把文件内容直接打印到屏幕",
+      "plain": "想快速看一个小配置文件、或把两个文件接起来时用它。cat 把文件内容原样输出到终端，适合小文件；文件大时会刷屏，长文件应该改用 less 分页看。",
+      "syntax": "cat [选项] [文件...]",
+      "keyPoints": [
+        "cat 文件 直接输出全文，多个文件会按顺序拼接输出",
+        "cat a b > c 把两个文件合成一个，注意 > 会覆盖 c 原有内容",
+        "-n 给每行加行号，-b 只给非空行加行号",
+        "后面不加文件时 cat 会读标准输入，按 Ctrl+D 结束"
+      ],
+      "options": [
+        { "flag": "-n", "desc": "所有输出行都加行号" },
+        { "flag": "-b", "desc": "只给非空行加行号，空行不编号" },
+        { "flag": "-A", "desc": "显示不可见字符，如制表符和行尾" },
+        { "flag": "-s", "desc": "压缩连续空行，多行只留一行" },
+        { "flag": "-E", "desc": "在每行末尾显示 $ 符号" }
+      ],
+      "examples": [
+        { "desc": "看 hosts 文件内容", "code": "cat /etc/hosts" },
+        { "desc": "带行号看配置", "code": "cat -n app.properties" },
+        { "desc": "把两个文件拼成一个", "code": "cat part1.txt part2.txt > all.txt" }
+      ],
+      "pitfalls": [
+        "文件几百 MB 时 cat 会刷满终端，改用 less 或 head",
+        "cat a > a 会把 a 清空，读写不能是同一个文件"
+      ],
+      "related": ["linux-less","linux-head","linux-tail"],
+      "docs": [
+        { "label": "man7: cat(1)", "url": "https://man7.org/linux/man-pages/man1/cat.1.html" }
+      ],
+      "tags": ["查看","文本","拼接"]
+    },
+    {
+      "id": "linux-less",
+      "tool": "linux",
+      "module": "linux-text",
+      "name": "less",
+      "level": "入门",
+      "tagline": "分页查看大文件内容",
+      "plain": "日志几百兆、一屏放不下时用它。less 打开文件后能上下翻页、按 / 搜关键字，看完按 q 退出，不会像 cat 那样把终端刷满，还能跟踪正在增长的日志。",
+      "syntax": "less [选项] 文件",
+      "keyPoints": [
+        "空格下一页，b 上一页，方向键上下滚动，q 退出",
+        "/关键字 向下搜，?关键字 向上搜，n 跳到下一个匹配",
+        "G 跳到文件末尾，g 回到开头，100g 跳到第 100 行",
+        "按 F 进入实时跟踪模式，等同 tail -f，Ctrl+C 退出跟踪"
+      ],
+      "options": [
+        { "flag": "-N", "desc": "在每行前显示行号" },
+        { "flag": "-S", "desc": "长行不折行，改用左右滚动查看" },
+        { "flag": "-R", "desc": "原样显示颜色控制符，看彩色日志用" },
+        { "flag": "-i", "desc": "搜索时忽略大小写" },
+        { "flag": "-F", "desc": "文件内容一屏放得下时直接退出" }
+      ],
+      "examples": [
+        { "desc": "分页看系统日志", "code": "less /var/log/syslog" },
+        { "desc": "带行号并保留颜色查看访问日志", "code": "less -NR /var/log/nginx/access.log" },
+        { "desc": "实时跟踪日志增长", "code": "less +F /var/log/syslog" }
+      ],
+      "pitfalls": [
+        "卡住时先试 q 退出；误按 Ctrl+S 会像死机，按 Ctrl+Q 恢复",
+        "less 显示的是打开时的内容，日志在增长要按 F 跟踪"
+      ],
+      "related": ["linux-cat","linux-tail","linux-grep"],
+      "docs": [
+        { "label": "man7: less(1)", "url": "https://man7.org/linux/man-pages/man1/less.1.html" }
+      ],
+      "tags": ["分页","日志","查看"]
+    },
+    {
+      "id": "linux-head",
+      "tool": "linux",
+      "module": "linux-text",
+      "name": "head",
+      "level": "入门",
+      "tagline": "查看文件开头的若干行",
+      "plain": "只想看配置文件的前几行、或确认 CSV 表头长什么样时用它。head 默认打印前 10 行，-n 可以改行数，-c 还能按字节截取，不用把整个文件都读进屏幕。",
+      "syntax": "head [选项] [文件...]",
+      "keyPoints": [
+        "默认前 10 行，head -n 20 文件 看前 20 行",
+        "head -c 100 文件 只要前 100 个字节",
+        "多文件时默认加文件名标题，-q 去掉标题",
+        "写 -n 5 或 -5 都行，新写法推荐 -n 5"
+      ],
+      "options": [
+        { "flag": "-n", "desc": "指定显示前多少行，如 -n 20" },
+        { "flag": "-c", "desc": "按字节数显示开头部分，如 -c 512" },
+        { "flag": "-q", "desc": "多文件时不打印文件名标题" },
+        { "flag": "-v", "desc": "总是打印文件名标题" }
+      ],
+      "examples": [
+        { "desc": "看配置文件前 20 行", "code": "head -n 20 /etc/nginx/nginx.conf" },
+        { "desc": "看 CSV 表头", "code": "head -n 1 data.csv" },
+        { "desc": "一次看两个文件的开头", "code": "head -n 3 a.txt b.txt" }
+      ],
+      "pitfalls": [
+        "head 看到的不代表文件全貌，排查问题要结合 tail 或 less",
+        "二进制文件别用 head 直接看，终端会被乱码刷乱"
+      ],
+      "related": ["linux-tail","linux-cat","linux-less"],
+      "docs": [
+        { "label": "man7: head(1)", "url": "https://man7.org/linux/man-pages/man1/head.1.html" }
+      ],
+      "tags": ["查看","行数","文本"]
+    },
+    {
+      "id": "linux-tail",
+      "tool": "linux",
+      "module": "linux-text",
+      "name": "tail",
+      "level": "进阶",
+      "tagline": "看文件末尾并实时跟踪",
+      "plain": "查线上问题最常用的就是 tail -f 盯着日志。tail 默认打印最后 10 行，-f 会持续输出新写入的内容，-n 可以先看最近几十行再继续跟踪。",
+      "syntax": "tail [选项] [文件...]",
+      "keyPoints": [
+        "默认最后 10 行，tail -n 100 文件 看最近 100 行",
+        "-f 持续跟踪文件新增内容，Ctrl+C 结束",
+        "-F 在文件被切割或重建后自动重新打开，比 -f 稳",
+        "-n +100 表示从第 100 行开始一直输出到末尾"
+      ],
+      "options": [
+        { "flag": "-n", "desc": "指定显示最后多少行，如 -n 50" },
+        { "flag": "-f", "desc": "跟踪文件增长，实时输出新内容" },
+        { "flag": "-F", "desc": "同 -f，但文件被替换后自动重新打开" },
+        { "flag": "-c", "desc": "按字节数显示末尾内容" },
+        { "flag": "--pid", "desc": "跟踪的进程结束后自动退出" }
+      ],
+      "examples": [
+        { "desc": "实时跟踪应用日志", "code": "tail -f /var/log/app/app.log" },
+        { "desc": "先看最近 200 行再跟踪", "code": "tail -n 200 -f /var/log/nginx/error.log" },
+        { "desc": "日志被切割后仍持续跟踪", "code": "tail -F /var/log/syslog" }
+      ],
+      "pitfalls": [
+        "-f 跟的是文件句柄，日志被切割后可能不再有新内容，改用 -F",
+        "tail -f 不会自己退出，脚本里用要配 timeout 或 --pid"
+      ],
+      "related": ["linux-head","linux-less","linux-grep"],
+      "docs": [
+        { "label": "man7: tail(1)", "url": "https://man7.org/linux/man-pages/man1/tail.1.html" }
+      ],
+      "tags": ["日志","实时","查看"]
+    },
+    {
+      "id": "linux-grep",
+      "tool": "linux",
+      "module": "linux-text",
+      "name": "grep",
+      "level": "入门",
+      "tagline": "按关键字搜索文件内容",
+      "plain": "日志里找报错、代码里找某个函数时用它。grep 逐行匹配关键字并打印命中的行，-r 递归搜整个目录，-i 忽略大小写，是最常用的排查工具之一。",
+      "syntax": "grep [选项] 模式 [文件...]",
+      "keyPoints": [
+        "grep error app.log 打印包含 error 的行",
+        "-r 递归搜目录，-n 显示行号，-i 忽略大小写",
+        "-v 反向匹配，用来排除含关键字的行",
+        "-E 用扩展正则，-l 只输出匹配的文件名",
+        "模式含特殊字符要加引号，如 'error|fail'"
+      ],
+      "options": [
+        { "flag": "-i", "desc": "匹配时忽略大小写" },
+        { "flag": "-r", "desc": "递归搜索目录下的文件" },
+        { "flag": "-n", "desc": "在结果前显示行号" },
+        { "flag": "-v", "desc": "反向匹配，输出不含关键字的行" },
+        { "flag": "-E", "desc": "使用扩展正则表达式" },
+        { "flag": "-l", "desc": "只列出匹配的文件名" },
+        { "flag": "-c", "desc": "只输出匹配的行数" }
+      ],
+      "examples": [
+        { "desc": "在日志里找报错行", "code": "grep -n 'ERROR' /var/log/app/app.log" },
+        { "desc": "递归搜代码里的 TODO", "code": "grep -rn 'TODO' ./src" },
+        { "desc": "排除配置里的注释行", "code": "grep -v '^#' /etc/ssh/sshd_config" }
+      ],
+      "pitfalls": [
+        "关键词不加引号时 shell 会先解释通配符或管道，模式要用单引号",
+        "grep 只按行匹配，跨行内容搜不到，要看上下文加 -A/-B",
+        "递归搜 / 很慢还会刷权限错误，先限定到具体目录"
+      ],
+      "related": ["linux-cat","linux-less","linux-sed"],
+      "docs": [
+        { "label": "man7: grep(1)", "url": "https://man7.org/linux/man-pages/man1/grep.1.html" }
+      ],
+      "tags": ["搜索","日志","文本"]
+    },
+    {
+      "id": "linux-wc",
+      "tool": "linux",
+      "module": "linux-text",
+      "name": "wc",
+      "level": "入门",
+      "tagline": "统计行数、单词数和字节数",
+      "plain": "想知道文件有多少行、日志最近涨了多少条时用它。wc 默认同时给出 行数、单词数、字节数 三列，最常用的写法是 wc -l 只数行数，也常接在管道后面。",
+      "syntax": "wc [选项] [文件...]",
+      "keyPoints": [
+        "默认输出 行数 单词数 字节数 和文件名 四列",
+        "wc -l 文件 只数行，wc -w 只数单词",
+        "配合管道统计条数：grep ERROR app.log | wc -l",
+        "-L 输出最长一行的长度"
+      ],
+      "options": [
+        { "flag": "-l", "desc": "只统计行数，不输出其他列" },
+        { "flag": "-w", "desc": "只统计单词数" },
+        { "flag": "-c", "desc": "只统计字节数" },
+        { "flag": "-m", "desc": "只统计字符数" },
+        { "flag": "-L", "desc": "显示最长一行的长度" }
+      ],
+      "examples": [
+        { "desc": "数文件有多少行", "code": "wc -l /var/log/app/app.log" },
+        { "desc": "统计错误日志有多少条", "code": "grep 'ERROR' app.log | wc -l" },
+        { "desc": "看用户列表有多少行", "code": "wc -l /etc/passwd" }
+      ],
+      "pitfalls": [
+        "wc -l 数的是换行符，最后一行没换行时结果会少一",
+        "一次给多个文件还会输出总计行，脚本里最好只处理单个文件"
+      ],
+      "related": ["linux-grep","linux-sort","linux-cut"],
+      "docs": [
+        { "label": "man7: wc(1)", "url": "https://man7.org/linux/man-pages/man1/wc.1.html" }
+      ],
+      "tags": ["统计","行数","文本"]
+    },
+    {
+      "id": "linux-sort",
+      "tool": "linux",
+      "module": "linux-text",
+      "name": "sort",
+      "level": "入门",
+      "tagline": "按列或数值给文本行排序",
+      "plain": "统计访问量前几名、把日志按时间排开时用它。sort 默认按整行字符排序，-n 按数值、-k 指定第几列、-t 指定分隔符，常配合 uniq 统计重复次数。",
+      "syntax": "sort [选项] [文件...]",
+      "keyPoints": [
+        "默认按整行字典序排，加 -r 变成从大到小",
+        "-n 按数值排，-h 按 2K、1G 这类人类可读大小排",
+        "-k 2,2 按第二列排，-t : 指定冒号作分隔符",
+        "sort file | uniq -c 数重复，前提是先排好序"
+      ],
+      "options": [
+        { "flag": "-n", "desc": "按数值大小排序" },
+        { "flag": "-r", "desc": "逆序排列，从大到小" },
+        { "flag": "-k", "desc": "指定按哪一列排序，如 -k 2,2" },
+        { "flag": "-t", "desc": "指定字段分隔符，如 -t :" },
+        { "flag": "-u", "desc": "排序后顺便去重" },
+        { "flag": "-h", "desc": "按人类可读大小排序，如 2K、1G" },
+        { "flag": "-f", "desc": "排序时忽略大小写" }
+      ],
+      "examples": [
+        { "desc": "按访问次数从多到少排", "code": "sort -nr access_count.txt" },
+        { "desc": "按第二列数值排序", "code": "sort -t : -k 2,2n /etc/passwd" },
+        { "desc": "统计每行出现次数并排序", "code": "sort access.log | uniq -c | sort -nr" }
+      ],
+      "pitfalls": [
+        "不先 sort 就用 uniq 统计，会漏掉不相邻的重复行",
+        "数字列不加 -n 会按字符排，10 会排在 2 前面",
+        "排序结果受本地化设置影响，脚本里可加 LC_ALL=C 保证稳定"
+      ],
+      "related": ["linux-wc","linux-cut","linux-awk"],
+      "docs": [
+        { "label": "man7: sort(1)", "url": "https://man7.org/linux/man-pages/man1/sort.1.html" }
+      ],
+      "tags": ["排序","统计","文本"]
+    },
+    {
+      "id": "linux-cut",
+      "tool": "linux",
+      "module": "linux-text",
+      "name": "cut",
+      "level": "入门",
+      "tagline": "按分隔符或字符位置切出字段",
+      "plain": "只想从日志或 CSV 里取某一列时用它。cut 用 -d 指定分隔符、-f 选第几列，或者用 -c 直接截取第几个字符，比 grep 取列更精确，也不改原文件。",
+      "syntax": "cut [选项] [文件...]",
+      "keyPoints": [
+        "cut -d : -f 1 /etc/passwd 取第一列用户名",
+        "-f 可写多个：-f 1,3 或范围 -f 2-4",
+        "-c 按字符位置切，-b 按字节位置切",
+        "-d 只认单个字符分隔符，多空格分隔的列要换用 awk"
+      ],
+      "options": [
+        { "flag": "-d", "desc": "指定字段分隔符，只支持单字符" },
+        { "flag": "-f", "desc": "选择第几个字段，如 -f 1,3 或 -f 2-4" },
+        { "flag": "-c", "desc": "按字符位置截取，如 -c 1-10" },
+        { "flag": "-b", "desc": "按字节位置截取" },
+        { "flag": "-s", "desc": "不输出不含分隔符的行" },
+        { "flag": "--complement", "desc": "取反，输出未被选中的部分" }
+      ],
+      "examples": [
+        { "desc": "取 /etc/passwd 的用户名", "code": "cut -d : -f 1 /etc/passwd" },
+        { "desc": "取 CSV 的前两列", "code": "cut -d , -f 1,2 data.csv" },
+        { "desc": "取每行前 10 个字符", "code": "cut -c 1-10 app.log" }
+      ],
+      "pitfalls": [
+        "-d 只认单个字符，多空格分隔的列用 cut 会切错，改用 awk",
+        "cut 只输出到屏幕，要保存结果得自己重定向到文件"
+      ],
+      "related": ["linux-awk","linux-sort","linux-grep"],
+      "docs": [
+        { "label": "man7: cut(1)", "url": "https://man7.org/linux/man-pages/man1/cut.1.html" }
+      ],
+      "tags": ["字段","文本","截取"]
+    },
+    {
+      "id": "linux-sed",
+      "tool": "linux",
+      "module": "linux-text",
+      "name": "sed",
+      "level": "进阶",
+      "tagline": "批量替换或删除文本中的内容",
+      "plain": "要一次改配置文件里多处内容、或删掉日志里的空行时用它。sed 按行处理文本，最常用 s/旧/新/g 做替换；加 -i 直接改文件，不加只把结果输出到屏幕。",
+      "syntax": "sed [选项] '脚本' [文件...]",
+      "keyPoints": [
+        "sed 's/old/new/' 只换每行第一处，加 g 换掉全部",
+        "-i 直接修改文件，-i.bak 改的同时留一份 .bak 备份",
+        "-n 关掉默认输出，配合 p 只打印匹配行",
+        "3d 删第 3 行，/pattern/d 删匹配到的行",
+        "-E 用扩展正则，写 (a|b) 更省事"
+      ],
+      "options": [
+        { "flag": "-i", "desc": "直接修改源文件，不输出到屏幕" },
+        { "flag": "-n", "desc": "不自动打印，配合 p 只输出需要的行" },
+        { "flag": "-e", "desc": "指定多条脚本，可以重复写多个" },
+        { "flag": "-E", "desc": "使用扩展正则表达式" },
+        { "flag": "-f", "desc": "从文件读取 sed 脚本" }
+      ],
+      "examples": [
+        { "desc": "把配置里的端口改成 9090", "code": "sed -i 's/8080/9090/g' application.properties" },
+        { "desc": "只打印含 ERROR 的行", "code": "sed -n '/ERROR/p' app.log" },
+        { "desc": "删除空行并保留原文件备份", "code": "sed -i.bak '/^$/d' config.txt" }
+      ],
+      "pitfalls": [
+        "sed -i 改完无法撤销，先加 .bak 备份或提前 cp 一份",
+        "GNU sed 的 -i 可以直接写，BSD 和 macOS 上要写成 -i ''",
+        "替换内容里有 / 时换个分隔符，如 s|/a|/b|g，避免转义"
+      ],
+      "related": ["linux-grep","linux-awk","linux-cut"],
+      "docs": [
+        { "label": "man7: sed(1)", "url": "https://man7.org/linux/man-pages/man1/sed.1.html" }
+      ],
+      "tags": ["替换","文本","批量"]
+    },
+    {
+      "id": "linux-awk",
+      "tool": "linux",
+      "module": "linux-text",
+      "name": "awk",
+      "level": "进阶",
+      "tagline": "按列处理文本并做统计",
+      "plain": "要从日志里按列取数据、求和求平均时用它。awk 逐行读取、按分隔符拆列，$1 表示第一列，还能写 if 和累加做统计，比 cut 灵活得多，适合一次性分析。",
+      "syntax": "awk [选项] '程序' [文件...]",
+      "keyPoints": [
+        "$1 是第一列，$NF 是最后一列，$0 是整行内容",
+        "默认按空格和制表符分列，-F : 可指定分隔符",
+        "awk '{sum+=$3} END {print sum}' 对第三列求和",
+        "-v 把外部变量传进程序，如 -v n=10",
+        "内置变量 NR 是当前行号，NF 是当前行的列数"
+      ],
+      "options": [
+        { "flag": "-F", "desc": "指定字段分隔符，如 -F :" },
+        { "flag": "-v", "desc": "定义变量并传进 awk 程序" },
+        { "flag": "-f", "desc": "从文件读取 awk 程序" }
+      ],
+      "examples": [
+        { "desc": "打印每行第一列", "code": "awk '{print $1}' access.log" },
+        { "desc": "按冒号分列取用户名", "code": "awk -F: '{print $1}' /etc/passwd" },
+        { "desc": "统计第三列的总和", "code": "awk '{sum+=$3} END {print sum}' data.txt" },
+        { "desc": "打印行号和内容", "code": "awk '{print NR, $0}' app.log" }
+      ],
+      "pitfalls": [
+        "awk 程序要用单引号包住，否则 $1 会被 shell 当成变量展开",
+        "指定 -F 后连续分隔符会产生空字段，字段编号可能和想的不同"
+      ],
+      "related": ["linux-cut","linux-sed","linux-sort"],
+      "docs": [
+        { "label": "man7: gawk(1)", "url": "https://man7.org/linux/man-pages/man1/gawk.1.html" },
+        { "label": "man7: awk(1p) POSIX 手册", "url": "https://man7.org/linux/man-pages/man1/awk.1p.html" }
+      ],
+      "tags": ["列处理","统计","文本"]
+    },
+    {
+      "id": "linux-chmod",
+      "tool": "linux",
+      "module": "linux-perm",
+      "name": "chmod",
+      "level": "入门",
+      "tagline": "修改文件和目录的访问权限",
+      "plain": "脚本没执行权限跑不起来、或改完文件别人访问不了时用它。chmod 用 rwx 或数字权限设置，755、644 是最常见的两组，-R 可以递归处理整个目录。",
+      "syntax": "chmod [选项] 权限 文件...",
+      "keyPoints": [
+        "数字法：755 表示属主可读写执行，组和其他人可读可执行",
+        "644 表示属主可读写，组和其他人只读，普通文件常用",
+        "符号法：chmod u+x 给属主加执行，chmod go-w 去掉组和他人写",
+        "-R 递归修改目录下所有文件和子目录的权限"
+      ],
+      "options": [
+        { "flag": "-R", "desc": "递归修改目录及其全部内容" },
+        { "flag": "-v", "desc": "显示处理过的每个文件" },
+        { "flag": "-c", "desc": "只显示真正发生变化的文件" },
+        { "flag": "--reference", "desc": "参照另一个文件的权限来设置" }
+      ],
+      "examples": [
+        { "desc": "给部署脚本加执行权限", "code": "chmod +x deploy.sh" },
+        { "desc": "应用目录设为属主可写、其他人只读", "code": "chmod 755 /opt/app" },
+        { "desc": "递归修正网站目录权限", "code": "chmod -R 755 /var/www/html" }
+      ],
+      "pitfalls": [
+        "chmod 777 让任何人都能改文件，线上目录这样设等于开门",
+        "chmod -R 777 会把子目录和文件权限全放开，事后很难逐项恢复",
+        "目录需要 x 权限才能进入，所以目录用 755、普通文件用 644"
+      ],
+      "related": ["linux-chown","linux-umask","linux-ls"],
+      "docs": [
+        { "label": "man7: chmod(1)", "url": "https://man7.org/linux/man-pages/man1/chmod.1.html" }
+      ],
+      "tags": ["权限","rwx","安全"]
+    },
+    {
+      "id": "linux-chown",
+      "tool": "linux",
+      "module": "linux-perm",
+      "name": "chown",
+      "level": "进阶",
+      "tagline": "修改文件或目录的属主和属组",
+      "plain": "文件被别人占了、部署后属主不对导致服务读不到时用它。chown 把文件所有者改成指定用户，冒号后面还能同时改组，-R 递归处理整个目录。",
+      "syntax": "chown [选项] 用户[:组] 文件...",
+      "keyPoints": [
+        "chown user file 只改属主，chown user:group file 一起改",
+        "chown :group file 只改属组，chgrp 也能做同样的改属组",
+        "-R 递归修改目录及里面所有内容的属主和属组",
+        "普通用户只能改自己文件的属组，改属主通常需要 root"
+      ],
+      "options": [
+        { "flag": "-R", "desc": "递归修改目录下所有内容" },
+        { "flag": "-v", "desc": "显示处理过的每个文件" },
+        { "flag": "-c", "desc": "只显示真正发生变化的文件" },
+        { "flag": "--reference", "desc": "照另一个文件的属主和属组设置" },
+        { "flag": "-h", "desc": "修改符号链接本身而不是它指向的文件" }
+      ],
+      "examples": [
+        { "desc": "把应用目录交给 deploy 用户", "code": "chown -R deploy:deploy /opt/app" },
+        { "desc": "只改属组", "code": "chown :www-data /var/www/html/index.html" },
+        { "desc": "照另一个文件的属主设置", "code": "chown --reference=/opt/app/config.yml /opt/app/app.yml" }
+      ],
+      "pitfalls": [
+        "chown -R 会把整个目录树的属主都换掉，执行前确认路径",
+        "对系统目录乱改属主可能让服务起不来，如 /var/lib/mysql",
+        "符号链接默认改的是它指向的文件，要改链接本身加 -h"
+      ],
+      "related": ["linux-chmod","linux-su","linux-sudo"],
+      "docs": [
+        { "label": "man7: chown(1)", "url": "https://man7.org/linux/man-pages/man1/chown.1.html" }
+      ],
+      "tags": ["属主","属组","权限"]
+    },
+    {
+      "id": "linux-umask",
+      "tool": "linux",
+      "module": "linux-perm",
+      "name": "umask",
+      "level": "进阶",
+      "tagline": "设置新建文件的默认权限掩码",
+      "plain": "想知道为什么新建目录是 755、文件是 644，或想改这个默认值时就查它。umask 决定新建时去掉哪些权限，普通用户常见 022 或 002，只对当前 shell 生效。",
+      "syntax": "umask [-p] [-S] [mode]",
+      "keyPoints": [
+        "umask 022 表示新建时去掉组和其他人的写权限",
+        "普通文件基数 666，目录基数 777，各自减掉掩码得到实际权限",
+        "umask -S 用符号形式显示，umask -p 输出可复用的命令",
+        "只影响当前 shell 及子进程，写进 /etc/profile 或 ~/.bashrc 才能持久"
+      ],
+      "options": [
+        { "flag": "-S", "desc": "用符号形式显示掩码，如 u=rwx,g=rx,o=rx" },
+        { "flag": "-p", "desc": "输出可直接复用为输入的命令形式" }
+      ],
+      "examples": [
+        { "desc": "查看当前掩码", "code": "umask" },
+        { "desc": "用符号形式查看", "code": "umask -S" },
+        { "desc": "输出可复用的命令形式", "code": "umask -p" },
+        { "desc": "新建文件默认不给组和其他人写权限", "code": "umask 022" }
+      ],
+      "pitfalls": [
+        "只影响当前 shell 及子进程；sudo 默认沿用你的 umask，除非 sudoers 里收紧",
+        "把 umask 设成 000 会让新文件对所有人可读写，别这么干"
+      ],
+      "related": ["linux-chmod","linux-chown","linux-useradd"],
+      "docs": [
+        { "label": "man7: bash(1) 内置命令 umask", "url": "https://man7.org/linux/man-pages/man1/bash.1.html" }
+      ],
+      "tags": ["权限","掩码","默认值"]
+    },
+    {
+      "id": "linux-sudo",
+      "tool": "linux",
+      "module": "linux-perm",
+      "name": "sudo",
+      "level": "进阶",
+      "tagline": "以其他用户身份执行单条命令",
+      "plain": "改系统配置提示权限不够时，在命令前加 sudo。sudo 按 sudoers 规则临时提权执行这一条命令，用完就退回普通用户，比一直用 root 账号更安全。",
+      "syntax": "sudo [选项] 命令",
+      "keyPoints": [
+        "sudo 只对紧跟的那条命令生效，不会切换整个 shell 身份",
+        "sudo -i 打开 root 登录 shell，sudo -s 打开 shell 但保留环境",
+        "sudo -u 用户名 命令 以指定用户身份运行",
+        "首次使用要输自己的密码，默认几分钟内免重复输入",
+        "能执行什么由 /etc/sudoers 决定，改它要用 visudo"
+      ],
+      "options": [
+        { "flag": "-u", "desc": "指定以哪个用户身份执行" },
+        { "flag": "-i", "desc": "启动目标用户的登录 shell" },
+        { "flag": "-s", "desc": "启动 shell 但保留当前环境变量" },
+        { "flag": "-k", "desc": "立即让 sudo 凭证失效，下次重新输密码" },
+        { "flag": "-l", "desc": "列出当前用户可以执行的 sudo 命令" }
+      ],
+      "examples": [
+        { "desc": "用 root 权限查看受限日志", "code": "sudo less /var/log/syslog" },
+        { "desc": "以 deploy 用户身份执行脚本", "code": "sudo -u deploy /opt/app/start.sh" },
+        { "desc": "查看自己能执行哪些 sudo 命令", "code": "sudo -l" }
+      ],
+      "pitfalls": [
+        "sudo cd 不会切换目录，cd 是 shell 内置命令，sudo 只认外部程序",
+        "在 sudoers 里给 NOPASSWD ALL 等于直接给 root 权限",
+        "sudo 要输的是当前用户自己的密码，不是 root 密码"
+      ],
+      "related": ["linux-su","linux-chown","linux-chmod"],
+      "docs": [
+        { "label": "man7: sudo(8)", "url": "https://man7.org/linux/man-pages/man8/sudo.8.html" },
+        { "label": "man7: sudoers(5)", "url": "https://man7.org/linux/man-pages/man5/sudoers.5.html" }
+      ],
+      "tags": ["提权","root","权限"]
+    },
+    {
+      "id": "linux-su",
+      "tool": "linux",
+      "module": "linux-perm",
+      "name": "su",
+      "level": "入门",
+      "tagline": "切换到另一个用户身份",
+      "plain": "需要连续以 root 或别的用户身份操作时用它。su 默认尝试切到 root 并要 root 密码，su - 用户名 切到指定用户并加载对方环境，一般推荐用带横杠的写法。",
+      "syntax": "su [选项] [用户]",
+      "keyPoints": [
+        "su 不带参数尝试切到 root，需要 root 的密码",
+        "su - user 登录式切换，加载目标用户的环境变量和家目录",
+        "su user 只换身份不换环境，PATH 可能还是原来的",
+        "exit 或 Ctrl+D 退回原来的用户"
+      ],
+      "options": [
+        { "flag": "-l", "desc": "登录式切换，等同 su -，加载目标用户环境" },
+        { "flag": "-c", "desc": "以目标用户执行一条命令后返回" },
+        { "flag": "-s", "desc": "指定切换后使用的 shell" },
+        { "flag": "-m", "desc": "保留当前环境变量，等同 -p" },
+        { "flag": "-g", "desc": "指定切换后的主组" }
+      ],
+      "examples": [
+        { "desc": "切到 root 并加载其环境", "code": "su -" },
+        { "desc": "以 deploy 身份执行一条命令", "code": "su - deploy -c 'whoami'" }
+      ],
+      "pitfalls": [
+        "很多发行版默认锁住 root 密码，su 会切不过去，可改用 sudo -i",
+        "切到 root 后忘了 exit，后续命令都以 root 执行，风险高",
+        "su 只验证密码，不像 sudo 那样细粒度记录每条命令"
+      ],
+      "related": ["linux-sudo","linux-useradd","linux-chown"],
+      "docs": [
+        { "label": "man7: su(1)", "url": "https://man7.org/linux/man-pages/man1/su.1.html" }
+      ],
+      "tags": ["切换用户","root","身份"]
+    },
+    {
+      "id": "linux-useradd",
+      "tool": "linux",
+      "module": "linux-perm",
+      "name": "useradd",
+      "level": "进阶",
+      "tagline": "新建系统用户账号",
+      "plain": "给同事开账号、给服务建专用运行用户时用它。useradd 把账号写进 /etc/passwd，加 -m 同时建家目录，-s 指定登录 shell；建完还要用 passwd 设密码才能登录。",
+      "syntax": "useradd [选项] 用户名",
+      "keyPoints": [
+        "useradd -m -s /bin/bash tom 建用户并创建家目录",
+        "-r 建系统账号，UID 落在系统范围，适合服务运行用户",
+        "-G 加入一个或多个附加组，-g 指定主组",
+        "建完要用 passwd 用户名 设密码，否则账号无法登录",
+        "-d 可指定家目录路径，-u 可指定 UID"
+      ],
+      "options": [
+        { "flag": "-m", "desc": "创建用户家目录" },
+        { "flag": "-s", "desc": "指定登录 shell，如 /bin/bash" },
+        { "flag": "-G", "desc": "加入附加组，多个组用逗号分隔" },
+        { "flag": "-g", "desc": "指定用户的主组" },
+        { "flag": "-d", "desc": "指定家目录路径" },
+        { "flag": "-r", "desc": "创建系统账号" },
+        { "flag": "-u", "desc": "指定用户 UID" }
+      ],
+      "examples": [
+        { "desc": "建一个可登录的普通用户", "code": "useradd -m -s /bin/bash tom" },
+        { "desc": "建一个禁止登录的服务账号", "code": "useradd -r -s /usr/sbin/nologin appsvc" },
+        { "desc": "建用户并加入 docker 和 developers 组", "code": "useradd -m -G docker,developers alice" }
+      ],
+      "pitfalls": [
+        "useradd 不会自动设密码，建完要再跑 passwd 用户名",
+        "不加 -m 时不会创建家目录，登录后可能没有可写目录",
+        "删用户要用 userdel，直接删 /etc/passwd 里的行会留下残留文件"
+      ],
+      "related": ["linux-su","linux-chown","linux-umask"],
+      "docs": [
+        { "label": "man7: useradd(8)", "url": "https://man7.org/linux/man-pages/man8/useradd.8.html" }
+      ],
+      "tags": ["用户","账号","系统管理"]
+    }
+  ]
+}

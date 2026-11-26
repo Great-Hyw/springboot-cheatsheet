@@ -1,0 +1,4 @@
+SOURCE: https://rsync.samba.org/how-rsync-works.html
+STATUS: 0
+ERROR: timeout
+

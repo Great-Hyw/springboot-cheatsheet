@@ -65,16 +65,35 @@ function readFirstId(prefix) {
   return null
 }
 
+function readAllCommands() {
+  const dir = path.join(root, 'src', 'data')
+  if (!fs.existsSync(dir)) return []
+  const out = []
+  for (const file of fs.readdirSync(dir)) {
+    if (!file.startsWith('commands-') || !file.endsWith('.json')) continue
+    try {
+      const data = JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8'))
+      for (const it of data.items || []) if (it?.id && it?.tool) out.push({ tool: it.tool, id: it.id })
+    } catch {
+      /* 忽略损坏文件 */
+    }
+  }
+  return out
+}
+
 const checkAll = process.argv.includes('--all')
-const routes = ['/', '/annotations', '/knowledge', '/favorites', '/about']
+const routes = ['/', '/annotations', '/knowledge', '/commands', '/commands/linux', '/commands/git', '/favorites', '/about']
 if (checkAll) {
   for (const id of readAllIds('annotations-')) routes.push(`/annotations/${id}`)
   for (const id of readAllIds('knowledge-')) routes.push(`/knowledge/${id}`)
+  for (const c of readAllCommands()) routes.push(`/commands/${c.tool}/${c.id}`)
 } else {
   const annId = readFirstId('annotations-')
   const knId = readFirstId('knowledge-')
+  const cmd = readAllCommands()[0]
   if (annId) routes.push(`/annotations/${annId}`)
   if (knId) routes.push(`/knowledge/${knId}`)
+  if (cmd) routes.push(`/commands/${cmd.tool}/${cmd.id}`)
 }
 routes.push('/this-page-does-not-exist')
 
@@ -153,7 +172,7 @@ async function check(route, width, height, label) {
       scrollWidth: doc.scrollWidth,
       innerWidth: inner,
       overflow,
-      cards: document.querySelectorAll('.ann-card, .kn-card, .fav-row, .detail-head, .doc-head').length,
+      cards: document.querySelectorAll('.ann-card, .kn-card, .fav-row, .detail-head, .doc-head, .cmd-card, .cmd-mod-card, .cmd-detail-head').length,
       hasHeader: !!document.querySelector('header, .app-header, .site-header'),
       computedLang: doc.lang,
     }

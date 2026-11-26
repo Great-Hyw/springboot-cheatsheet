@@ -1,15 +1,18 @@
 <script setup>
 import { computed } from 'vue'
 import { auditSummary, stats } from '../data'
+import { commandStats } from '../data/commands'
 
 const s = computed(() => auditSummary || {})
 
 const rows = computed(() => [
   { label: '收录注解', value: s.value.annotationCount ?? stats.annotations, unit: '条' },
   { label: '知识文章', value: s.value.knowledgeCount ?? stats.knowledge, unit: '篇' },
+  { label: 'Linux / Git 命令', value: commandStats.total, unit: '条' },
+  { label: '命令模块', value: commandStats.modules, unit: '组' },
   { label: '反射扫描的 Jar', value: s.value.jarsScanned ?? 115, unit: '个' },
   { label: '索引到的注解类', value: s.value.indexAnnotations ?? 1109, unit: '个' },
-  { label: '官方文档链接', value: s.value.docsLinks ?? '—', unit: '条' },
+  { label: '注解模块文档链接', value: s.value.docsLinks ?? '—', unit: '条' },
   { label: '核查后修正的问题', value: s.value.fixedIssues ?? '—', unit: '条' },
 ])
 </script>
@@ -20,7 +23,7 @@ const rows = computed(() => [
       <span class="eyebrow">About</span>
       <h1 class="page-title">关于本站与「不瞎写」</h1>
       <p class="page-desc">
-        这是一个 Spring Boot 注解速查站：面向刚上手 Spring Boot 的同学，把常用注解和背后的原理讲清楚。比起“背名词”，更希望你看完知道「什么时候该用它」。
+        这是一个「注解 + 命令」速查站：Spring Boot 注解与原理面向刚上手后端的同学，讲清楚「什么时候该用」；Linux 与 Git 命令分成两个独立模块，各查各的，不混在一起。
       </p>
     </div>
 
@@ -30,7 +33,8 @@ const rows = computed(() => [
         <ul class="point-list">
           <li><strong>注解卡片</strong>：每条包含大白话解释、关键点、真实属性表、可读的代码示例、容易踩的坑和官方文档链接。</li>
           <li><strong>知识库</strong>：把 IoC、AOP、事务、自动配置这些“绕不开的原理”，连同工程实践与版本升级，串成 20 篇短文，每篇 2–8 分钟。</li>
-          <li><strong>搜索与收藏</strong>：⌘K / Ctrl+K 全局搜索；收藏存在浏览器本地，不需要登录。</li>
+          <li><strong>命令速查</strong>：Linux 与 Git 两个独立入口，每条命令有真实选项、可直接敲的示例、容易踩的坑和官方 man / git 文档。</li>
+          <li><strong>搜索与收藏</strong>：⌘K / Ctrl+K 全局搜索（注解、文章、命令一起搜）；收藏存在浏览器本地，不需要登录。</li>
         </ul>
       </section>
 
@@ -72,6 +76,32 @@ const rows = computed(() => [
     </section>
 
     <section class="about-section">
+      <h2 class="section-title">命令模块的「不瞎写」 <small>和注解分开做</small></h2>
+      <div class="method-grid">
+        <div class="method-card">
+          <span class="method-step">1</span>
+          <h3>两个模块，边界写死</h3>
+          <p>Linux 与 Git 的数据、模块 id、条目 id、相关推荐各自独立，页面也分成两个入口；Linux 模块里不会出现 Git 命令，反之亦然。</p>
+        </div>
+        <div class="method-card">
+          <span class="method-step">2</span>
+          <h3>只写真实选项</h3>
+          <p>选项表里的 flag 必须能在官方 man 页或 git 文档里找到；没有选项可写的命令（如 <code>nohup</code>）不硬凑参数，把用法放到关键点里。</p>
+        </div>
+        <div class="method-card">
+          <span class="method-step">3</span>
+          <h3>示例可直接敲</h3>
+          <p>示例不带 <code>$</code> 提示符，路径用常见的占位写法；破坏性命令（<code>rm -rf</code>、<code>git reset --hard</code>、<code>push --force</code>）必须在坑里写清后果。</p>
+        </div>
+        <div class="method-card">
+          <span class="method-step">4</span>
+          <h3>独立复核</h3>
+          <p>由另一位核查员按官方文档抽查命令语义、选项与危险提示，产出命令模块核查报告；发现错误回到数据文件修正。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-section">
       <h2 class="section-title">核查数据 <small>可复跑</small></h2>
       <div class="audit-grid">
         <div v-for="r in rows" :key="r.label" class="audit-stat">
@@ -85,7 +115,7 @@ const rows = computed(() => [
       </p>
       <p v-else class="source-note">核查报告仍在生成。页面里的注解与文章数据已是核对过属性的版本。</p>
       <p class="source-note">
-        自动校验脚本在项目的 <code>scripts/validate-data.mjs</code>，任何人都可以在本地复跑；真实注解索引在 <code>tools/annotation-audit/index/annotations.txt</code>。
+        自动校验脚本在项目的 <code>scripts/validate-data.mjs</code> 与 <code>scripts/validate-commands.mjs</code>，任何人都可以在本地复跑；真实注解索引在 <code>tools/annotation-audit/index/annotations.txt</code>。
       </p>
     </section>
 

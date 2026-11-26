@@ -2686,3 +2686,472 @@ html.dark .search-overlay {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   命令速查（Linux / Git）—— 与注解模块共用排版，但入口、配色和卡片区分
+   ============================================================ */
+
+.cmd-hero {
+  padding: 18px 0 26px;
+}
+.cmd-hero h1 {
+  margin: 10px 0 14px;
+  font-size: clamp(28px, 4.6vw, 44px);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+.cmd-hero h1 em {
+  font-style: normal;
+  color: var(--accent);
+}
+.cmd-tool-badge {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow-sm);
+}
+.cmd-tool-badge--lg {
+  width: 52px;
+  height: 52px;
+  border-radius: 15px;
+  font-size: 22px;
+}
+.cmd-tool-section {
+  margin-bottom: 34px;
+}
+.cmd-tool-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.cmd-tool-head__text {
+  flex: 1 1 260px;
+}
+.cmd-tool-head__text p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.cmd-tool-enter {
+  flex: none;
+}
+.cmd-mod-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.cmd-mod-card {
+  display: block;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.cmd-mod-card:hover {
+  border-color: var(--accent-line);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.cmd-mod-card__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.cmd-mod-card__top strong {
+  font-size: 14px;
+}
+.cmd-mod-card__top span {
+  color: var(--faint);
+  font-size: 12px;
+}
+.cmd-mod-card p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+.cmd-feat {
+  margin-top: 16px;
+}
+.cmd-feat__label {
+  margin: 0 0 8px;
+  color: var(--faint);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.cmd-feat__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cmd-feat-card {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  max-width: 100%;
+}
+.cmd-feat-card:hover {
+  border-color: var(--accent-line);
+}
+.cmd-feat-card code {
+  color: var(--accent-strong);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.cmd-feat-card span {
+  color: var(--muted);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cmd-home-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.cmd-home-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.cmd-home-card:hover {
+  border-color: var(--accent-line);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.cmd-home-card__body {
+  flex: 1;
+  min-width: 0;
+}
+.cmd-home-card__body h3 {
+  margin: 0;
+  font-size: 17px;
+}
+.cmd-home-card__body h3 small {
+  margin-left: 6px;
+  color: var(--faint);
+  font-size: 12px;
+  font-weight: 500;
+}
+.cmd-home-card__body p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.cmd-home-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+.cmd-home-card__arrow {
+  flex: none;
+  color: var(--accent);
+  font-weight: 700;
+}
+.cmd-home-note {
+  margin: 12px 0 0;
+  color: var(--faint);
+  font-size: 13px;
+}
+.trust-banner--cmd {
+  background: linear-gradient(180deg, var(--accent-soft), var(--surface));
+}
+.side-link--sub {
+  padding-left: 26px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.tool-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: 1px;
+}
+.search-item__icon--cmd {
+  background: var(--surface-2);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+}
+.cmd-list-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 6px 0 18px;
+}
+.cmd-list-head h1 {
+  margin: 0;
+  font-size: clamp(24px, 3.6vw, 34px);
+  letter-spacing: -0.02em;
+}
+.cmd-list-head p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.cmd-list-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  color: var(--faint);
+  font-size: 12.5px;
+}
+.cmd-filter-bar {
+  margin-bottom: 12px;
+}
+.cmd-mod-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 22px;
+}
+.chip-count {
+  display: inline-block;
+  min-width: 18px;
+  margin-left: 5px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--faint);
+  font-size: 11px;
+  line-height: 17px;
+  text-align: center;
+}
+.cmd-section {
+  margin-bottom: 30px;
+}
+.cmd-section__head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.cmd-section__head h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.cmd-section__head p {
+  flex: 1;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.cmd-section__count {
+  color: var(--faint);
+  font-size: 12px;
+}
+.cmd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.cmd-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.cmd-card:hover {
+  border-color: var(--accent-line);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.cmd-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.cmd-card__name {
+  color: var(--accent-strong);
+  font-size: 15px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.cmd-card__tagline {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.cmd-card__syntax {
+  display: block;
+  padding: 6px 9px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+.cmd-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.tag--adv {
+  background: var(--warn-soft);
+  border-color: var(--warn-border);
+  color: var(--warn-text);
+}
+.cmd-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 6px 0 18px;
+}
+.cmd-detail-head__main {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+}
+.cmd-detail-name {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(24px, 4vw, 34px);
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+.cmd-detail-tagline {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+.cmd-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.cmd-example {
+  margin-bottom: 16px;
+}
+.cmd-example:last-child {
+  margin-bottom: 0;
+}
+.cmd-example__desc {
+  margin: 0 0 6px;
+  color: var(--text-2);
+  font-size: 13.5px;
+}
+.related-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip--cmd {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 9px 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.chip--cmd:hover {
+  border-color: var(--accent-line);
+}
+.chip--cmd code {
+  color: var(--accent-strong);
+  font-size: 13px;
+  font-weight: 600;
+}
+.chip--cmd span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .cmd-home-grid {
+    grid-template-columns: 1fr;
+  }
+  .cmd-tool-head {
+    align-items: flex-start;
+  }
+  .cmd-tool-enter {
+    margin-left: 54px;
+  }
+  .cmd-detail-head {
+    flex-direction: column;
+  }
+  .cmd-grid {
+    
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .cmd-tool-enter {
+    margin-left: 0;
+  }
+  .cmd-list-head {
+    align-items: flex-start;
+  }
+}
+
+/* 命令详情页的文档列表：li 结构 + 长 URL 必须能断行（390 宽实测会溢出） */
+.doc-links li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  min-width: 0;
+}
+.doc-links li a {
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.doc-links li a:hover {
+  color: var(--accent-strong);
+}
+.doc-links li span {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}

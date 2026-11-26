@@ -1,34 +1,40 @@
 import { computed, ref } from 'vue'
 import Fuse from 'fuse.js'
 import { annotations, knowledge, getAnnotation } from '../data'
+import { commands, featuredCommands, COMMAND_TOOLS } from '../data/commands'
 
 const open = ref(false)
 const query = ref('')
 
-const annIndex = shallowDocs(
-  annotations.map((a) => ({
-    type: 'annotation',
-    id: a.id,
-    title: a.name,
-    subtitle: a.tagline,
-    tags: a.tags,
-    text: [a.plain, ...a.keyPoints, a.package, a.subcategory].join(' '),
-  })),
-)
-const knIndex = shallowDocs(
-  knowledge.map((k) => ({
-    type: 'knowledge',
-    id: k.id,
-    title: k.title,
-    subtitle: k.summary,
-    tags: k.tags,
-    text: k.content,
-  })),
-)
+const annIndex = annotations.map((a) => ({
+  type: 'annotation',
+  id: a.id,
+  title: a.name,
+  subtitle: a.tagline,
+  tags: a.tags,
+  text: [a.plain, ...a.keyPoints, a.package, a.subcategory].join(' '),
+}))
 
-function shallowDocs(docs) {
-  return docs
-}
+const knIndex = knowledge.map((k) => ({
+  type: 'knowledge',
+  id: k.id,
+  title: k.title,
+  subtitle: k.summary,
+  tags: k.tags,
+  text: k.content,
+}))
+
+const toolLabel = Object.fromEntries(COMMAND_TOOLS.map((t) => [t.id, t.short]))
+const cmdIndex = commands.map((c) => ({
+  type: 'command',
+  tool: c.tool,
+  toolLabel: toolLabel[c.tool] || c.tool,
+  id: c.id,
+  title: c.name,
+  subtitle: c.tagline,
+  tags: c.tags,
+  text: [c.plain, ...c.keyPoints, c.syntax, ...c.options.map((o) => o.flag)].join(' '),
+}))
 
 const fuseOptions = {
   includeScore: true,
@@ -45,19 +51,25 @@ const fuseOptions = {
 
 let annFuse = null
 let knFuse = null
+let cmdFuse = null
 function ensureFuse() {
   if (!annFuse) annFuse = new Fuse(annIndex, fuseOptions)
   if (!knFuse) knFuse = new Fuse(knIndex, fuseOptions)
+  if (!cmdFuse) cmdFuse = new Fuse(cmdIndex, fuseOptions)
 }
 
 const DEFAULT_ANN = ['springboot-application', 'rest-controller', 'autowired', 'transactional', 'configuration-properties', 'request-mapping']
   .map(getAnnotation)
   .filter(Boolean)
 
+const findCmd = (id) => cmdIndex.find((d) => d.id === id)
+
 function fallback() {
   return {
     annotations: DEFAULT_ANN.slice(0, 5).map((a) => ({ item: annIndex.find((d) => d.id === a.id) })).filter((r) => r.item),
     knowledge: knowledge.slice(0, 3).map((k) => ({ item: knIndex.find((d) => d.id === k.id) })),
+    linux: featuredCommands.linux.slice(0, 3).map((c) => ({ item: findCmd(c.id) })).filter((r) => r.item),
+    git: featuredCommands.git.slice(0, 3).map((c) => ({ item: findCmd(c.id) })).filter((r) => r.item),
   }
 }
 
@@ -65,15 +77,20 @@ const results = computed(() => {
   const q = query.value.trim()
   if (!q) return fallback()
   ensureFuse()
+  const cmdHits = cmdFuse.search(q, { limit: 10 })
   return {
     annotations: annFuse.search(q, { limit: 8 }),
     knowledge: knFuse.search(q, { limit: 5 }),
+    linux: cmdHits.filter((r) => r.item.tool === 'linux').slice(0, 5),
+    git: cmdHits.filter((r) => r.item.tool === 'git').slice(0, 5),
   }
 })
 
 const flatResults = computed(() => [
   ...results.value.annotations.map((r) => r.item),
   ...results.value.knowledge.map((r) => r.item),
+  ...results.value.linux.map((r) => r.item),
+  ...results.value.git.map((r) => r.item),
 ])
 
 function openSearch() {

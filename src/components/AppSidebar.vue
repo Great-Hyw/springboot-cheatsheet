@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   ANNOTATION_CATEGORIES,
@@ -7,12 +8,18 @@ import {
   knowledgeCounts,
   stats,
 } from '../data'
+import { COMMAND_TOOLS, commandModuleCounts, commandStats, getToolModules } from '../data/commands'
 
 defineProps({ open: { type: Boolean, default: false } })
 defineEmits(['close'])
 
 const route = useRoute()
 
+const activeToolId = computed(() => (route.path.startsWith('/commands/') ? String(route.params.tool || '') : ''))
+const activeTool = computed(() => COMMAND_TOOLS.find((t) => t.id === activeToolId.value) || null)
+const activeToolModules = computed(() => (activeTool.value ? getToolModules(activeTool.value.id) : []))
+
+const isToolActive = (id) => route.path === `/commands/${id}`
 function isCategoryActive(path, categoryId) {
   return route.path === path && route.query.category === categoryId
 }
@@ -69,9 +76,37 @@ function isPlainActive(path) {
         </RouterLink>
       </div>
 
+      <div class="side-group">
+        <p class="side-label">命令速查</p>
+        <RouterLink class="side-link" :class="{ active: isPlainActive('/commands') }" to="/commands">
+          命令速查首页
+        </RouterLink>
+        <RouterLink
+          v-for="t in COMMAND_TOOLS"
+          :key="t.id"
+          class="side-link"
+          :class="{ active: isToolActive(t.id) }"
+          :to="`/commands/${t.id}`"
+        >
+          <span class="tool-dot" :style="{ background: t.color }"></span>
+          {{ t.label }}
+          <span class="side-count">{{ commandStats.byTool[t.id] || 0 }}</span>
+        </RouterLink>
+        <RouterLink
+          v-for="m in activeToolModules"
+          :key="m.id"
+          class="side-link side-link--sub"
+          :class="{ active: route.query.module === m.id }"
+          :to="{ path: `/commands/${activeTool.id}`, query: { module: m.id } }"
+        >
+          {{ m.label }}
+          <span class="side-count">{{ commandModuleCounts.get(m.id) || 0 }}</span>
+        </RouterLink>
+      </div>
+
       <div class="side-note">
         <strong>本站怎么保证不瞎写</strong>
-        <p>包名与属性对照 Spring Boot 3.5.16 真实依赖索引核对，每条观点都附官方文档链接，另有独立核查报告。</p>
+        <p>注解的包名与属性对照 Boot 3.5.16 真实依赖索引；Linux / Git 命令的参数与示例对照官方 man、git 文档。两者都附出处，并有独立核查。</p>
         <RouterLink to="/about" style="font-size: 12px; font-weight: 600">查看核查方法 →</RouterLink>
       </div>
     </div>
