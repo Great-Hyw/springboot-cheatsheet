@@ -23,7 +23,7 @@ const { isDark, label, toggleTheme } = useTheme()
         <span class="brand-mark">SB</span>
         <span class="brand-text">
           <strong>SpringBoot 速查</strong>
-          <small>注解 · 知识 · 命令</small>
+          <small>注解 · 知识 · 专题 · 命令</small>
         </span>
         <span class="brand-badge">3.5</span>
       </RouterLink>
@@ -31,6 +31,7 @@ const { isDark, label, toggleTheme } = useTheme()
       <nav class="top-nav" aria-label="主导航">
         <RouterLink to="/annotations">注解速查</RouterLink>
         <RouterLink to="/knowledge">知识库</RouterLink>
+        <RouterLink to="/topics">实战专题</RouterLink>
         <RouterLink to="/commands">命令速查</RouterLink>
         <RouterLink to="/favorites">
           收藏<span v-if="total" class="nav-count">{{ total }}</span>
@@ -43,7 +44,7 @@ const { isDark, label, toggleTheme } = useTheme()
             <circle cx="11" cy="11" r="7" />
             <path d="m20 20-3.5-3.5" />
           </svg>
-          <span class="search-trigger__text">搜索注解 / 知识 / 命令</span>
+          <span class="search-trigger__text">搜索注解 / 知识 / 专题 / 命令</span>
           <kbd>⌘K</kbd>
         </button>
 

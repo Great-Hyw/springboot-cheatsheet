@@ -14,6 +14,9 @@ const groups = computed(() => {
   if (results.value.knowledge.length) {
     list.push({ key: 'knowledge', type: 'knowledge', label: '知识文章', rows: results.value.knowledge })
   }
+  if (results.value.topics.length) {
+    list.push({ key: 'topic', type: 'topic', label: '实战专题', rows: results.value.topics })
+  }
   if (results.value.linux.length) {
     list.push({ key: 'linux', type: 'command', tool: 'linux', label: 'Linux 命令', rows: results.value.linux })
   }
@@ -58,29 +61,27 @@ function onInputKeydown(e) {
   }
 }
 
+function pathOf(item) {
+  if (item.type === 'annotation') return `#/annotations/${item.id}`
+  if (item.type === 'knowledge') return `#/knowledge/${item.id}`
+  if (item.type === 'topic') return `#/topics/${item.topic}/${item.id}`
+  return `#/commands/${item.tool}/${item.id}`
+}
+
 function go(item) {
   closeSearch()
   // 用 location.hash 跳转，避免在弹层里依赖 router 实例
-  const path =
-    item.type === 'annotation'
-      ? `#/annotations/${item.id}`
-      : item.type === 'knowledge'
-        ? `#/knowledge/${item.id}`
-        : `#/commands/${item.tool}/${item.id}`
-  window.location.hash = path
+  window.location.hash = pathOf(item)
 }
 
 function hrefOf(item) {
-  return item.type === 'annotation'
-    ? `#/annotations/${item.id}`
-    : item.type === 'knowledge'
-      ? `#/knowledge/${item.id}`
-      : `#/commands/${item.tool}/${item.id}`
+  return pathOf(item)
 }
 
 function iconOf(item) {
   if (item.type === 'annotation') return '@'
   if (item.type === 'knowledge') return '文'
+  if (item.type === 'topic') return '专'
   return item.tool === 'linux' ? 'L' : 'G'
 }
 
@@ -91,6 +92,7 @@ function titleOf(item) {
 function badgeOf(item) {
   if (item.type === 'annotation') return '注解'
   if (item.type === 'knowledge') return '知识'
+  if (item.type === 'topic') return '专题'
   return item.toolLabel || item.tool
 }
 
@@ -121,7 +123,7 @@ function closeOnOverlay(e) {
             ref="inputRef"
             v-model="query"
             type="search"
-            placeholder="搜注解名、包名、命令或知识主题…"
+            placeholder="搜注解名、包名、专题、命令或知识主题…"
             autocomplete="off"
             spellcheck="false"
             aria-label="搜索关键词"
@@ -143,7 +145,7 @@ function closeOnOverlay(e) {
                 @click.prevent="go(row.item)"
                 @mouseenter="activeIndex = indexOfRow(group.key, i)"
               >
-                <span class="search-item__icon" :class="{ 'search-item__icon--cmd': group.type === 'command' }">{{ iconOf(row.item) }}</span>
+                <span class="search-item__icon" :class="{ 'search-item__icon--cmd': group.type === 'command', 'search-item__icon--topic': group.type === 'topic' }">{{ iconOf(row.item) }}</span>
                 <span class="search-item__body">
                   <span class="search-item__title">{{ titleOf(row.item) }}</span>
                   <span class="search-item__sub">{{ row.item.subtitle }}</span>

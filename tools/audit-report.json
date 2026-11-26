@@ -1,13 +1,13 @@
 {
   "schemaVersion": "1.0",
   "tool": "tools/audit.mjs",
-  "generatedAt": "2026-11-26T08:11:00.911Z",
+  "generatedAt": "2026-11-26T15:41:32.316Z",
   "options": {
     "dataDir": "src\\data",
     "skipLinks": false,
     "sampleRatio": 0.4,
-    "linkTimeoutMs": 20000,
-    "concurrency": 8
+    "linkTimeoutMs": 25000,
+    "concurrency": 6
   },
   "index": {
     "file": "tools\\annotation-audit\\index\\annotations.txt",

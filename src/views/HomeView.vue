@@ -3,21 +3,14 @@ import { computed } from 'vue'
 import AnnotationCard from '../components/AnnotationCard.vue'
 import {
   ANNOTATION_CATEGORIES,
-  annotations,
   annotationCounts,
   featuredAnnotations,
   knowledge,
   knowledgeCategory,
   stats,
 } from '../data'
-import { COMMAND_TOOLS, commandStats, commands, getToolModules } from '../data/commands'
-
-const docCount = computed(
-  () =>
-    annotations.reduce((sum, a) => sum + a.docs.length, 0) +
-    knowledge.reduce((sum, k) => sum + (k.sources?.length || 0), 0) +
-    commands.reduce((sum, c) => sum + c.docs.length, 0),
-)
+import { COMMAND_TOOLS, commandStats, getToolModules } from '../data/commands'
+import { TOPICS, getTopicArticles, topicStats } from '../data/topics'
 
 const picks = computed(() =>
   ['ioc-and-di', 'mvc-request-flow', 'transaction-failure', 'auto-configuration']
@@ -61,6 +54,7 @@ const pathSteps = [
       <div class="hero-actions">
         <RouterLink class="btn btn-primary" to="/annotations">开始查注解 →</RouterLink>
         <RouterLink class="btn" to="/knowledge">读知识库</RouterLink>
+        <RouterLink class="btn" to="/topics">看企业实战专题</RouterLink>
         <RouterLink class="btn" to="/commands">查 Linux / Git 命令</RouterLink>
       </div>
       <div class="hero-stats">
@@ -73,12 +67,12 @@ const pathSteps = [
           <span>篇知识文章</span>
         </div>
         <div class="hero-stat">
-          <strong>{{ stats.categories }}</strong>
-          <span>个使用场景分类</span>
+          <strong>{{ commandStats.total }}</strong>
+          <span>条 Linux / Git 命令</span>
         </div>
         <div class="hero-stat">
-          <strong>{{ docCount }}</strong>
-          <span>条官方文档出处</span>
+          <strong>{{ topicStats.total }}</strong>
+          <span>篇企业实战专题</span>
         </div>
       </div>
     </section>
@@ -161,6 +155,32 @@ const pathSteps = [
       </div>
       <p class="cmd-home-note">
         两个模块各自收录、各自检索：Linux 系统命令不会混进 Git 模块，Git 命令也不会混进 Linux 模块。
+      </p>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">企业实战专题 <small>规范 / 面经 / 分层 / 坐标，四块分开</small></h2>
+        <RouterLink class="section-more" to="/topics">全部专题 →</RouterLink>
+      </div>
+      <div class="topic-grid">
+        <RouterLink v-for="t in TOPICS" :key="t.id" class="topic-card" :to="`/topics/${t.id}`">
+          <div class="topic-card__head">
+            <span class="topic-card__icon" :style="{ background: t.color }">{{ t.icon }}</span>
+            <div>
+              <h3>{{ t.label }}</h3>
+              <p class="topic-card__count">{{ topicStats.byTopic[t.id] || 0 }} 篇</p>
+            </div>
+            <span class="topic-card__arrow">→</span>
+          </div>
+          <p class="topic-card__desc">{{ t.desc }}</p>
+          <div class="topic-card__foot">
+            <span class="tag">{{ t.entry }}</span>
+          </div>
+        </RouterLink>
+      </div>
+      <p class="cmd-home-note">
+        规范管「怎么约定」，面经管「怎么答」，分层管「每层代码怎么写」，坐标管「依赖怎么引、版本谁管」——四块内容不互相搬运。
       </p>
     </section>
 

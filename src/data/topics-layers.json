@@ -1,0 +1,221 @@
+{
+  "generatedBy": "knowledge-b",
+  "topic": "layers",
+  "items": [
+    {
+      "id": "layers-architecture",
+      "title": "分层架构与依赖方向：把代码摆对位置",
+      "level": "入门",
+      "readingMinutes": 5,
+      "summary": "分层只回答一个问题：改需求要动几处代码；依赖只朝一个方向走，每层只做自己的事。",
+      "tags": [
+        "分层架构",
+        "依赖方向",
+        "包结构"
+      ],
+      "sources": [
+        {
+          "label": "Martin Fowler：PresentationDomainDataLayering",
+          "url": "https://martinfowler.com/bliki/PresentationDomainDataLayering.html"
+        },
+        {
+          "label": "Spring Boot 3.5 参考文档：组织代码结构",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/using/structuring-your-code.html"
+        }
+      ],
+      "content": "分层架构不值得争论太多，它只回答一个问题：改一个需求时，你希望动几处代码。现代企业写法的共识是：按职责分层，依赖只朝一个方向走，每层只做自己的事。\n\n## 这一层负责什么\n\n典型四层：Controller 接协议，Service 放业务，Repository 管数据，Entity 表示持久化结构。另外还有 DTO/VO 负责出入参，异常处理负责兜底。\n\n依赖方向只有一个：外层依赖内层。Controller 依赖 Service，Service 依赖 Repository，Repository 依赖数据库。反过来一律不允许——Repository 不能回头调 Service，Service 也不能拿到 HttpServletRequest。\n\n这条规矩的价值在于可替换：换 Web 框架只动 Controller，换存储只动 Repository，业务逻辑不动。反过来，如果 Controller 里直接写 SQL，改表结构就要连接口层一起改，测试也没法单独跑业务。\n\n## 怎么写\n\n推荐按业务能力建包，每个业务包内部再分层，而不是全站按 controller/service 平铺：\n\n```text\ncom.example.shop\n├── order\n│   ├── OrderController.java\n│   ├── OrderService.java\n│   ├── OrderRepository.java\n│   └── Order.java\n└── payment\n    └── ...\n```\n\n依赖注入统一用构造器，字段声明 final，让依赖关系一眼可见：\n\n```java\npublic interface OrderService {\n    OrderResponse get(Long id);\n}\n\n@Service\npublic class OrderServiceImpl implements OrderService {\n    private final OrderRepository orderRepository;\n\n    public OrderServiceImpl(OrderRepository orderRepository) {\n        this.orderRepository = orderRepository;\n    }\n}\n```\n\nController 只依赖 Service 接口，不依赖实现类，也不直接依赖 Repository。这样将来把 Service 换成远程调用或加缓存，Controller 完全不用改。\n\n写代码时守住三条：每层只调用下一层；DTO 只出现在跨层边界；Entity 不出 Repository/Service 的边界。需要跨层传数据时，定义明确的请求和响应对象，而不是复用同一个大对象。\n\n## 边界与常见错误\n\n- Controller 直接注入 Repository 查数据。省了一时，业务规则就散在接口层了，后续改不动。\n- Service 返回 Entity，Controller 直接序列化返回。Entity 的字段、懒加载、循环引用都会泄漏到 API，接口一改就是线上问题。\n- 下层反调上层。比如 Repository 里调用 Service 发消息，看起来方便，实际上把依赖方向搞反了，测试和复用都会变难。\n- 层内再分层套娃。Controller→Service→Manager→Helper→Util，每层只转发一句话，等于没有分层，还增加阅读成本。\n- 业务判断写在工具类里。工具类应该无状态、可复用，一旦塞进业务规则，所有模块都被绑死。\n- 为了\"解耦\"给每层都写接口，实现却只有一个且从不替换。接口是边界需要时才加，不是仪式。\n- 没有集成测试兜底就大改分层。先保接口行为，再动结构，否则改完不知道坏在哪。"
+    },
+    {
+      "id": "layers-controller",
+      "title": "Controller 层：只做协议转换和参数校验",
+      "level": "入门",
+      "readingMinutes": 5,
+      "summary": "Controller 只管路由、参数绑定、校验和响应转换；业务下沉到 Service，异常交给统一处理。",
+      "tags": [
+        "Controller",
+        "参数校验",
+        "REST"
+      ],
+      "sources": [
+        {
+          "label": "Spring Framework：Controller 入门",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller.html"
+        },
+        {
+          "label": "Spring Framework：@RequestBody",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestbody.html"
+        },
+        {
+          "label": "Spring Framework：Bean Validation",
+          "url": "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html"
+        }
+      ],
+      "content": "Controller 层是最容易被写胖的一层。很多人习惯在 Controller 里校验、查库、拼响应、算业务，最后接口一动全炸。现代写法的目标是：Controller 只做协议转换，业务全部下沉。\n\n## 这一层负责什么\n\nController 负责四件事：把 HTTP 请求映射到方法、把参数绑定成 Java 对象、触发参数校验、把结果翻译成 HTTP 响应。异常不在这里处理，交给统一异常处理。\n\n不该做的事同样明确：不写业务判断，不直接访问数据库，不开事务，不拼装复杂查询，不 try/catch 吞异常。判断标准很简单——这段逻辑如果换个入口（定时任务、消息消费者）还会不会用到？会，就该放 Service。\n\n## 怎么写\n\n请求体用 record 接收，校验注解直接标在字段上，配合 `@Valid` 生效：\n\n```java\npublic record CreateOrderRequest(\n        @NotNull Long productId,\n        @Min(1) int quantity) {\n}\n\n@RestController\n@RequestMapping(\"/api/orders\")\npublic class OrderController {\n\n    private final OrderService orderService;\n\n    public OrderController(OrderService orderService) {\n        this.orderService = orderService;\n    }\n\n    @PostMapping\n    public ResponseEntity<OrderResponse> create(@Valid @RequestBody CreateOrderRequest request) {\n        OrderResponse created = orderService.create(request);\n        return ResponseEntity.status(HttpStatus.CREATED).body(created);\n    }\n\n    @GetMapping(\"/{id}\")\n    public OrderResponse get(@PathVariable Long id) {\n        return orderService.get(id);\n    }\n}\n```\n\n要点：路径和动作放在类级 `@RequestMapping` 与方法级注解上；创建成功返回 201 而不是一律 200；响应体统一用明确的 DTO；参数校验失败交给统一异常处理，不要在每个方法里写 if 判断。\n\n如果接口要返回统一包装（比如带 code、message、data），也在这里做一次转换，不要污染 Service。分页参数用 `Pageable` 时可以加 `@PageableDefault` 控制默认值，避免前端不传就报错。\n\n参数绑定还有几个常用注解：路径上的值用 `@PathVariable`，查询串用 `@RequestParam`，可选参数可以设 `required = false` 或用 `Optional` 接收，多个查询条件字段较多时封装成一个查询对象，让 Spring 按字段名绑定。状态码别滥用：创建成功返回 201，删除成功可以返回 204，查询不到资源交给异常处理返回 404。把这些规则固定下来，前端对接会轻松很多。\n\n## 边界与常见错误\n\n- 在 Controller 里写 `@Transactional`。事务应该跟着业务用例走，放这里会导致一个 HTTP 请求包住整个事务，粒度失控。\n- Controller 直接注入 Repository。查询和业务规则会散到接口层，其他入口无法复用。\n- 直接返回 Entity。字段变更、懒加载序列化、敏感字段泄漏，全是坑；必须用响应 DTO。\n- 用 `Map<String, Object>` 当返回类型。前端不知道字段，编译期也发现不了改名错误。\n- 参数校验靠手写 if。重复且容易漏，还会把错误码格式做成两套。\n- 在 Controller 里 catch 所有异常再返回 200。调用方无法区分成功失败，监控也统计不到错误率。\n- 忘记 `@RequestBody` 或 `@Valid`。前者参数永远是 null，后者校验根本不触发，是最高频的低级错误。\n- 一个方法塞多个 URL 或多个动作。REST 语义会乱，接口文档也很难维护。"
+    },
+    {
+      "id": "layers-service",
+      "title": "Service 层：业务编排与事务的落脚点",
+      "level": "入门",
+      "readingMinutes": 6,
+      "summary": "Service 承担业务规则和事务边界，不依赖 Web 类型，也不把 Entity 直接返回给上层。",
+      "tags": [
+        "Service",
+        "业务编排",
+        "事务边界"
+      ],
+      "sources": [
+        {
+          "label": "Spring Framework：声明式事务注解",
+          "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html"
+        },
+        {
+          "label": "Spring Framework：事务管理概览",
+          "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction.html"
+        }
+      ],
+      "content": "Service 层是业务逻辑的落脚点，也是事务边界所在。它不关心请求从哪来，只关心\"这个业务用例要按什么规则完成\"。\n\n## 这一层负责什么\n\nService 负责：编排一个完整用例（校验业务规则、调用多个 Repository、调用外部服务、决定事务范围）、把领域对象转换成对外 DTO、抛出业务异常让上层翻译成 HTTP 状态。\n\n它不该依赖 Web 类型。方法签名里出现 `HttpServletRequest`、`ResponseEntity`、`@RequestParam` 都说明边界漏了。Service 也不该直接返回 Entity 给 Controller 序列化，更不该拼 SQL。\n\n一个实用判断：这个方法是\"业务动作\"还是\"数据访问\"？如果是业务动作，放 Service；如果只是取数，Repository 就够，不要在中间加一个只做转发的 Service 方法。\n\n## 怎么写\n\n用接口定义对外能力，实现类加 `@Service`，构造器注入依赖，事务注解加在实现类的公开方法上：\n\n```java\npublic interface OrderService {\n    OrderResponse create(CreateOrderRequest request);\n}\n\n@Service\npublic class OrderServiceImpl implements OrderService {\n\n    private final OrderRepository orderRepository;\n    private final InventoryClient inventoryClient;\n\n    public OrderServiceImpl(OrderRepository orderRepository, InventoryClient inventoryClient) {\n        this.orderRepository = orderRepository;\n        this.inventoryClient = inventoryClient;\n    }\n\n    @Override\n    @Transactional\n    public OrderResponse create(CreateOrderRequest request) {\n        Order order = Order.create(request.productId(), request.quantity());\n        orderRepository.save(order);\n        inventoryClient.deduct(request.productId(), request.quantity());\n        return OrderResponse.from(order);\n    }\n\n    @Override\n    @Transactional(readOnly = true)\n    public OrderResponse get(Long id) {\n        Order order = orderRepository.findById(id)\n                .orElseThrow(() -> new OrderNotFoundException(id));\n        return OrderResponse.from(order);\n    }\n}\n```\n\n几个要点：查询方法标 `readOnly = true`，既表达意图也能让部分数据库走只读优化；业务规则在 Service 里判断并抛自定义异常，不要返回 null 让上层猜；外部调用和数据库写入的顺序要提前想清楚，失败时谁补偿。\n\n一个用例要调多个外部服务时，尽量把远程调用放在数据库写入之前，或者干脆拆成两步、用状态机推进。原因是远程调用不可控，把它包在事务里，持续时间一长，数据库连接和行锁都会被占住。另一个实用习惯是：Service 方法的入参和返回值都用明确的 DTO，不要用 Map 或 Entity 传递，这样单元测试只需要构造少量对象，不必启动 Web 容器。\n\n## 边界与常见错误\n\n- 事务注解加在 Controller 或 Repository 上。边界错位，一个接口的多个 Service 调用无法统一回滚。\n- Service 返回 Entity。上层拿到懒加载代理后序列化失败，或者把内部字段暴露出去。\n- Service 里直接 new 依赖（`new OrderRepository()`）。脱离容器管理，事务和代理都失效。\n- 同类方法自调用事务不生效。`this.otherMethod()` 不走代理，`@Transactional` 形同虚设，要么拆类要么注入自身代理。\n- 把 HTTP 状态码写进 Service。Service 抛业务异常即可，`HttpStatus` 的翻译属于 Controller/异常处理层。\n- 一个 Service 方法几百行，什么都做。按用例拆小，一个公开方法对应一个业务动作，测试才好写。\n- 事务里做远程调用且没有超时控制。外部服务一慢，数据库连接和锁就被长时间占住。\n- 查询直接 `findAll()` 再在内存过滤。数据量一大就 OOM，条件应该下推到 Repository。"
+    },
+    {
+      "id": "layers-repository",
+      "title": "Repository 层：数据访问只暴露必要操作",
+      "level": "入门",
+      "readingMinutes": 6,
+      "summary": "Repository 只封装数据存取，方法名表达查询意图，复杂查询用 @Query，业务判断留在 Service。",
+      "tags": [
+        "Repository",
+        "JPA",
+        "MyBatis"
+      ],
+      "sources": [
+        {
+          "label": "Spring Data JPA：查询方法",
+          "url": "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html"
+        },
+        {
+          "label": "MyBatis-Spring：Mapper 接口",
+          "url": "https://mybatis.org/spring/mappers.html"
+        },
+        {
+          "label": "Spring Framework：DAO 支持与异常翻译",
+          "url": "https://docs.spring.io/spring-framework/reference/data-access/dao.html"
+        }
+      ],
+      "content": "Repository 层只干一件事：把数据存取封装成方法。它不该知道业务规则，也不该知道 HTTP。用 JPA 还是 MyBatis 是团队选择，但边界要求一样。\n\n## 这一层负责什么\n\nRepository 负责：按业务需要提供查询和写入方法、把数据库异常翻译成统一的数据访问异常、隐藏 SQL/JPQL 细节。它对外返回 Entity 或明确的投影对象，不返回 `Map`、不返回 `Object[]` 让调用方猜。\n\n不该做的事：写业务判断、调用远程服务、处理权限、拼装 HTTP 响应、在查询方法里做多步写操作。复杂查询可以放到 Repository 或专门的 Query 对象里，但不能回头依赖 Service。\n\n## 怎么写\n\nSpring Data JPA 只需要声明接口，方法名按约定派生查询，复杂查询用 `@Query`：\n\n```java\npublic interface OrderRepository extends JpaRepository<Order, Long> {\n\n    List<Order> findByStatusOrderByCreatedAtDesc(OrderStatus status);\n\n    @Query(\"select o from Order o where o.userId = :userId and o.status = :status\")\n    List<Order> findUserOrders(@Param(\"userId\") Long userId,\n                               @Param(\"status\") OrderStatus status);\n}\n```\n\nMyBatis 则用 `@Mapper` 加注解或 XML：\n\n```java\n@Mapper\npublic interface OrderMapper {\n\n    @Select(\"select id, user_id, status, created_at from orders where id = #{id}\")\n    Order findById(@Param(\"id\") Long id);\n\n    @Insert(\"insert into orders(user_id, status, created_at) values(#{userId}, #{status}, #{createdAt})\")\n    int insert(Order order);\n}\n```\n\n要点：方法名要表达查询意图；分页用 `Pageable` 让数据库分页，不要查全量再切；只 select 需要的列，避免大字段拖慢；写操作方法要明确返回影响行数或生成的 ID。\n\n分页查询的标准写法是方法参数接收 `Pageable`，返回 `Page<T>`，调用方用 `PageRequest.of(page, size)` 构造分页参数。如果只需要列表里的一两个字段，可以定义只读的投影接口或返回 record，让 JPA 只查需要的列。MyBatis 侧则要注意 `#{}` 与 `${}` 的区别：前者是预编译占位符，能防注入；后者是字符串拼接，只在排序字段这类白名单场景使用，绝不能直接拼用户输入。写操作在 MyBatis 里要返回 `int`，调用方检查影响行数是否符合预期。\n\n## 边界与常见错误\n\n- Controller 直接调 Repository。跳过 Service 意味着业务规则和事务边界都丢了，这是分层里最常见的一刀切。\n- Repository 里写业务判断。比如\"库存不足就不插入\"，这属于 Service，Repository 只负责存取。\n- 自定义更新方法忘了事务。继承来的 `save` 有事务，自己写的 `@Modifying` 查询需要在调用方或方法上加 `@Transactional`，否则报错或不生效。\n- 返回 Entity 后被上层随意修改。JPA 的托管对象在事务内改动会自动脏检查写回，意外改库很难排查。\n- 滥用懒加载。循环里访问关联集合就是 N+1，应该用 `@EntityGraph` 或 join fetch 一次取回。\n- 方法名派生查询写太长。`findByAAndBAndCAndDAndE` 可读性极差，超过三四个条件就改用 `@Query` 或 Specification。\n- 把数据库异常原样抛给上层。应该让 Spring 的异常翻译机制处理，或者在边界处转成业务异常。\n- 一个 Repository 塞进所有业务的查询。按聚合根拆分，跨聚合查询用专门的读模型，别让一个接口无限膨胀。"
+    },
+    {
+      "id": "layers-dto-conversion",
+      "title": "DTO、Entity、VO 到底怎么转换",
+      "level": "进阶",
+      "readingMinutes": 6,
+      "summary": "Entity 管持久化、DTO 管入参、VO 管出参；转换集中一处，别让数据库结构变成接口契约。",
+      "tags": [
+        "DTO",
+        "VO",
+        "Entity"
+      ],
+      "sources": [
+        {
+          "label": "Spring Framework：Bean Validation",
+          "url": "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html"
+        },
+        {
+          "label": "MapStruct 参考文档",
+          "url": "https://mapstruct.org/documentation/stable/reference/html/"
+        }
+      ],
+      "content": "DTO、Entity、VO 混用是分层项目里最隐蔽的债。刚写完能跑，一旦接口要加字段、实体要改结构，就会发现三者被焊死在一起。现代做法的核心是：把\"数据库长什么样\"和\"接口对外长什么样\"分开。\n\n## 这一层负责什么\n\nEntity 对应数据库表，只服务持久化；请求 DTO 表示\"客户端能传什么\"；响应 VO（也常叫 Response DTO）表示\"接口能返回什么\"。三者职责不同，字段也允许不同。\n\n转换逻辑集中放在一处，比如 Assembler/Mapper 类或 DTO 的静态工厂方法。不要在每个 Service 里手写一堆 setter，更不要用 `BeanUtils.copyProperties` 到处复制——字段改名时它不会报错，只会在运行期悄悄丢值。\n\n## 怎么写\n\n请求和响应都用 record，转换用静态方法显式写出每个字段：\n\n```java\npublic record CreateOrderRequest(\n        @NotNull Long productId,\n        @Min(1) int quantity) {\n}\n\npublic record OrderResponse(Long id, Long productId, int quantity,\n                            String status, Instant createdAt) {\n\n    public static OrderResponse from(Order order) {\n        return new OrderResponse(order.getId(), order.getProductId(),\n                order.getQuantity(), order.getStatus().name(), order.getCreatedAt());\n    }\n}\n```\n\n要点：入参和出参分开定义，不要一个类既接收又返回；校验注解放在请求 DTO 上，Entity 不承担接口校验；响应 DTO 只暴露前端需要的字段，内部主键、软删除标记、审计字段按需隐藏。\n\n如果字段多、转换重复，可以用 MapStruct 生成映射代码，接口上标 `@Mapper(componentModel = \"spring\")`，编译期生成实现，字段改名会编译失败，比反射复制安全。但别为了省几行 setter 引入一整套映射框架，小项目手写更直白。\n\n响应对象优先用 record 这类不可变结构，天然线程安全，也不会被谁顺手改字段；确实需要可变性时再用普通类，并克制 setter 的数量。校验提示语可以用注解的 `message` 属性写清楚，前端直接展示即可，不用再维护一份错误文案映射。最后，转换方法建议放在 DTO 自己身上或专门的 Assembler 里，保证全项目只有一处能回答\"这个字段从哪来\"。\n\n## 边界与常见错误\n\n- Entity 直接当接口返回。懒加载字段序列化报错、敏感字段泄漏、数据库结构被迫成为 API 契约。\n- 请求 DTO 和 Entity 共用一个类。前端多传一个字段就可能改到不该改的列，批量赋值漏洞就是这么来的。\n- 转换逻辑散落在 Controller、Service、Repository。同一份映射出现三份，改一处漏两处。\n- 用 `BeanUtils.copyProperties` 做核心转换。同名不同义、类型静默转换、嵌套对象不复制，问题都在运行期才暴露。\n- VO 里塞业务方法。响应对象应该只是数据载体，逻辑放 Service。\n- DTO 之间互相继承形成层级。字段来源难追踪，序列化行为也不可控。\n- 校验注解加在 Entity 上。持久化实体被接口规则绑死，换个入口调用就校验不到。\n- 分页结果直接返回 `Page<Entity>`。前端会看到一堆框架字段，还泄漏了 Entity；应该映射成自定义分页响应。"
+    },
+    {
+      "id": "layers-exception-errorcode",
+      "title": "统一异常与错误码：让报错可读可追踪",
+      "level": "进阶",
+      "readingMinutes": 6,
+      "summary": "业务抛自定义异常，@RestControllerAdvice 统一翻译成 ProblemDetail，错误码集中定义。",
+      "tags": [
+        "异常处理",
+        "错误码",
+        "错误响应"
+      ],
+      "sources": [
+        {
+          "label": "Spring Framework：@ExceptionHandler",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html"
+        },
+        {
+          "label": "Spring Framework：REST 异常与 ProblemDetail",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html"
+        }
+      ],
+      "content": "接口报错时前端只看到 500，日志里只有一坨堆栈，这是最常见的线上体验问题。统一异常处理要解决三件事：错误格式统一、错误码可查、技术异常不裸露。\n\n## 这一层负责什么\n\n统一异常处理负责：定义错误码契约、把业务异常翻译成明确的 HTTP 状态和响应体、处理参数校验失败、兜住未预期异常并记录日志。它只负责\"出口\"，不负责决定业务规则。\n\n边界要说清：业务层抛出自定义异常，不要自己拼状态码；Controller 不写 try/catch；异常处理器只做翻译和日志，不重复打日志，也不在里面再抛新异常。错误码属于接口契约的一部分，必须集中定义，不能散落成字符串。\n\n## 怎么写\n\n先定义错误码枚举和业务异常：\n\n```java\npublic enum ErrorCode {\n    ORDER_NOT_FOUND(\"ORDER_NOT_FOUND\", \"订单不存在\"),\n    INVALID_PARAM(\"INVALID_PARAM\", \"参数不合法\");\n\n    private final String code;\n    private final String message;\n\n    ErrorCode(String code, String message) {\n        this.code = code;\n        this.message = message;\n    }\n\n    public String code() { return code; }\n    public String message() { return message; }\n}\n\npublic class BizException extends RuntimeException {\n    private final ErrorCode errorCode;\n\n    public BizException(ErrorCode errorCode) {\n        super(errorCode.message());\n        this.errorCode = errorCode;\n    }\n\n    public ErrorCode getErrorCode() { return errorCode; }\n}\n```\n\n再用 `@RestControllerAdvice` 集中处理。Spring 6 提供了 `ProblemDetail`，返回标准错误结构，前端不用猜格式：\n\n```java\n@RestControllerAdvice\npublic class GlobalExceptionHandler {\n\n    @ExceptionHandler(BizException.class)\n    public ProblemDetail handleBiz(BizException ex) {\n        ProblemDetail pd = ProblemDetail.forStatusAndDetail(\n                HttpStatus.BAD_REQUEST, ex.getMessage());\n        pd.setProperty(\"code\", ex.getErrorCode().code());\n        return pd;\n    }\n\n    @ExceptionHandler(MethodArgumentNotValidException.class)\n    public ProblemDetail handleInvalid(MethodArgumentNotValidException ex) {\n        String detail = ex.getBindingResult().getFieldError() == null\n                ? \"参数不合法\"\n                : ex.getBindingResult().getFieldError().getDefaultMessage();\n        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);\n        pd.setProperty(\"code\", ErrorCode.INVALID_PARAM.code());\n        return pd;\n    }\n}\n```\n\n要点：业务异常带错误码，HTTP 状态由处理器统一映射；校验失败单独处理，别让字段错误变成 500；未预期异常再配一个 `Exception` 兜底，日志打全堆栈，响应只给通用提示。\n\n状态码按语义映射，不要一律 400 或 500：资源不存在用 404，入参不合法用 400，状态冲突用 409，没有认证用 401，已认证但无权限用 403。错误码本身建议带上业务前缀，比如 `ORDER_NOT_FOUND`、`PAYMENT_TIMEOUT`，排查时一眼能看出归属哪个模块。响应里除了 code 和 message，最好再加一个 traceId，把日志和用户反馈串起来；traceId 可以由网关或过滤器生成，异常处理器只负责透出。\n\n## 边界与常见错误\n\n- 每个 Controller 方法各自 try/catch 拼响应。格式千奇百怪，改统一格式时无从下手。\n- 把堆栈或 SQL 原文返回给前端。既泄露内部结构，又对用户毫无帮助。\n- 所有异常都返回 500。参数错误、资源不存在、权限不足都无法区分，前端没法做针对性处理。\n- 错误码用魔法字符串。同一个含义在三个地方拼出三种写法，统计和排查都对不上。\n- 在异常处理器里再抛异常。异常套异常，最后用户看到的是容器默认错误页。\n- 业务层直接 `ResponseEntity.status(...)`。业务代码被 Web 协议绑死，定时任务里没法复用。\n- 日志重复记录。Service 打一遍、处理器再打一遍，线上日志量翻倍还找不到重点。\n- 捕获异常后返回 null 或空对象。调用方以为成功，数据却丢了，这类问题最难排查。"
+    },
+    {
+      "id": "layers-transaction-boundary",
+      "title": "事务边界：为什么必须放在 Service",
+      "level": "进阶",
+      "readingMinutes": 7,
+      "summary": "事务跟着业务用例走，边界在 Service 公开方法；默认只回滚运行时异常，自调用会让注解失效。",
+      "tags": [
+        "事务",
+        "事务注解",
+        "传播行为"
+      ],
+      "sources": [
+        {
+          "label": "Spring Framework：事务管理概览",
+          "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction.html"
+        },
+        {
+          "label": "Spring Framework：声明式事务注解",
+          "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html"
+        }
+      ],
+      "content": "事务是分层项目里最容易\"看起来对、其实没生效\"的东西。核心结论只有一句：事务边界放在 Service 的公开方法上，一个业务用例一个事务。\n\n## 这一层负责什么\n\nService 定义业务用例，也定义事务范围：这个用例内的多次数据库写入，要么全成功，要么全回滚。Controller 不参与事务，Repository 也不该自己开一个跨用例的大事务。\n\n判断边界方法很实用：画出这个用例要改哪几张表、调哪些外部服务。数据库写入应该在同一事务里；远程调用、消息发送、文件上传尽量放在事务外或者最后执行，因为事务长时间打开会占着连接和锁。\n\n事务注解默认只对 RuntimeException 和 Error 回滚。受检异常需要显式写 `rollbackFor = Exception.class`，这一点不知道就会遇到\"明明抛异常了却没回滚\"。\n\n## 怎么写\n\n类级别标只读，写方法单独覆盖，读方法保持只读：\n\n```java\n@Service\n@Transactional(readOnly = true)\npublic class TransferServiceImpl implements TransferService {\n\n    private final AccountRepository accountRepository;\n\n    public TransferServiceImpl(AccountRepository accountRepository) {\n        this.accountRepository = accountRepository;\n    }\n\n    @Override\n    @Transactional(rollbackFor = Exception.class)\n    public void transfer(Long fromId, Long toId, BigDecimal amount) {\n        Account from = accountRepository.findById(fromId)\n                .orElseThrow(() -> new AccountNotFoundException(fromId));\n        Account to = accountRepository.findById(toId)\n                .orElseThrow(() -> new AccountNotFoundException(toId));\n        from.withdraw(amount);\n        to.deposit(amount);\n    }\n}\n```\n\n需要独立提交的分支（比如记录审计日志，主流程失败也要留下记录）用新事务：\n\n```java\n@Transactional(propagation = Propagation.REQUIRES_NEW)\npublic void recordAudit(Long accountId, BigDecimal amount) { }\n```\n\n`REQUIRES_NEW` 会挂起当前事务、开一个新事务，内层回滚不影响外层；用错方向则会出现\"主流程回滚了，日志也没了\"或者\"日志提交了，主流程却失败\"。\n\n## 边界与常见错误\n\n- 在 Controller 上标 `@Transactional`。一个 HTTP 请求包住整个事务，校验、序列化、远程调用都算在事务里，粒度完全失控。\n- 同类方法自调用。`this.saveLog()` 不经过代理，`@Transactional` 不生效；要么拆到另一个 Bean，要么注入自身代理。\n- 方法不是 public，或者类是 final。Spring 的代理拦不到，注解形同虚设。\n- try/catch 把异常吞了。没有异常抛出，事务管理器不会回滚，数据半截写入。\n- 事务里做 HTTP 调用或发消息，且没有超时。外部服务一慢，数据库连接被占满，故障扩散。\n- 以为嵌套调用会自动合并成一个事务。默认传播行为是加入当前事务，出现异常时整个事务一起回滚；需要独立提交必须显式用 `REQUIRES_NEW`。\n- 大事务里循环处理几千条数据。锁持有时间长、回滚代价高，应该分批提交或改成异步任务。\n- 只读事务里做写入。部分数据库会直接拒绝，或者看起来成功但语义混乱。"
+    },
+    {
+      "id": "layers-common-module",
+      "title": "公共模块与工具类：能共享什么，不能共享什么",
+      "level": "进阶",
+      "readingMinutes": 6,
+      "summary": "common 只放稳定、无业务的能力；依赖尽量少，别把 Entity、Repository 和业务规则塞进去。",
+      "tags": [
+        "公共模块",
+        "工具类",
+        "依赖方向"
+      ],
+      "sources": [
+        {
+          "label": "Martin Fowler：AnemicDomainModel",
+          "url": "https://martinfowler.com/bliki/AnemicDomainModel.html"
+        },
+        {
+          "label": "Jakarta Bean Validation 3.0 规范",
+          "url": "https://jakarta.ee/specifications/bean-validation/3.0/"
+        }
+      ],
+      "content": "几乎每个项目都有 common 模块，也几乎每个 common 模块最后都会变成垃圾桶。它的边界比其他层更难守，因为\"共享\"这个词天生没有边界。\n\n## 这一层负责什么\n\n公共模块只放跨业务、跨模块、且相对稳定的东西：错误码定义、全局常量、无状态的工具方法、基础响应结构、通用校验注解。判断标准是：这份代码是否与具体业务无关，是否多个模块真的都要用。\n\n它不能包含业务规则，不能依赖 Controller 或 Service，不能放 Entity 和 Repository，也不能反过来依赖任何业务模块。依赖方向必须是单向的：所有模块依赖 common，common 不依赖任何业务模块。\n\n还有一个隐含要求：common 的依赖要尽量少。它一旦引入 Web、Jackson、数据库驱动，所有模块都会被这些依赖绑住，想换技术栈时连公共模块都要重写。\n\n## 怎么写\n\n按用途分包，别按类型平铺：\n\n```text\ncom.example.common\n├── error      错误码与业务异常\n├── constant   全局常量（缓存 key、头名称）\n├── util       纯函数工具\n└── validation 通用校验注解与校验器\n```\n\n工具类写成无状态、可测试的纯函数，并且私有构造器防止实例化：\n\n```java\npublic final class OrderNos {\n\n    private static final DateTimeFormatter FORMAT =\n            DateTimeFormatter.ofPattern(\"yyyyMMddHHmmss\");\n\n    private OrderNos() {\n    }\n\n    public static String next() {\n        return LocalDateTime.now().format(FORMAT)\n                + UUID.randomUUID().toString().substring(0, 6).toUpperCase();\n    }\n}\n```\n\n要点：工具方法只依赖 JDK 和极少的基础库，不碰 Spring 容器；能用参数传入的依赖就不要在工具类里静态获取；需要被替换或多态的行为，用 Spring Bean 注入而不是 static 方法；错误码放 common，让所有模块引用同一份契约。\n\n## 边界与常见错误\n\n- 把业务判断塞进 common。比如 `PriceUtils.calcDiscount`，看似通用，其实绑定某条业务线，最后没人敢改。\n- common 依赖 `spring-boot-starter-web`。所有模块被迫带上 Web 栈，定时任务、消息消费者也被污染。\n- Entity 和 Repository 放进 common。等于让所有模块共享数据库模型，模块边界直接失效。\n- 工具类变成万能类。`CommonUtils` 几百个静态方法，谁都在往里加，最后没人知道哪些还在用。\n- 静态方法难以 mock。涉及外部资源、时间、随机数的逻辑，静态调用会让测试只能靠反射，优先做成可注入的 Bean。\n- common 和业务模块互相依赖。Maven 会报循环依赖，改起来只能拆包，越晚越痛。\n- 为了复用强行抽象。两个模块代码长得像不代表语义相同，过早抽到 common 会把两个业务绑死。\n- 版本管理失控。common 频繁改动会让所有下游模块被迫升级，变更要按公共契约对待。"
+    },
+    {
+      "id": "layers-modularization",
+      "title": "从单体到模块化：包结构怎么演进",
+      "level": "进阶",
+      "readingMinutes": 7,
+      "summary": "先按业务能力分包、只暴露 api，再用 Spring Modulith 验证边界，最后才考虑拆服务。",
+      "tags": [
+        "模块化",
+        "包结构",
+        "模块边界"
+      ],
+      "sources": [
+        {
+          "label": "Spring Modulith：核心概念",
+          "url": "https://docs.spring.io/spring-modulith/reference/fundamentals.html"
+        },
+        {
+          "label": "Spring Modulith 参考文档",
+          "url": "https://docs.spring.io/spring-modulith/reference/index.html"
+        }
+      ],
+      "content": "项目初期按 controller/service/repository 平铺没问题，业务一多就会痛：改订单要翻三个包，模块之间随便互相注入。模块化不是一上来拆微服务，而是先在单体内把边界立起来。\n\n## 这一层负责什么\n\n模块化的目标是：每个业务能力是一个独立模块，模块内部可以分层，模块之间只能通过公开接口通信。包结构从\"按技术分\"演进为\"按业务能力分\"，再在外层保留少量共享代码。\n\n依赖方向要求：模块之间单向依赖，允许 A→B、B→C，不允许 A→B→A。跨模块调用只走对方暴露的 api 包，内部实现（internal）对其他模块不可见。这样将来把某个模块拆成独立服务时，改动范围是可控的。\n\n模块化不等于微服务。单体里先做到\"代码边界清晰、依赖可验证\"，再根据流量和组织需要决定要不要拆。顺序反了就是分布式单体，调试成本翻倍。\n\n## 怎么写\n\n先把包按业务能力分，再在模块内部保留分层：\n\n```text\ncom.example.shop\n├── order\n│   ├── api\n│   │   ├── OrderFacade.java\n│   │   └── OrderView.java\n│   └── internal\n│       ├── OrderController.java\n│       ├── OrderService.java\n│       └── OrderRepository.java\n├── payment\n│   └── ...\n└── common\n    └── ...\n```\n\n对外只暴露 api 包里的接口和视图对象，实现类保持包私有：\n\n```java\npackage com.example.shop.order.api;\n\npublic interface OrderFacade {\n    OrderView getOrder(Long id);\n}\n```\n\n```java\npackage com.example.shop.order.internal;\n\n@Component\nclass OrderFacadeImpl implements OrderFacade {\n\n    private final OrderRepository orderRepository;\n\n    OrderFacadeImpl(OrderRepository orderRepository) {\n        this.orderRepository = orderRepository;\n    }\n\n    @Override\n    public OrderView getOrder(Long id) {\n        return orderRepository.findById(id)\n                .map(OrderView::from)\n                .orElseThrow(() -> new OrderNotFoundException(id));\n    }\n}\n```\n\n要点：跨模块只注入 `OrderFacade`，不注入 `OrderService` 或 `OrderRepository`；模块间需要异步解耦时用 `ApplicationEventPublisher` 发领域事件；目录结构定下来后，可以用 Spring Modulith 的 `ApplicationModules.of(ShopApplication.class).verify()` 在构建时检查有没有非法跨模块依赖。\n\n## 边界与常见错误\n\n- 跨模块直接注入 internal 包里的类。编译能过，但边界已经破了，日后拆分时全是隐式依赖。\n- 模块之间共享 Entity 和数据库表。表结构一成契约，模块就再也分不开。\n- 出现循环依赖。A 调 B、B 回调 A，说明边界划错了，要么抽公共能力，要么改成事件。\n- 只把包名改了，依赖方向没变。这是\"模块化表演\"，验证工具一跑就露馅。\n- 过早拆微服务。团队、监控、发布流程都没准备好，拆完只会增加故障点。\n- 模块划分按技术而不是业务。`util`、`base`、`core` 这种包会越来越大，实际边界依然模糊。\n- 缺少自动化校验。边界靠自觉一定会退化，应该用模块测试或依赖检查工具放进流水线。\n- 一步到位重构。先在新增功能上采用新结构，再逐步迁移老代码，避免一次性改到无法回归。"
+    }
+  ]
+}

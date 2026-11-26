@@ -1,0 +1,270 @@
+{
+  "generatedBy": "knowledge-a",
+  "topic": "interview",
+  "items": [
+    {
+      "id": "interview-auto-configuration",
+      "title": "示例标题第1篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 一句话答案\n先给结论。第二句补充。\n## 展开讲\n短\n```java\nclass A {}\n```\n## 追问与加分点\n1. 追问一\n2. 追问二\n## 别踩的坑\n1. 坑一\n2. 坑二",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-ioc-bean-lifecycle",
+      "title": "示例标题第2篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 一句话答案\n先给结论。第二句补充。\n## 展开讲\n展开讲正文，机制说明。\n```java\nclass A {}\n```\n## 追问与加分点\n1. 追问一\n2. 追问二\n## 别踩的坑\n1. 坑一\n2. 坑二",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-circular-dependency",
+      "title": "示例标题第3篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 一句话答案\n先给结论。第二句补充。\n## 展开讲\n展开讲正文，机制说明。\n```java\nclass A {}\n```\n## 追问与加分点\n1. 追问一\n2. 追问二\n## 别踩的坑\n1. 坑一\n2. 坑二",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-aop-proxy",
+      "title": "示例标题第4篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 一句话答案\n先给结论。第二句补充。\n## 展开讲\n展开讲正文，机制说明。\n```java\nclass A {}\n```\n## 追问与加分点\n1. 追问一\n2. 追问二\n## 别踩的坑\n1. 坑一\n2. 坑二",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-transaction-failure",
+      "title": "示例标题第5篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 一句话答案\n先给结论。第二句补充。\n## 展开讲\n展开讲正文，机制说明。\n```java\nclass A {}\n```\n## 追问与加分点\n1. 追问一\n2. 追问二\n## 别踩的坑\n1. 坑一\n2. 坑二",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-mvc-request-flow",
+      "title": "示例标题第6篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 一句话答案\n先给结论。第二句补充。\n## 展开讲\n展开讲正文，机制说明。\n```java\nclass A {}\n```\n## 追问与加分点\n1. 追问一\n2. 追问二\n## 别踩的坑\n1. 坑一\n2. 坑二",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-starter-principle",
+      "title": "示例标题第7篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 一句话答案\n先给结论。第二句补充。\n## 展开讲\n展开讲正文，机制说明。\n```java\nclass A {}\n```\n## 追问与加分点\n1. 追问一\n2. 追问二\n## 别踩的坑\n1. 坑一\n2. 坑二",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-config-priority",
+      "title": "示例标题第8篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 一句话答案\n先给结论。第二句补充。\n## 展开讲\n展开讲正文，机制说明。\n```java\nclass A {}\n```\n## 追问与加分点\n1. 追问一\n2. 追问二\n## 别踩的坑\n1. 坑一\n2. 坑二",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-bean-scope",
+      "title": "示例标题第9篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 一句话答案\n先给结论。第二句补充。\n## 展开讲\n展开讲正文，机制说明。\n```java\nclass A {}\n```\n## 追问与加分点\n1. 追问一\n2. 追问二\n## 别踩的坑\n1. 坑一\n2. 坑二",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-filter-interceptor",
+      "title": "示例标题第10篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 一句话答案\n先给结论。第二句补充。\n## 展开讲\n展开讲正文，机制说明。\n```java\nclass A {}\n```\n## 追问与加分点\n1. 追问一\n2. 追问二\n## 别踩的坑\n1. 坑一\n2. 坑二",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-async-threadpool",
+      "title": "示例标题第11篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 一句话答案\n先给结论。第二句补充。\n## 展开讲\n展开讲正文，机制说明。\n```java\nclass A {}\n```\n## 追问与加分点\n1. 追问一\n2. 追问二\n## 别踩的坑\n1. 坑一\n2. 坑二",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-graceful-shutdown",
+      "title": "示例标题第12篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 一句话答案\n先给结论。第二句补充。\n## 展开讲\n展开讲正文，机制说明。\n```java\nclass A {}\n```\n## 追问与加分点\n1. 追问一\n2. 追问二\n## 别踩的坑\n1. 坑一\n2. 坑二",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    }
+  ]
+}

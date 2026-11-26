@@ -1,0 +1,188 @@
+{
+  "generatedBy": "knowledge-b",
+  "topic": "layers",
+  "items": [
+    {
+      "id": "layers-architecture",
+      "title": "示例标题第1篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 这一层负责什么\n这一层负责什么正文。\n## 怎么写\n怎么写正文。\n```java\nclass A {}\n```\n## 边界与常见错误\n1. 错误一\n2. 错误二\n3. 错误三",
+      "sources": [
+        {
+          "label": "CSDN",
+          "url": "https://blog.csdn.net/x/article/details/1"
+        }
+      ]
+    },
+    {
+      "id": "layers-controller",
+      "title": "示例标题第2篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 这一层负责什么\n这一层负责什么正文。\n## 怎么写\n怎么写正文。\n```java\nclass A {}\n```\n## 边界与常见错误\n1. 错误一\n2. 错误二\n3. 错误三",
+      "sources": [
+        {
+          "label": "HTTP",
+          "url": "http://docs.spring.io/spring-boot/3.5/reference/index.html"
+        }
+      ]
+    },
+    {
+      "id": "layers-service",
+      "title": "示例标题第3篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 这一层负责什么\n这一层负责什么正文。\n## 怎么写\n怎么写正文。\n```java\nclass A {}\n```\n## 边界与常见错误\n1. 错误一\n2. 错误二\n3. 错误三",
+      "sources": [
+        {
+          "label": "首页",
+          "url": "https://docs.spring.io/"
+        }
+      ]
+    },
+    {
+      "id": "layers-repository",
+      "title": "示例标题第4篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 这一层负责什么\n这一层负责什么正文。\n## 怎么写\n怎么写正文。\n```java\nclass A {}\n```\n## 边界与常见错误\n1. 错误一\n2. 错误二\n3. 错误三",
+      "sources": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/foo/bar"
+        }
+      ]
+    },
+    {
+      "id": "conventions-project-structure",
+      "title": "示例标题第5篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 这一层负责什么\n这一层负责什么正文。\n## 怎么写\n怎么写正文。\n```java\nclass A {}\n```\n## 边界与常见错误\n1. 错误一\n2. 错误二\n3. 错误三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "layers-exception-errorcode",
+      "title": "示例标题第6篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 这一层负责什么\n这一层负责什么正文。\n## 怎么写\n怎么写正文。\n```java\nclass A {}\n```\n## 边界与常见错误\n1. 错误一\n2. 错误二\n3. 错误三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "layers-transaction-boundary",
+      "title": "示例标题第7篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 这一层负责什么\n这一层负责什么正文。\n## 怎么写\n怎么写正文。\n```java\nclass A {}\n```\n## 边界与常见错误\n1. 错误一\n2. 错误二\n3. 错误三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "layers-common-module",
+      "title": "示例标题第8篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 这一层负责什么\n这一层负责什么正文。\n## 怎么写\n怎么写正文。\n```java\nclass A {}\n```\n## 边界与常见错误\n1. 错误一\n2. 错误二\n3. 错误三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "layers-modularization",
+      "title": "示例标题第9篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 这一层负责什么\n这一层负责什么正文。\n## 怎么写\n怎么写正文。\n```java\nclass A {}\n```\n## 边界与常见错误\n1. 错误一\n2. 错误二\n3. 错误三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    }
+  ]
+}

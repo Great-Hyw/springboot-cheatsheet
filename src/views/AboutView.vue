@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { auditSummary, stats } from '../data'
 import { commandStats } from '../data/commands'
+import { topicStats } from '../data/topics'
 
 const s = computed(() => auditSummary || {})
 
@@ -10,6 +11,8 @@ const rows = computed(() => [
   { label: '知识文章', value: s.value.knowledgeCount ?? stats.knowledge, unit: '篇' },
   { label: 'Linux / Git 命令', value: commandStats.total, unit: '条' },
   { label: '命令模块', value: commandStats.modules, unit: '组' },
+  { label: '企业实战专题', value: topicStats.total, unit: '篇' },
+  { label: '专题分块', value: topicStats.blocks, unit: '块' },
   { label: '反射扫描的 Jar', value: s.value.jarsScanned ?? 115, unit: '个' },
   { label: '索引到的注解类', value: s.value.indexAnnotations ?? 1109, unit: '个' },
   { label: '注解模块文档链接', value: s.value.docsLinks ?? '—', unit: '条' },
@@ -23,7 +26,7 @@ const rows = computed(() => [
       <span class="eyebrow">About</span>
       <h1 class="page-title">关于本站与「不瞎写」</h1>
       <p class="page-desc">
-        这是一个「注解 + 命令」速查站：Spring Boot 注解与原理面向刚上手后端的同学，讲清楚「什么时候该用」；Linux 与 Git 命令分成两个独立模块，各查各的，不混在一起。
+        这是一个「注解 + 命令 + 实战专题」速查站：Spring Boot 注解与原理面向刚上手后端的同学，讲清楚「什么时候该用」；Linux 与 Git 命令分成两个独立模块；开发规范、面试高频题、企业分层写法、Maven 坐标各占一块，四块互不混排。
       </p>
     </div>
 
@@ -34,7 +37,8 @@ const rows = computed(() => [
           <li><strong>注解卡片</strong>：每条包含大白话解释、关键点、真实属性表、可读的代码示例、容易踩的坑和官方文档链接。</li>
           <li><strong>知识库</strong>：把 IoC、AOP、事务、自动配置这些“绕不开的原理”，连同工程实践与版本升级，串成 20 篇短文，每篇 2–8 分钟。</li>
           <li><strong>命令速查</strong>：Linux 与 Git 两个独立入口，每条命令有真实选项、可直接敲的示例、容易踩的坑和官方 man / git 文档。</li>
-          <li><strong>搜索与收藏</strong>：⌘K / Ctrl+K 全局搜索（注解、文章、命令一起搜）；收藏存在浏览器本地，不需要登录。</li>
+          <li><strong>企业实战专题</strong>：开发规范、面试高频题、现代企业分层写法、常用 Maven 坐标用法四个独立分块，每篇按固定小节写，题目/坐标/代码骨架各有出处。</li>
+          <li><strong>搜索与收藏</strong>：⌘K / Ctrl+K 全局搜索（注解、文章、专题、命令一起搜）；收藏存在浏览器本地，不需要登录。</li>
         </ul>
       </section>
 
@@ -102,6 +106,32 @@ const rows = computed(() => [
     </section>
 
     <section class="about-section">
+      <h2 class="section-title">专题模块的「不瞎写」 <small>四块各查各的</small></h2>
+      <div class="method-grid">
+        <div class="method-card">
+          <span class="method-step">1</span>
+          <h3>四块，四种写法</h3>
+          <p>规范写「推荐做法 / 为什么 / 检查清单」，面经写「一句话答案 / 展开 / 追问 / 坑」，分层写「职责 / 代码骨架 / 边界」，坐标写「什么时候用 / 坐标表 / 配置」。四种结构互不套用。</p>
+        </div>
+        <div class="method-card">
+          <span class="method-step">2</span>
+          <h3>规范与面经有官方依据</h3>
+          <p>注入方式、配置优先级、自动配置、优雅停机等说法都以 Spring 官方文档为准；面试题只写能落到官方文档的机制，不编「某公司真题」。</p>
+        </div>
+        <div class="method-card">
+          <span class="method-step">3</span>
+          <h3>坐标逐个实测</h3>
+          <p>每个 groupId:artifactId 都去 Maven Central 查 <code>maven-metadata.xml</code>；由 BOM 管版本的坐标不写死版本，非 BOM 的版本必须能在 Central 的版本列表里找到。</p>
+        </div>
+        <div class="method-card">
+          <span class="method-step">4</span>
+          <h3>独立复核</h3>
+          <p>核查员另写审计脚本查 schema、链接、坐标与四块互相污染，再人工抽查每块至少 3 篇，产出 <code>docs/TOPIC-QA-REPORT.md</code>；有错回到数据文件修。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-section">
       <h2 class="section-title">核查数据 <small>可复跑</small></h2>
       <div class="audit-grid">
         <div v-for="r in rows" :key="r.label" class="audit-stat">
@@ -115,7 +145,7 @@ const rows = computed(() => [
       </p>
       <p v-else class="source-note">核查报告仍在生成。页面里的注解与文章数据已是核对过属性的版本。</p>
       <p class="source-note">
-        自动校验脚本在项目的 <code>scripts/validate-data.mjs</code> 与 <code>scripts/validate-commands.mjs</code>，任何人都可以在本地复跑；真实注解索引在 <code>tools/annotation-audit/index/annotations.txt</code>。
+        自动校验脚本在项目的 <code>scripts/validate-data.mjs</code>、<code>scripts/validate-commands.mjs</code> 与 <code>scripts/validate-topics.mjs</code>（坐标加 <code>--check-coords</code>），任何人都可以在本地复跑；真实注解索引在 <code>tools/annotation-audit/index/annotations.txt</code>。
       </p>
     </section>
 

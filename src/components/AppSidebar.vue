@@ -9,6 +9,7 @@ import {
   stats,
 } from '../data'
 import { COMMAND_TOOLS, commandModuleCounts, commandStats, getToolModules } from '../data/commands'
+import { TOPICS, topicCounts } from '../data/topics'
 
 defineProps({ open: { type: Boolean, default: false } })
 defineEmits(['close'])
@@ -18,6 +19,8 @@ const route = useRoute()
 const activeToolId = computed(() => (route.path.startsWith('/commands/') ? String(route.params.tool || '') : ''))
 const activeTool = computed(() => COMMAND_TOOLS.find((t) => t.id === activeToolId.value) || null)
 const activeToolModules = computed(() => (activeTool.value ? getToolModules(activeTool.value.id) : []))
+
+const activeTopicId = computed(() => (route.path.startsWith('/topics/') ? String(route.params.topic || '') : ''))
 
 const isToolActive = (id) => route.path === `/commands/${id}`
 function isCategoryActive(path, categoryId) {
@@ -77,6 +80,24 @@ function isPlainActive(path) {
       </div>
 
       <div class="side-group">
+        <p class="side-label">实战专题</p>
+        <RouterLink class="side-link" :class="{ active: isPlainActive('/topics') }" to="/topics">
+          专题首页
+        </RouterLink>
+        <RouterLink
+          v-for="t in TOPICS"
+          :key="t.id"
+          class="side-link"
+          :class="{ active: activeTopicId === t.id }"
+          :to="`/topics/${t.id}`"
+        >
+          <span class="cat-dot" :style="{ background: t.color }"></span>
+          {{ t.short }}
+          <span class="side-count">{{ topicCounts.get(t.id) || 0 }}</span>
+        </RouterLink>
+      </div>
+
+      <div class="side-group">
         <p class="side-label">命令速查</p>
         <RouterLink class="side-link" :class="{ active: isPlainActive('/commands') }" to="/commands">
           命令速查首页
@@ -106,7 +127,7 @@ function isPlainActive(path) {
 
       <div class="side-note">
         <strong>本站怎么保证不瞎写</strong>
-        <p>注解的包名与属性对照 Boot 3.5.16 真实依赖索引；Linux / Git 命令的参数与示例对照官方 man、git 文档。两者都附出处，并有独立核查。</p>
+        <p>注解的包名与属性对照 Boot 3.5.16 真实依赖索引；Linux / Git 命令对照官方 man、git 文档；实战专题的规范/面经/分层内容对照官方文档，Maven 坐标逐条在 Maven Central 核实。全部附出处，并有独立核查。</p>
         <RouterLink to="/about" style="font-size: 12px; font-weight: 600">查看核查方法 →</RouterLink>
       </div>
     </div>

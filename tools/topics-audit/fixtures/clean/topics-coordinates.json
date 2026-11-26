@@ -1,0 +1,342 @@
+{
+  "generatedBy": "content-data",
+  "topic": "coordinates",
+  "items": [
+    {
+      "id": "coordinates-web",
+      "title": "示例标题第1篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 什么时候用\n什么时候用正文。\n## 坐标清单\n\n| 依赖 | 用途 | 版本 |\n| --- | --- | --- |\n| `spring-boot-starter-web` | Web | BOM |\n| `spring-boot-starter-validation` | 校验 | BOM |\n| `springdoc-openapi-starter-webmvc-ui` | 文档 | 2.8.6 |\n| `spring-boot-devtools` | 热重载 | BOM |\n## 配置与坑\n配置与坑正文。\n```java\nclass A {}\n```",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ],
+      "coordinates": [
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-web",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "Web"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-validation",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "校验"
+        },
+        {
+          "groupId": "org.springdoc",
+          "artifactId": "springdoc-openapi-starter-webmvc-ui",
+          "version": "2.8.6",
+          "managed": false,
+          "scope": null,
+          "usage": "OpenAPI"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-devtools",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "热重载"
+        }
+      ]
+    },
+    {
+      "id": "coordinates-data",
+      "title": "示例标题第2篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 什么时候用\n什么时候用正文。\n## 坐标清单\n\n| 依赖 | 用途 | 版本 |\n| --- | --- | --- |\n| `spring-boot-starter-web` | Web | BOM |\n| `spring-boot-starter-validation` | 校验 | BOM |\n| `springdoc-openapi-starter-webmvc-ui` | 文档 | 2.8.6 |\n| `spring-boot-devtools` | 热重载 | BOM |\n## 配置与坑\n配置与坑正文。\n```java\nclass A {}\n```",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ],
+      "coordinates": [
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-web",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "Web"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-validation",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "校验"
+        },
+        {
+          "groupId": "org.springdoc",
+          "artifactId": "springdoc-openapi-starter-webmvc-ui",
+          "version": "2.8.6",
+          "managed": false,
+          "scope": null,
+          "usage": "OpenAPI"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-devtools",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "热重载"
+        }
+      ]
+    },
+    {
+      "id": "coordinates-security",
+      "title": "示例标题第3篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 什么时候用\n什么时候用正文。\n## 坐标清单\n\n| 依赖 | 用途 | 版本 |\n| --- | --- | --- |\n| `spring-boot-starter-web` | Web | BOM |\n| `spring-boot-starter-validation` | 校验 | BOM |\n| `springdoc-openapi-starter-webmvc-ui` | 文档 | 2.8.6 |\n| `spring-boot-devtools` | 热重载 | BOM |\n## 配置与坑\n配置与坑正文。\n```java\nclass A {}\n```",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ],
+      "coordinates": [
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-web",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "Web"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-validation",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "校验"
+        },
+        {
+          "groupId": "org.springdoc",
+          "artifactId": "springdoc-openapi-starter-webmvc-ui",
+          "version": "2.8.6",
+          "managed": false,
+          "scope": null,
+          "usage": "OpenAPI"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-devtools",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "热重载"
+        }
+      ]
+    },
+    {
+      "id": "coordinates-test",
+      "title": "示例标题第4篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 什么时候用\n什么时候用正文。\n## 坐标清单\n\n| 依赖 | 用途 | 版本 |\n| --- | --- | --- |\n| `spring-boot-starter-web` | Web | BOM |\n| `spring-boot-starter-validation` | 校验 | BOM |\n| `springdoc-openapi-starter-webmvc-ui` | 文档 | 2.8.6 |\n| `spring-boot-devtools` | 热重载 | BOM |\n## 配置与坑\n配置与坑正文。\n```java\nclass A {}\n```",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ],
+      "coordinates": [
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-web",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "Web"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-validation",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "校验"
+        },
+        {
+          "groupId": "org.springdoc",
+          "artifactId": "springdoc-openapi-starter-webmvc-ui",
+          "version": "2.8.6",
+          "managed": false,
+          "scope": null,
+          "usage": "OpenAPI"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-devtools",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "热重载"
+        }
+      ]
+    },
+    {
+      "id": "coordinates-ops",
+      "title": "示例标题第5篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 什么时候用\n什么时候用正文。\n## 坐标清单\n\n| 依赖 | 用途 | 版本 |\n| --- | --- | --- |\n| `spring-boot-starter-web` | Web | BOM |\n| `spring-boot-starter-validation` | 校验 | BOM |\n| `springdoc-openapi-starter-webmvc-ui` | 文档 | 2.8.6 |\n| `spring-boot-devtools` | 热重载 | BOM |\n## 配置与坑\n配置与坑正文。\n```java\nclass A {}\n```",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ],
+      "coordinates": [
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-web",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "Web"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-validation",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "校验"
+        },
+        {
+          "groupId": "org.springdoc",
+          "artifactId": "springdoc-openapi-starter-webmvc-ui",
+          "version": "2.8.6",
+          "managed": false,
+          "scope": null,
+          "usage": "OpenAPI"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-devtools",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "热重载"
+        }
+      ]
+    },
+    {
+      "id": "coordinates-utils",
+      "title": "示例标题第6篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 什么时候用\n什么时候用正文。\n## 坐标清单\n\n| 依赖 | 用途 | 版本 |\n| --- | --- | --- |\n| `spring-boot-starter-web` | Web | BOM |\n| `spring-boot-starter-validation` | 校验 | BOM |\n| `springdoc-openapi-starter-webmvc-ui` | 文档 | 2.8.6 |\n| `spring-boot-devtools` | 热重载 | BOM |\n## 配置与坑\n配置与坑正文。\n```java\nclass A {}\n```",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ],
+      "coordinates": [
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-web",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "Web"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-validation",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "校验"
+        },
+        {
+          "groupId": "org.springdoc",
+          "artifactId": "springdoc-openapi-starter-webmvc-ui",
+          "version": "2.8.6",
+          "managed": false,
+          "scope": null,
+          "usage": "OpenAPI"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-devtools",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "热重载"
+        }
+      ]
+    }
+  ]
+}

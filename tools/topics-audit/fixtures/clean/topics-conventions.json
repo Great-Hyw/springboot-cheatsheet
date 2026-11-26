@@ -1,0 +1,226 @@
+{
+  "generatedBy": "content-boot",
+  "topic": "conventions",
+  "items": [
+    {
+      "id": "conventions-project-structure",
+      "title": "示例标题第1篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 推荐做法\n推荐做法正文，用构造器注入。\n```java\nclass A {}\n```\n## 为什么\n为什么正文，官方文档有说明。\n## 落地检查清单\n- [ ] 检查项一\n- [ ] 检查项二\n- [ ] 检查项三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-constructor-injection",
+      "title": "示例标题第2篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 推荐做法\n推荐做法正文，用构造器注入。\n```java\nclass A {}\n```\n## 为什么\n为什么正文，官方文档有说明。\n## 落地检查清单\n- [ ] 检查项一\n- [ ] 检查项二\n- [ ] 检查项三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-configuration",
+      "title": "示例标题第3篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 推荐做法\n推荐做法正文，用构造器注入。\n```java\nclass A {}\n```\n## 为什么\n为什么正文，官方文档有说明。\n## 落地检查清单\n- [ ] 检查项一\n- [ ] 检查项二\n- [ ] 检查项三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-rest-api",
+      "title": "示例标题第4篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 推荐做法\n推荐做法正文，用构造器注入。\n```java\nclass A {}\n```\n## 为什么\n为什么正文，官方文档有说明。\n## 落地检查清单\n- [ ] 检查项一\n- [ ] 检查项二\n- [ ] 检查项三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-dto-validation",
+      "title": "示例标题第5篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 推荐做法\n推荐做法正文，用构造器注入。\n```java\nclass A {}\n```\n## 为什么\n为什么正文，官方文档有说明。\n## 落地检查清单\n- [ ] 检查项一\n- [ ] 检查项二\n- [ ] 检查项三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-exception",
+      "title": "示例标题第6篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 推荐做法\n推荐做法正文，用构造器注入。\n```java\nclass A {}\n```\n## 为什么\n为什么正文，官方文档有说明。\n## 落地检查清单\n- [ ] 检查项一\n- [ ] 检查项二\n- [ ] 检查项三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-transaction",
+      "title": "示例标题第7篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 推荐做法\n推荐做法正文，用构造器注入。\n```java\nclass A {}\n```\n## 为什么\n为什么正文，官方文档有说明。\n## 落地检查清单\n- [ ] 检查项一\n- [ ] 检查项二\n- [ ] 检查项三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-logging",
+      "title": "示例标题第8篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 推荐做法\n推荐做法正文，用构造器注入。\n```java\nclass A {}\n```\n## 为什么\n为什么正文，官方文档有说明。\n## 落地检查清单\n- [ ] 检查项一\n- [ ] 检查项二\n- [ ] 检查项三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-testing",
+      "title": "示例标题第9篇",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 推荐做法\n推荐做法正文，用构造器注入。\n```java\nclass A {}\n```\n## 为什么\n为什么正文，官方文档有说明。\n## 落地检查清单\n- [ ] 检查项一\n- [ ] 检查项二\n- [ ] 检查项三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-dependency",
+      "title": "示例标题第10篇",
+      "level": "进阶",
+      "readingMinutes": 4,
+      "summary": "这是一句话摘要，说明这篇文章解决什么问题。",
+      "tags": [
+        "示例",
+        "测试"
+      ],
+      "content": "## 推荐做法\n推荐做法正文，用构造器注入。\n```java\nclass A {}\n```\n## 为什么\n为什么正文，官方文档有说明。\n## 落地检查清单\n- [ ] 检查项一\n- [ ] 检查项二\n- [ ] 检查项三",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/index.html"
+        },
+        {
+          "label": "Spring Framework 参考文档",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans.html"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "tool": "topics-audit/audit.mjs",
+  "generatedAt": "2026-11-26T15:29:36.596Z",
+  "options": {
+    "dataDir": "src/data",
+    "json": "tools/topics-audit/report.json",
+    "md": "tools/topics-audit/report.md",
+    "checkLinks": false,
+    "checkCoords": false,
+    "refreshCache": false,
+    "relaxed": false,
+    "allowMissing": false,
+    "verbose": false,
+    "timeout": 20000
+  },
+  "dataDir": "src/data",
+  "summary": {
+    "files": 4,
+    "filesExpected": 4,
+    "items": 37,
+    "errors": 0,
+    "warnings": 0,
+    "infos": 2,
+    "verdict": "pass",
+    "byCode": {
+      "ANSWER_SENTENCE_COUNT": 2
+    },
+    "linkChecks": {
+      "enabled": false,
+      "total": 0,
+      "ok": 0,
+      "unreachable": 0,
+      "failed": 0,
+      "cached": 0
+    },
+    "coordChecks": {
+      "enabled": false,
+      "total": 0,
+      "ok": 0,
+      "missing": 0,
+      "unreachable": 0,
+      "failed": 0,
+      "versions": 0
+    },
+    "sampleSize": 16
+  },
+  "perFile": [
+    {
+      "topic": "conventions",
+      "file": "topics-conventions.json",
+      "exists": true,
+      "count": 10,
+      "expectedCount": 10,
+      "headings": [
+        "推荐做法",
+        "为什么",
+        "落地检查清单"
+      ]
+    },
+    {
+      "topic": "interview",
+      "file": "topics-interview.json",
+      "exists": true,
+      "count": 12,
+      "expectedCount": 12,
+      "headings": [
+        "一句话答案",
+        "展开讲",
+        "追问与加分点",
+        "别踩的坑"
+      ]
+    },
+    {
+      "topic": "layers",
+      "file": "topics-layers.json",
+      "exists": true,
+      "count": 9,
+      "expectedCount": 9,
+      "headings": [
+        "这一层负责什么",
+        "怎么写",
+        "边界与常见错误"
+      ]
+    },
+    {
+      "topic": "coordinates",
+      "file": "topics-coordinates.json",
+      "exists": true,
+      "count": 6,
+      "expectedCount": 6,
+      "headings": [
+        "什么时候用",
+        "坐标清单",
+        "配置与坑"
+      ]
+    }
+  ],
+  "sample": [
+    {
+      "topic": "conventions",
+      "id": "conventions-dependency",
+      "title": "依赖与版本管理规范：用 BOM 管版本，用 starter 收敛"
+    },
+    {
+      "topic": "conventions",
+      "id": "conventions-dto-validation",
+      "title": "DTO 与参数校验规范：边界校验、业务归位"
+    },
+    {
+      "topic": "conventions",
+      "id": "conventions-exception",
+      "title": "统一异常处理规范：错误码、状态码与 RFC 9457"
+    },
+    {
+      "topic": "conventions",
+      "id": "conventions-logging",
+      "title": "日志规范：接口、级别、上下文与脱敏"
+    },
+    {
+      "topic": "interview",
+      "id": "interview-ioc-bean-lifecycle",
+      "title": "IoC 和 Bean 生命周期怎么答？"
+    },
+    {
+      "topic": "interview",
+      "id": "interview-transaction-failure",
+      "title": "为什么 @Transactional 会失效？"
+    },
+    {
+      "topic": "interview",
+      "id": "interview-circular-dependency",
+      "title": "Spring 循环依赖是怎么回事？"
+    },
+    {
+      "topic": "interview",
+      "id": "interview-bean-scope",
+      "title": "Bean 的作用域有哪些？"
+    },
+    {
+      "topic": "interview",
+      "id": "interview-graceful-shutdown",
+      "title": "优雅停机是怎么做的？"
+    },
+    {
+      "topic": "layers",
+      "id": "layers-architecture",
+      "title": "分层架构与依赖方向：把代码摆对位置"
+    },
+    {
+      "topic": "layers",
+      "id": "layers-dto-conversion",
+      "title": "DTO、Entity、VO 到底怎么转换"
+    },
+    {
+      "topic": "layers",
+      "id": "layers-repository",
+      "title": "Repository 层：数据访问只暴露必要操作"
+    },
+    {
+      "topic": "layers",
+      "id": "layers-modularization",
+      "title": "从单体到模块化：包结构怎么演进"
+    },
+    {
+      "topic": "coordinates",
+      "id": "coordinates-test",
+      "title": "测试依赖与 Testcontainers"
+    },
+    {
+      "topic": "coordinates",
+      "id": "coordinates-ops",
+      "title": "监控与运维：Actuator、指标与打包插件"
+    },
+    {
+      "topic": "coordinates",
+      "id": "coordinates-web",
+      "title": "Web 与参数校验依赖怎么引"
+    }
+  ],
+  "linkChecks": [],
+  "coordChecks": [],
+  "issues": [
+    {
+      "severity": "info",
+      "code": "ANSWER_SENTENCE_COUNT",
+      "topic": "interview",
+      "file": "topics-interview.json",
+      "id": "interview-mvc-request-flow",
+      "message": "topics-interview.json items[5]: 「一句话答案」句数 1（规范 2–4 句左右，1 句=1 标点）"
+    },
+    {
+      "severity": "info",
+      "code": "ANSWER_SENTENCE_COUNT",
+      "topic": "interview",
+      "file": "topics-interview.json",
+      "id": "interview-filter-interceptor",
+      "message": "topics-interview.json items[9]: 「一句话答案」句数 1（规范 2–4 句左右，1 句=1 标点）"
+    }
+  ]
+}

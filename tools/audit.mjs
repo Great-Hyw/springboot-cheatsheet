@@ -340,8 +340,8 @@ for (const name of files) {
   const isAnnotation = name.startsWith('annotations-')
   const isKnowledge = name.startsWith('knowledge-')
   if (!isAnnotation && !isKnowledge) {
-    // audit-summary.json 是核查数据汇总，供「关于」页展示，不是内容文件
-    if (name === 'audit-summary.json') continue
+    // audit-summary.json 是核查数据汇总，commands-*/topics-* 由各自校验/审计脚本负责
+    if (name === 'audit-summary.json' || name.startsWith('commands-') || name.startsWith('topics-')) continue
     addIssue('info', 'UNKNOWN_DATA_FILE', file, null, `不是 annotations-*/knowledge-*，前端不会加载：${name}`)
     continue
   }

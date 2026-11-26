@@ -1,0 +1,274 @@
+{
+ "https://docs.spring.io/spring-boot/3.5/reference/index.html": {
+  "status": 200,
+  "fetchedAt": 1795706442585
+ },
+ "https://docs.spring.io/spring-framework/reference/core/beans.html": {
+  "status": 200,
+  "fetchedAt": 1795706442911
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/using/structuring-your-code.html": {
+  "status": 200,
+  "fetchedAt": 1795706762902
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/using/auto-configuration.html": {
+  "status": 200,
+  "fetchedAt": 1795706763064
+ },
+ "https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html": {
+  "status": 200,
+  "fetchedAt": 1795706763239
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html": {
+  "status": 200,
+  "fetchedAt": 1795706763524
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html#features.external-config.typesafe-configuration-properties": {
+  "status": 200,
+  "fetchedAt": 1795706763721
+ },
+ "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller.html": {
+  "status": 200,
+  "fetchedAt": 1795706763870
+ },
+ "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html": {
+  "status": 200,
+  "fetchedAt": 1795706764048
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/io/validation.html": {
+  "status": 200,
+  "fetchedAt": 1795706764191
+ },
+ "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html": {
+  "status": 200,
+  "fetchedAt": 1795706764337
+ },
+ "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html": {
+  "status": 200,
+  "fetchedAt": 1795706764493
+ },
+ "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html": {
+  "status": 200,
+  "fetchedAt": 1795706764629
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/web/servlet.html": {
+  "status": 200,
+  "fetchedAt": 1795706764839
+ },
+ "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html": {
+  "status": 200,
+  "fetchedAt": 1795706765013
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/features/logging.html": {
+  "status": 200,
+  "fetchedAt": 1795706765160
+ },
+ "https://docs.spring.io/spring-boot/3.5/how-to/logging.html": {
+  "status": 200,
+  "fetchedAt": 1795706765296
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/testing/spring-boot-applications.html": {
+  "status": 200,
+  "fetchedAt": 1795706765521
+ },
+ "https://docs.spring.io/spring-framework/reference/testing.html": {
+  "status": 200,
+  "fetchedAt": 1795706765669
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/using/build-systems.html": {
+  "status": 200,
+  "fetchedAt": 1795706765817
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/using/build-systems.html#using.build-systems.starters": {
+  "status": 200,
+  "fetchedAt": 1795706765959
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html": {
+  "status": 200,
+  "fetchedAt": 1795706766168
+ },
+ "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-nature.html": {
+  "status": 200,
+  "fetchedAt": 1795706766335
+ },
+ "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/postconstruct-and-predestroy-annotations.html": {
+  "status": 200,
+  "fetchedAt": 1795706766467
+ },
+ "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-collaborators.html": {
+  "status": 200,
+  "fetchedAt": 1795706766605
+ },
+ "https://docs.spring.io/spring-boot/3.5/appendix/application-properties/index.html": {
+  "status": 200,
+  "fetchedAt": 1795706766948
+ },
+ "https://github.com/spring-projects/spring-framework/blob/6.2.x/spring-beans/src/main/java/org/springframework/beans/factory/support/DefaultSingletonBeanRegistry.java": {
+  "status": 200,
+  "fetchedAt": 1795706768521
+ },
+ "https://docs.spring.io/spring-framework/reference/6.2/core/aop/introduction-defn.html": {
+  "status": 200,
+  "fetchedAt": 1795706768806
+ },
+ "https://docs.spring.io/spring-framework/reference/6.2/core/aop/proxying.html": {
+  "status": 200,
+  "fetchedAt": 1795706768943
+ },
+ "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/annotations.html": {
+  "status": 200,
+  "fetchedAt": 1795706769070
+ },
+ "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/rolling-back.html": {
+  "status": 200,
+  "fetchedAt": 1795706769197
+ },
+ "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/tx-propagation.html": {
+  "status": 200,
+  "fetchedAt": 1795706769337
+ },
+ "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/sequence.html": {
+  "status": 200,
+  "fetchedAt": 1795706769473
+ },
+ "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/special-bean-types.html": {
+  "status": 200,
+  "fetchedAt": 1795706769598
+ },
+ "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-scopes.html": {
+  "status": 200,
+  "fetchedAt": 1795706769732
+ },
+ "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/handlermapping-interceptor.html": {
+  "status": 200,
+  "fetchedAt": 1795706769853
+ },
+ "https://jakarta.ee/specifications/servlet/6.1/": {
+  "status": 200,
+  "fetchedAt": 1795706771160
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/features/task-execution-and-scheduling.html": {
+  "status": 200,
+  "fetchedAt": 1795706771295
+ },
+ "https://docs.spring.io/spring-framework/reference/6.2/integration/scheduling.html": {
+  "status": 200,
+  "fetchedAt": 1795706771476
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/web/graceful-shutdown.html": {
+  "status": 200,
+  "fetchedAt": 1795706771608
+ },
+ "https://docs.spring.io/spring-boot/3.5/reference/actuator/endpoints.html": {
+  "status": 200,
+  "fetchedAt": 1795706771771
+ },
+ "https://martinfowler.com/bliki/PresentationDomainDataLayering.html": {
+  "status": 200,
+  "fetchedAt": 1795706772793
+ },
+ "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestbody.html": {
+  "status": 200,
+  "fetchedAt": 1795706772929
+ },
+ "https://docs.spring.io/spring-framework/reference/data-access/transaction.html": {
+  "status": 200,
+  "fetchedAt": 1795706773054
+ },
+ "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html": {
+  "status": 200,
+  "fetchedAt": 1795706773190
+ },
+ "https://mybatis.org/spring/mappers.html": {
+  "status": 200,
+  "fetchedAt": 1795706773890
+ },
+ "https://docs.spring.io/spring-framework/reference/data-access/dao.html": {
+  "status": 200,
+  "fetchedAt": 1795706774078
+ },
+ "https://mapstruct.org/documentation/stable/reference/html/": {
+  "status": 200,
+  "fetchedAt": 1795706774728
+ },
+ "https://martinfowler.com/bliki/AnemicDomainModel.html": {
+  "status": 200,
+  "fetchedAt": 1795706775037
+ },
+ "https://jakarta.ee/specifications/bean-validation/3.0/": {
+  "status": 200,
+  "fetchedAt": 1795706775732
+ },
+ "https://docs.spring.io/spring-modulith/reference/fundamentals.html": {
+  "status": 200,
+  "fetchedAt": 1795706775855
+ },
+ "https://docs.spring.io/spring-modulith/reference/index.html": {
+  "status": 200,
+  "fetchedAt": 1795706776072
+ },
+ "https://docs.spring.io/spring-boot/reference/web/servlet.html": {
+  "status": 200,
+  "fetchedAt": 1795706776220
+ },
+ "https://docs.spring.io/spring-boot/reference/io/validation.html": {
+  "status": 200,
+  "fetchedAt": 1795706776438
+ },
+ "https://github.com/springdoc/springdoc-openapi": {
+  "status": 200,
+  "fetchedAt": 1795706777672
+ },
+ "https://docs.spring.io/spring-boot/reference/data/sql.html": {
+  "status": 200,
+  "fetchedAt": 1795706777830
+ },
+ "https://mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/": {
+  "status": 200,
+  "fetchedAt": 1795706778227
+ },
+ "https://docs.spring.io/spring-boot/how-to/data-initialization.html": {
+  "status": 200,
+  "fetchedAt": 1795706778378
+ },
+ "https://docs.spring.io/spring-boot/reference/web/spring-security.html": {
+  "status": 200,
+  "fetchedAt": 1795706778516
+ },
+ "https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/index.html": {
+  "status": 200,
+  "fetchedAt": 1795706778710
+ },
+ "https://docs.spring.io/spring-boot/reference/testing/testcontainers.html": {
+  "status": 200,
+  "fetchedAt": 1795706778854
+ },
+ "https://testcontainers.com/modules/mysql/": {
+  "status": 200,
+  "fetchedAt": 1795706780130
+ },
+ "https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html": {
+  "status": 200,
+  "fetchedAt": 1795706780292
+ },
+ "https://docs.spring.io/spring-boot/reference/actuator/index.html": {
+  "status": 200,
+  "fetchedAt": 1795706780418
+ },
+ "https://docs.spring.io/spring-boot/reference/actuator/metrics.html": {
+  "status": 200,
+  "fetchedAt": 1795706780571
+ },
+ "https://micrometer.io/docs": {
+  "status": 200,
+  "fetchedAt": 1795706782337
+ },
+ "https://projectlombok.org/setup/maven": {
+  "status": 200,
+  "fetchedAt": 1795706782846
+ },
+ "https://mapstruct.org/documentation/installation/": {
+  "status": 200,
+  "fetchedAt": 1795706783460
+ }
+}

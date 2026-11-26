@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "tool": "topics-audit/audit.mjs",
+  "generatedAt": "2026-11-26T15:25:52.643Z",
+  "options": {
+    "dataDir": "D:\\windowsisland\\springboot-cheatsheet\\tools\\topics-audit\\fixtures\\empty",
+    "json": "D:\\windowsisland\\springboot-cheatsheet\\tools\\topics-audit\\fixtures\\.report-selftest.json",
+    "md": "D:\\windowsisland\\springboot-cheatsheet\\tools\\topics-audit\\fixtures\\.report-selftest.md",
+    "checkLinks": false,
+    "checkCoords": false,
+    "refreshCache": false,
+    "relaxed": false,
+    "allowMissing": false,
+    "verbose": false,
+    "timeout": 20000
+  },
+  "dataDir": "tools/topics-audit/fixtures/empty",
+  "summary": {
+    "files": 0,
+    "filesExpected": 4,
+    "items": 0,
+    "errors": 4,
+    "warnings": 0,
+    "infos": 0,
+    "verdict": "needs-fix",
+    "byCode": {
+      "FILE_MISSING": 4
+    },
+    "linkChecks": {
+      "enabled": false,
+      "total": 0,
+      "ok": 0,
+      "unreachable": 0,
+      "failed": 0,
+      "cached": 0
+    },
+    "coordChecks": {
+      "enabled": false,
+      "total": 0,
+      "ok": 0,
+      "missing": 0,
+      "unreachable": 0,
+      "failed": 0,
+      "versions": 0
+    },
+    "sampleSize": 0
+  },
+  "perFile": [
+    {
+      "topic": "conventions",
+      "file": "topics-conventions.json",
+      "exists": false,
+      "count": 0,
+      "expectedCount": 10,
+      "headings": [
+        "推荐做法",
+        "为什么",
+        "落地检查清单"
+      ]
+    },
+    {
+      "topic": "interview",
+      "file": "topics-interview.json",
+      "exists": false,
+      "count": 0,
+      "expectedCount": 12,
+      "headings": [
+        "一句话答案",
+        "展开讲",
+        "追问与加分点",
+        "别踩的坑"
+      ]
+    },
+    {
+      "topic": "layers",
+      "file": "topics-layers.json",
+      "exists": false,
+      "count": 0,
+      "expectedCount": 9,
+      "headings": [
+        "这一层负责什么",
+        "怎么写",
+        "边界与常见错误"
+      ]
+    },
+    {
+      "topic": "coordinates",
+      "file": "topics-coordinates.json",
+      "exists": false,
+      "count": 0,
+      "expectedCount": 6,
+      "headings": [
+        "什么时候用",
+        "坐标清单",
+        "配置与坑"
+      ]
+    }
+  ],
+  "sample": [],
+  "linkChecks": [],
+  "coordChecks": [],
+  "issues": [
+    {
+      "severity": "error",
+      "code": "FILE_MISSING",
+      "topic": "conventions",
+      "file": "topics-conventions.json",
+      "id": null,
+      "message": "缺少文件 topics-conventions.json（Spring Boot 开发规范）"
+    },
+    {
+      "severity": "error",
+      "code": "FILE_MISSING",
+      "topic": "interview",
+      "file": "topics-interview.json",
+      "id": null,
+      "message": "缺少文件 topics-interview.json（面试高频题（面经））"
+    },
+    {
+      "severity": "error",
+      "code": "FILE_MISSING",
+      "topic": "layers",
+      "file": "topics-layers.json",
+      "id": null,
+      "message": "缺少文件 topics-layers.json（现代企业分层写法）"
+    },
+    {
+      "severity": "error",
+      "code": "FILE_MISSING",
+      "topic": "coordinates",
+      "file": "topics-coordinates.json",
+      "id": null,
+      "message": "缺少文件 topics-coordinates.json（常用 Maven 坐标用法）"
+    }
+  ]
+}

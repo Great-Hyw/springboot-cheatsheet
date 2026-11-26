@@ -1,0 +1,282 @@
+{
+  "topic": "interview",
+  "generatedBy": "knowledge-a",
+  "items": [
+    {
+      "id": "interview-auto-configuration",
+      "title": "Spring Boot 自动配置是怎么生效的？",
+      "level": "进阶",
+      "readingMinutes": 3,
+      "summary": "启动时按 classpath 依赖和已有 bean，用条件注解决定加载哪些配置；用户 bean 优先，可排除或替换。",
+      "tags": [
+        "自动配置",
+        "条件注解",
+        "Spring Boot"
+      ],
+      "content": "## 一句话答案\n\n自动配置是 Spring Boot 在启动时读一批预先写好的配置类，逐个判断条件（类在不在 classpath、容器里有没有某个 bean、某个开关开没开），条件满足才把这些 bean 注册进来。所以它是「有条件地帮你配」，不是「什么都配好」。你自己定义了同类型的 bean，默认配置通常会自动退让。\n\n## 展开讲\n\n`@SpringBootApplication` 是三个注解的组合：`@SpringBootConfiguration`、`@EnableAutoConfiguration`、`@ComponentScan`。真正负责自动配置的是 `@EnableAutoConfiguration`，它通过 `@Import` 机制把登记在 imports 文件里的配置类加载进来。\n\nBoot 3.x 的登记文件是 jar 包里的 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`，一行一个类全名，`#` 开头是注释。这些类标了 `@AutoConfiguration`（本质是 `@Configuration`），方法上挂条件注解：\n\n```java\n@AutoConfiguration\n@ConditionalOnClass(RestClient.class)\npublic class HelloAutoConfiguration {\n\n    @Bean\n    @ConditionalOnMissingBean\n    @ConditionalOnProperty(prefix = \"hello\", name = \"base-url\")\n    public RestClient helloClient(Environment environment) {\n        return RestClient.builder()\n                .baseUrl(environment.getRequiredProperty(\"hello.base-url\"))\n                .build();\n    }\n}\n```\n\n三个条件各管一件事：`@ConditionalOnClass` 看依赖在不在，`@ConditionalOnMissingBean` 看你有没有自己定义，`@ConditionalOnProperty` 看配置开关。评估条件的先后顺序很关键：用户自己的配置类先注册，自动配置类后注册，所以 `@ConditionalOnMissingBean` 才能看到「用户已经配过了」。\n\n想看自动配置为什么生效或不生效，启动时加 `--debug`，控制台会打印条件评估报告。不想让某个自动配置生效，可以在 `@SpringBootApplication(exclude = ...)` 里排除，类不在 classpath 时用 `excludeName`，或者用 `spring.autoconfigure.exclude` 属性。\n\n## 追问与加分点\n\n- **为什么要有条件注解**：同一套依赖组合很多，Boot 要让「有 HSQLDB 就配内存库、有 MySQL 驱动且有 url 就配连接池、用户自己配了就退让」同时成立，只能靠条件把默认行为做成可关可换。\n- **自动配置类不能被组件扫描到**：官方明确要求自动配置类只从 imports 文件加载，不要开组件扫描去扫它们。扫到会重复注册，条件评估顺序也会乱。\n- **排序**：`@AutoConfigureBefore`、`@AutoConfigureAfter`、`@AutoConfigureOrder` 只影响 bean 定义的注册顺序，不决定 bean 的创建顺序（创建顺序由依赖决定）。\n- **`@ConditionalOnClass` 别写在 `@Bean` 方法上**：官方说明类条件在 `@Bean` 方法上行为不同，方法返回类型对应的类可能已被 JVM 加载，要用独立的 `@Configuration` 类把条件隔离出来。\n- **自定义 starter**：写一个 `@AutoConfiguration` 类 + imports 文件，再打一个只负责拉依赖的 starter 模块，就是官方推荐的自定义 starter 做法。\n\n## 别踩的坑\n\n- 自己 `@Bean` 了一个 `DataSource`，以为自动配置会「合并」你的和默认的。实际是默认配置整体退让，连 Hikari 的默认参数都不再自动配。\n- 在普通 `@Configuration` 类上用 `@ConditionalOnMissingBean` 想控制顺序：条件评估时机取决于注册顺序，很容易失效；这类条件主要给自动配置类用。\n- 排除了某个自动配置类导致启动报缺 bean，先看 `--debug` 的条件报告定位，不要靠猜。\n- 把自动配置类放在会被 `@ComponentScan` 扫到的包里，出现「配了两遍」或条件判断不生效。\n",
+      "sources": [
+        {
+          "label": "Spring Boot 3.5 Reference — Auto-configuration",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/using/auto-configuration.html"
+        },
+        {
+          "label": "Spring Boot 3.5 Reference — Creating Your Own Auto-configuration",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-ioc-bean-lifecycle",
+      "title": "IoC 和 Bean 生命周期怎么答？",
+      "level": "入门",
+      "readingMinutes": 3,
+      "summary": "IoC 是把对象创建与依赖注入交给容器；Bean 经历实例化、注入、初始化回调、销毁回调，顺序固定。",
+      "tags": [
+        "IoC",
+        "Bean 生命周期",
+        "依赖注入"
+      ],
+      "content": "## 一句话答案\n\nIoC（控制反转）就是把「new 对象、找依赖、管生命周期」的控制权从业务代码交给 Spring 容器。Bean 的生命周期主线是：实例化 → 依赖注入 → 初始化回调 → 使用 → 销毁回调。初始化和销毁各有固定顺序：先注解（`@PostConstruct`/`@PreDestroy`），再接口（`afterPropertiesSet`/`destroy`），最后配置里指定的 init/destroy 方法。\n\n## 展开讲\n\n创建阶段：容器读 BeanDefinition，反射调用构造器创建对象，构造器注入的依赖在这一步传进去。正因为对象已经被完整构造出来了，构造器注入天然不支持循环依赖。\n\n注入阶段：setter 注入、字段注入的 `@Autowired`、`@Value` 在这一步生效；同时会回调各种 Aware 接口（如 `BeanNameAware`、`ApplicationContextAware`），让 bean 拿到容器信息。\n\n初始化阶段：`BeanPostProcessor` 的 `postProcessBeforeInitialization` → `@PostConstruct` → `afterPropertiesSet()` → 配置的 init 方法 → `BeanPostProcessor` 的 `postProcessAfterInitialization`。像事务、AOP 这些代理，通常就是在初始化阶段由 BeanPostProcessor 给原对象包一层。\n\n销毁阶段：`@PreDestroy` → `destroy()` → 配置的 destroy 方法。只有容器管理的单例会在容器关闭时走这套；原型 bean 容器不管销毁。\n\n```java\n@Component\npublic class ReportService {\n\n    private final DataSource dataSource;   // 构造器注入：对象创建时依赖就位\n\n    public ReportService(DataSource dataSource) {\n        this.dataSource = dataSource;\n    }\n\n    @PostConstruct\n    void warmUp() {\n        // 依赖已注入，可以预热缓存、校验配置\n    }\n\n    @PreDestroy\n    void shutdown() {\n        // 容器关闭时释放资源\n    }\n}\n```\n\n## 追问与加分点\n\n- **为什么推荐构造器注入**：依赖可以加 `final`、不可能为空；缺依赖启动就报错，而不是运行到一半空指针；单元测试直接 new，不需要容器。\n- **`@PostConstruct` 和 `InitializingBean` 的区别**：前者是 `jakarta.annotation` 的标准注解，不绑 Spring；后者是 Spring 接口，会让业务代码依赖框架。官方建议优先用注解或 `@Bean(initMethod = ...)`。\n- **单例是启动时创建的吗**：默认非懒加载的单例在容器 refresh 阶段就创建并初始化完；加了 `@Lazy` 才等到第一次使用。原型 bean 是每次获取时创建。\n- **BeanPostProcessor 是扩展点**：AOP 代理、`@Autowired` 注入、`@PostConstruct` 的识别都靠它。自己实现时要小心，它初始化得非常早，不要依赖普通业务 bean。\n- **销毁只对单例保证**：`@PreDestroy` 在 `kill -9`、断电时不会执行；原型 bean 的销毁回调根本不会被调用。\n\n## 别踩的坑\n\n- 在构造器里读 `@Value` 注入的字段：字段注入发生在构造之后，这时读到的是 null，要用构造器参数接收。\n- 在 `@PostConstruct` 里调用本 bean 的 `@Async`、`@Transactional` 方法：这时代理可能还没就绪，增强不生效；初始化要异步就另建一个 bean 去调。\n- 以为 `@PreDestroy` 一定执行、拿它做关键的「落库」操作：进程被强杀时来不及执行。\n- 把重活（远程调用、大文件加载）塞进构造器：创建失败时异常堆栈都指向 bean 初始化，难定位，放在 `@PostConstruct` 至少阶段清晰。\n",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2 — Customizing the Nature of a Bean",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-nature.html"
+        },
+        {
+          "label": "Spring Framework 6.2 — @PostConstruct and @PreDestroy",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/postconstruct-and-predestroy-annotations.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-circular-dependency",
+      "title": "Spring 循环依赖是怎么回事？",
+      "level": "进阶",
+      "readingMinutes": 3,
+      "summary": "A、B 互相依赖时，单例可以靠三级缓存提前暴露半成品解决，构造器注入直接失败；Boot 默认禁止，应重构。",
+      "tags": [
+        "循环依赖",
+        "三级缓存",
+        "Bean"
+      ],
+      "content": "## 一句话答案\n\n循环依赖是 A 依赖 B、B 又依赖 A。单例 + setter/字段注入时，Spring 用「三级缓存」提前暴露还没填充完属性的半成品来打破循环；构造器注入没有半成品可暴露，只能启动失败。Boot 2.6 起默认不允许循环依赖，正确做法是重构依赖关系，而不是打开开关。\n\n## 展开讲\n\n三级缓存都在 `DefaultSingletonBeanRegistry` 里：一级 `singletonObjects` 放成品 bean；二级 `earlySingletonObjects` 放提前暴露的半成品；三级 `singletonFactories` 放能生成早期引用的 ObjectFactory（如果这个 bean 会被 AOP 代理，工厂产出的就是代理）。\n\n以 A、B 互相依赖为例：创建 A → 实例化后把 A 的工厂放进三级缓存 → 填充属性时发现要 B → 去创建 B → B 填充属性时发现要 A → 依次查一级、二级、三级，从三级工厂拿到 A 的早期引用（升级到二级）→ B 创建完成 → A 拿到 B 继续完成创建。\n\n构造器注入为什么不行：调构造器之前对象还不存在，容器必须先完整创建 B，而 B 又在等 A，于是抛 `BeanCurrentlyInCreationException`。官方文档给的方案是改成 setter 注入（并说明这「不推荐但可行」），更好的方案是重新设计依赖。\n\nBoot 3.5 的属性 `spring.main.allow-circular-references` 默认是 false，所以即使是 setter 循环，启动也会失败，需要显式打开才能让三级缓存发挥作用。临时解法是在注入点加 `@Lazy`，注入一个代理，真正用到时才去容器里取。\n\n```java\n@Service\npublic class OrderService {\n\n    private final PayService payService;\n\n    // 构造器注入形成循环：OrderService -> PayService -> OrderService，启动失败\n    public OrderService(PayService payService) {\n        this.payService = payService;\n    }\n}\n```\n\n```java\n@Service\npublic class OrderService {\n\n    private final PayService payService;\n\n    public OrderService(@Lazy PayService payService) {   // 注入代理，延迟取真身\n        this.payService = payService;\n    }\n}\n```\n\n## 追问与加分点\n\n- **为什么三级缓存存工厂而不是实例**：提前暴露的引用可能要先经过 BeanPostProcessor 生成代理，存 ObjectFactory 可以把「要不要提前生成代理」推迟到真正发生循环时，避免所有 bean 都提前代理。\n- **为什么说构造器注入能暴露设计问题**：能构造出循环依赖，通常说明两个类的职责边界不清，拆出第三个类或改成事件/回调往往更合理。\n- **`@Lazy` 的原理**：注入的是延迟代理，第一次调用方法时才向容器要真实 bean，从而把「创建时机」错开。\n- **prototype 循环依赖**：没有缓存可借，官方明确无法解决。\n- **Boot 2.6 起默认禁止**：默认值就是 false（不允许），需要显式配成 true 才会尝试自动解析。\n\n## 别踩的坑\n\n- 直接把 `allow-circular-references` 打开上线：依赖关系更乱，初始化顺序不可控，还可能出现「拿到的是半成品」的问题。\n- 用字段注入「绕过」循环依赖就以为解决了：循环还在，只是被隐藏了，后面加 AOP、加事务时容易炸。\n- 循环依赖叠加 AOP：早期暴露的可能是原始对象而不是最终代理，导致事务、异步等增强失效。\n- 把 `@Lazy` 当银弹：它只是把创建时机延后，循环依赖没消失，滥用会让启动期错误变成运行期错误。\n",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2 — Circular Dependencies",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-collaborators.html"
+        },
+        {
+          "label": "Spring Boot 3.5 — Common Application Properties",
+          "url": "https://docs.spring.io/spring-boot/3.5/appendix/application-properties/index.html"
+        },
+        {
+          "label": "spring-framework 6.2.x — DefaultSingletonBeanRegistry 源码",
+          "url": "https://github.com/spring-projects/spring-framework/blob/6.2.x/spring-beans/src/main/java/org/springframework/beans/factory/support/DefaultSingletonBeanRegistry.java"
+        }
+      ]
+    },
+    {
+      "id": "interview-aop-proxy",
+      "title": "Spring AOP 的代理是怎么回事？",
+      "level": "进阶",
+      "readingMinutes": 3,
+      "summary": "AOP 把日志事务等横切逻辑做成切面，运行时生成代理在方法前后增强；有接口用 JDK 代理，无接口用 CGLIB。",
+      "tags": [
+        "AOP",
+        "动态代理",
+        "CGLIB"
+      ],
+      "content": "## 一句话答案\n\nAOP 是把日志、事务、权限这类「横切」逻辑从业务方法里抽出来做成切面，在方法执行前后织入。Spring AOP 靠运行时生成代理对象实现：目标类有接口就用 JDK 动态代理，没有接口就用 CGLIB 生成子类。调用方拿到的是代理，真正干活的还是原对象。\n\n## 展开讲\n\n先对齐几个术语：切面（Aspect）是横切逻辑的模块，标 `@Aspect`；连接点（Join point）是程序执行点，Spring AOP 里只能是方法执行；通知（Advice）是具体动作，分前置、后置、异常、最终、环绕；切点（Pointcut）是匹配哪些方法的表达式；目标对象（Target）是被代理的原对象；织入（Weaving）是把切面接到目标上的过程。\n\n```java\n@Aspect\n@Component\npublic class TimingAspect {\n\n    @Around(\"execution(* com.example.order.service..*(..))\")\n    public Object timing(ProceedingJoinPoint pjp) throws Throwable {\n        long start = System.nanoTime();\n        try {\n            return pjp.proceed();          // 调用真正的业务方法\n        } finally {\n            System.out.println(pjp.getSignature().toShortString()\n                    + \" 耗时 \" + (System.nanoTime() - start) + \"ns\");\n        }\n    }\n}\n```\n\n代理怎么选：目标实现了至少一个接口，Spring 默认用 JDK 动态代理，代理对象只能增强接口里声明的方法；目标没有接口，用 CGLIB 生成子类，所以 `final` 类不能代理、`final` 方法不能被增强。\n\n`@Transactional`、`@Async`、缓存注解本质上都是 AOP：调用方法时先经过代理，代理在外面开事务、提交线程池，再调目标方法。所以「注解失效」的问题，几乎都是「调用没经过代理」。\n\n## 追问与加分点\n\n- **为什么自调用失效**：`this.method()` 不经过代理，增强逻辑根本没有机会执行。解法是把方法拆到另一个 bean，或者自注入自己的代理；`AopContext.currentProxy()` 也能拿到当前代理，但要开 `exposeProxy`，不推荐。\n- **private 方法为什么不能增强**：JDK 代理只能实现接口方法，CGLIB 靠继承覆盖方法，private 方法两者都碰不到。\n- **Spring AOP 和 AspectJ 的区别**：Spring AOP 是运行时代理，只支持方法级连接点，够用且无侵入；AspectJ 支持编译期/加载期织入，能增强构造器、字段等更多连接点，但需要额外编译插件或 agent。\n- **代理对象和目标对象不是一回事**：注入后 `getClass()` 看到的是代理类，按接口类型注入更稳；调试时想看真实类型可以用 `AopUtils.getTargetClass()`。\n- **切面本身也是 bean**：`@Aspect` 类要注册进容器（`@Component` 或 `@Bean`），否则不会生效。\n\n## 别踩的坑\n\n- 同类方法互调，被调方法的 `@Transactional`、`@Async`、`@Cacheable` 全部失效，这是线上最常见的一类问题。\n- 给 private 方法加注解，以为能增强，实际完全无效。\n- 把 `final` 类交给 CGLIB 代理，启动或调用时直接报错。\n- 环绕通知里 catch 了异常却不重新抛出，等于把业务异常吞掉，事务也不会回滚。\n- 在切面里做重活（查库、发消息）且没做异常隔离，切面出问题会连带业务一起挂。\n",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2 — AOP Concepts",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/introduction-defn.html"
+        },
+        {
+          "label": "Spring Framework 6.2 — Proxying Mechanisms",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/proxying.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-transaction-failure",
+      "title": "为什么 @Transactional 会失效？",
+      "level": "进阶",
+      "readingMinutes": 3,
+      "summary": "事务靠 AOP 代理生效，自调用、不可见方法会让它失效；默认只回滚 RuntimeException 和 Error。",
+      "tags": [
+        "事务",
+        "事务失效",
+        "事务传播"
+      ],
+      "content": "## 一句话答案\n\n`@Transactional` 不是魔法，是 Spring 用 AOP 代理在方法外面开事务、正常返回就提交、抛异常按规则回滚。失效基本都是两类原因：调用没经过代理（同类自调用、方法不可见、对象不是 Spring 管的），或者异常没触发回滚（被 catch 了、类型不对）。默认只对 `RuntimeException` 和 `Error` 回滚，受检异常要显式配 `rollbackFor`。\n\n## 展开讲\n\n拦截链路：调用方 → 代理 → `TransactionInterceptor` 向事务管理器要一个事务 → 执行目标方法 → 正常返回提交、抛异常回滚。这就解释了所有规则：\n\n1. 只有从代理进来的外部调用才会被拦截，`this.method()` 不行。\n2. bean 必须注册在容器里（`@Service`、`@Component`、`@Bean`），自己 new 出来的对象没有代理。\n3. 方法可见性：通常要 public。Spring 6 起，class-based 代理默认也支持 protected 和包可见方法；interface-based 代理则必须 public 且在接口里声明。\n4. 默认回滚规则：`RuntimeException` 及子类、`Error` 回滚；受检异常默认不回滚。\n\n```java\n@Service\npublic class PayService {\n\n    private final JdbcTemplate jdbcTemplate;\n\n    public PayService(JdbcTemplate jdbcTemplate) {\n        this.jdbcTemplate = jdbcTemplate;\n    }\n\n    @Transactional(rollbackFor = Exception.class)   // 受检异常也回滚\n    public void pay(long orderId) throws Exception {\n        jdbcTemplate.update(\"update orders set status = ? where id = ?\", \"PAID\", orderId);\n        if (orderId <= 0) {\n            throw new Exception(\"订单号非法\");        // 不加 rollbackFor 时这里不会回滚\n        }\n    }\n}\n```\n\n传播行为也常被追问：默认 `REQUIRED`，外层有事务就加入，任意一处标记回滚则整个事务回滚；`REQUIRES_NEW` 会挂起外层、开独立事务，内层失败不影响外层；`NESTED` 用保存点，可以只回滚内层这一段。\n\n还有一个官方专门提醒过的点：不要在 `@PostConstruct` 里依赖 `@Transactional`，此时 bean 还没完全初始化，代理可能没就绪。\n\n## 追问与加分点\n\n- **REQUIRED 和 REQUIRES_NEW 的区别**：前者加入外层事务，一起提交一起回滚；后者是独立物理事务，需要自己的连接，用多了要小心连接池耗尽。\n- **内层 catch 住异常会怎样**：事务管理器看不到异常，外层照常提交；如果内层已经把事务标成 rollback-only，外层提交时会抛 `UnexpectedRollbackException`。\n- **readOnly、timeout、isolation**：`readOnly = true` 是给驱动/ORM 的优化提示，不是强制拒绝写；timeout 超时会回滚；隔离级别一般交给数据库默认值。\n- **为什么建议加在 service 层**：事务边界应该包住一组完整业务操作，加在 controller 太粗、加在 repository 太细。\n- **编程式事务**：需要精细控制提交时机时用 `TransactionTemplate`，比注解更直观。\n- **多数据源**：有多个 `TransactionManager` 时要通过 `@Transactional(transactionManager = \"...\")` 指定。\n\n## 别踩的坑\n\n- 同类自调用：A 方法调本类 B 方法，B 上的 `@Transactional` 无效。\n- 方法里 catch 住异常、打条日志就完事，没有重新抛：事务不会回滚。\n- 抛受检异常却没配 `rollbackFor`：事务照常提交，数据只改了一半。\n- 方法本身是 private 或 final 的：private 代理碰不到，final 方法 CGLIB 覆盖不了。\n- 以为事务能跨线程：事务上下文绑定在当前线程上，`@Async` 方法在新线程执行，不会共享调用方的事务。\n- 把 `@Transactional` 打在 controller 上，中间调了远程接口：事务时间长、连接被占住，并发一高就连接池告急。\n",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2 — Using @Transactional",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/annotations.html"
+        },
+        {
+          "label": "Spring Framework 6.2 — Rolling Back a Declarative Transaction",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/rolling-back.html"
+        },
+        {
+          "label": "Spring Framework 6.2 — Transaction Propagation",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/tx-propagation.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-mvc-request-flow",
+      "title": "一个 HTTP 请求在 Spring MVC 里怎么走？",
+      "level": "进阶",
+      "readingMinutes": 3,
+      "summary": "请求先进 DispatcherServlet，由 HandlerMapping 找方法、HandlerAdapter 执行，JSON 直接写回或交给视图渲染。",
+      "tags": [
+        "Spring MVC",
+        "请求流程",
+        "ResponseBody"
+      ],
+      "content": "## 一句话答案\n\n所有请求先进前端控制器 `DispatcherServlet`；它用 `HandlerMapping` 找到处理这个 URL 的 handler（通常是 controller 方法），用 `HandlerAdapter` 执行；如果方法有 `@ResponseBody`，返回值直接由 `HttpMessageConverter` 序列化成 JSON 写回；否则返回 `ModelAndView`，交给 `ViewResolver` 找模板渲染。\n\n## 展开讲\n\n`DispatcherServlet` 处理请求的主流程（Boot 3.5 / Framework 6.2）：\n\n1. 把 WebApplicationContext 绑定到 request 上，controller 里能直接拿到容器。\n2. `LocaleResolver`、`ThemeResolver` 解析语言和主题。\n3. `MultipartResolver` 判断是不是文件上传，需要就包装 request。\n4. `HandlerMapping` 查找 handler，返回 `HandlerExecutionChain`（handler + 匹配到的拦截器）。\n5. `HandlerAdapter` 适配并执行 handler：注解方法由 `RequestMappingHandlerAdapter` 调用，参数由各种 `HandlerMethodArgumentResolver` 解析（`@RequestBody`、`@PathVariable` 等）。\n6. 处理返回值：返回 `ModelAndView` 的走 `ViewResolver` 渲染；`@ResponseBody`、`ResponseEntity` 的由 `HttpMessageConverter` 直接写出并提交响应。\n7. 过程中抛出的异常交给 `HandlerExceptionResolver` 处理。\n\n```java\n@RestController\n@RequestMapping(\"/api/orders\")\npublic class OrderController {\n\n    private final OrderService orderService;\n\n    public OrderController(OrderService orderService) {\n        this.orderService = orderService;\n    }\n\n    @GetMapping(\"/{id}\")\n    public OrderView get(@PathVariable long id) {\n        return orderService.find(id);      // 由 Jackson 序列化成 JSON\n    }\n}\n```\n\n`@RestController` 等于 `@Controller` 加 `@ResponseBody`，后者让返回值不再被当成视图名，而是交给消息转换器。想让异常统一返回 JSON，配 `@RestControllerAdvice` + `@ExceptionHandler` 即可。\n\n\n这套流程有几个容易忽略的细节：handler 是按 URL、请求方法、请求头等条件匹配出来的，找不到对应 handler 就是 404，匹配到多个会报歧义；`HandlerExecutionChain` 里除了 handler 还带着拦截器，所以拦截器是 `HandlerMapping` 一起返回的，不是 DispatcherServlet 自己临时挑的。视图渲染阶段，`ModelAndView` 里的模型数据会放进 request 属性供模板引擎读取；而 `@ResponseBody` 走的是另一条路，由消息转换器直接写 `HttpServletResponse`，完全不经过视图解析器。\n\n## 追问与加分点\n\n- **为什么叫前端控制器模式**：`DispatcherServlet` 是统一入口，把「找 handler、执行、渲染、异常处理」拆成可替换的组件，扩展时不用改主流程。\n- **HandlerMapping 不止一种**：`RequestMappingHandlerMapping` 处理 `@RequestMapping` 注解方法，`SimpleUrlHandlerMapping` 按显式 URL 映射，静态资源由 `ResourceHttpRequestHandler` 处理。\n- **HandlerAdapter 的作用**：屏蔽不同 handler 的调用差异，让 DispatcherServlet 不用关心 handler 到底是注解方法还是函数式端点。\n- **拦截器在流程里的位置**：`preHandle` 在 handler 之前、`postHandle` 在 handler 之后、`afterCompletion` 在请求完全结束后。\n- **响应写出的时机**：`@ResponseBody` 的响应在 HandlerAdapter 内就已写出并提交，所以 `postHandle` 里改响应头已经太晚，要改用 `ResponseBodyAdvice`。\n\n## 别踩的坑\n\n- 用 `@Controller` 却让方法返回 `String` 想输出 JSON，结果被当成视图名去渲染，报 404 或模板找不到。\n- 表单提交用 `@RequestBody` 接不到参数：表单是 `application/x-www-form-urlencoded`，应该用 `@ModelAttribute` 或直接方法参数接收。\n- 过滤器、拦截器、controller 的顺序记混：请求是 filter → DispatcherServlet → interceptor → controller，响应原路返回。\n- 没有统一异常处理，异常直接暴露成 Whitelabel 页面或框架默认 JSON，把内部堆栈泄露出去。\n- 在拦截器 `postHandle` 里加响应头，对 `@ResponseBody` 接口无效，调试半天以为是代码没执行。\n",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2 — DispatcherServlet 处理流程",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/sequence.html"
+        },
+        {
+          "label": "Spring Framework 6.2 — Special Bean Types",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/special-bean-types.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-starter-principle",
+      "title": "spring-boot-starter 是怎么工作的？",
+      "level": "进阶",
+      "readingMinutes": 2,
+      "summary": "starter 是依赖聚合加自动配置：空 jar 拉齐依赖，autoconfigure 模块按条件注册 bean。",
+      "tags": [
+        "starter",
+        "自动配置",
+        "依赖管理"
+      ],
+      "content": "## 一句话答案\n\nstarter 本身几乎没有代码，它是一份「依赖清单」：引入 `spring-boot-starter-web` 就把 Spring MVC、内嵌 Tomcat、Jackson 等一整套依赖带进来。真正把这些组件配成 bean 的是配套的 autoconfigure 模块，靠自动配置类加条件注解完成。所以 starter = 依赖聚合 + 自动配置。\n\n## 展开讲\n\n以 `spring-boot-starter-web` 为例，它负责把做 Web 必需的依赖一次拉齐：`spring-boot-starter`、`spring-webmvc`、内嵌 Tomcat、Jackson 等，你不需要逐个写版本。版本由 Spring Boot 的 BOM（`spring-boot-dependencies`，通过 parent 或 dependencyManagement 引入）统一管理。\n\n自动配置在另一个模块里：`spring-boot-autoconfigure` 中有一批 `@AutoConfiguration` 类，用 `@ConditionalOnClass` 判断依赖在不在、`@ConditionalOnMissingBean` 判断你有没有自己定义、`@ConditionalOnProperty` 判断开关，满足条件才注册 bean。Boot 3.x 通过 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` 文件登记这些类。\n\n自己写一个 starter，官方推荐拆成两个模块：autoconfigure 模块放自动配置代码，starter 模块只写依赖。\n\n```java\n// acme-spring-boot-autoconfigure 模块里的自动配置类\n@AutoConfiguration\n@ConditionalOnClass(RestClient.class)\npublic class AcmeAutoConfiguration {\n\n    @Bean\n    @ConditionalOnMissingBean\n    public RestClient acmeRestClient(Environment environment) {\n        return RestClient.builder()\n                .baseUrl(environment.getRequiredProperty(\"acme.base-url\"))\n                .build();\n    }\n}\n```\n\n```xml\n<!-- acme-spring-boot-starter 模块的 pom：只负责拉依赖 -->\n<dependencies>\n  <dependency>\n    <groupId>com.acme</groupId>\n    <artifactId>acme-spring-boot-autoconfigure</artifactId>\n    <version>${project.version}</version>\n  </dependency>\n</dependencies>\n```\n\n再把自动配置类全名写进 imports 文件，用户引入 starter 就同时拿到依赖和自动配置。命名规范：不要以 `spring-boot` 开头，autoconfigure 模块叫 `acme-spring-boot`、starter 叫 `acme-spring-boot-starter`；配置键用自己的命名空间（如 `acme.`）；starter 必须直接或间接依赖 `spring-boot-starter`。\n\n## 追问与加分点\n\n- **为什么 starter 是空 jar**：让「依赖版本」和「自动配置代码」分离，别人可以只要依赖不要自动配置，也能自己组合 starter；升级依赖只改一处。\n- **两个模块必须拆吗**：不必须，官方说自动配置简单时合并成一个模块也行；有可选特性时拆开更清晰。\n- **怎么排除某个自动配置**：`@SpringBootApplication(exclude = ...)`、`excludeName`，或属性 `spring.autoconfigure.exclude`。\n- **怎么调试**：启动加 `--debug` 看条件评估报告，能确认每个自动配置类为什么生效或不生效。\n- **官方 starter 的根**：几乎所有官方 starter 都依赖 `spring-boot-starter`，它提供自动配置、日志、YAML 等基础能力。\n\n## 别踩的坑\n\n- 自己 starter 里开组件扫描：官方要求自动配置类只从 imports 文件加载，被扫描会重复注册、顺序不可控。\n- 用 `spring-boot-` 开头命名自己的模块，和官方命名空间冲突，将来官方支持这个技术时容易撞车。\n- starter 里直接引 `spring-boot-starter-web` 这类重依赖，别人一引入就多个 Tomcat，依赖冲突很难查。\n- `@ConditionalOnClass` 写在 `@Bean` 方法上判断返回类型：行为不可靠，应该用独立的 `@Configuration` 类隔离条件。\n- 配置键用 `spring.`、`server.`、`management.` 这些官方命名空间，后续升级可能被覆盖或冲突。\n",
+      "sources": [
+        {
+          "label": "Spring Boot 3.5 Reference — Creating Your Own Auto-configuration",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html"
+        },
+        {
+          "label": "Spring Boot 3.5 Reference — Auto-configuration",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/using/auto-configuration.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-config-priority",
+      "title": "Spring Boot 配置优先级怎么记？",
+      "level": "入门",
+      "readingMinutes": 3,
+      "summary": "同名配置后加载的覆盖先加载的：命令行 > 系统属性 > 环境变量 > 外部 application-{profile} > jar 内配置。",
+      "tags": [
+        "配置",
+        "优先级",
+        "外部化配置"
+      ],
+      "content": "## 一句话答案\n\n同一个配置项出现在多个来源时，后加载的覆盖先加载的。常用记忆（优先级从高到低）：命令行参数 > Java 系统属性 > 操作系统环境变量 > jar 包外的 `application-{profile}` > jar 包外的 `application` > jar 包内的 `application-{profile}` > jar 包内的 `application`。profile 文件又覆盖同名的非 profile 文件。\n\n## 展开讲\n\n官方给出的完整顺序（从低到高，后者覆盖前者）：默认属性 → `@PropertySource` → config data（`application.properties`/YAML）→ `RandomValuePropertySource` → 操作系统环境变量 → Java 系统属性 → JNDI → ServletContext 参数 → ServletConfig 参数 → `SPRING_APPLICATION_JSON` → 命令行参数 → 测试里的 properties → `@DynamicPropertySource` → `@TestPropertySource` → devtools 全局配置。\n\nconfig data 文件内部也有顺序（从低到高）：jar 内的 `application` → jar 内的 `application-{profile}` → jar 外的 `application` → jar 外的 `application-{profile}`。同一位置同时存在 `.properties` 和 YAML 时，`.properties` 优先。\n\n读取方式两种：`@Value(\"${app.timeout}\")` 取单个值；`@ConfigurationProperties(prefix = \"app\")` 绑定一组配置，类型安全、支持校验，还能宽松绑定（`app.timeout`、`APP_TIMEOUT` 都能绑到同一属性）。\n\n```yaml\n# application.yml\napp:\n  timeout: 3s\n  retry: 2\n---\n# application-prod.yml（profile 覆盖同名项）\napp:\n  timeout: 10s\n```\n\n```java\n@ConfigurationProperties(prefix = \"app\")\npublic record AppProperties(Duration timeout, int retry) {\n}\n```\n\n记录类需要注册成 bean 才会被绑定，用 `@EnableConfigurationProperties(AppProperties.class)` 或 `@ConfigurationPropertiesScan`。\n\n\n加载顺序可以用启动日志验证：加 `--debug` 启动时 Boot 会打印 config data 的加载位置。线上排查「为什么读到的不是这个值」，先确认哪个来源最后被加载，而不是盯着某一个文件看。另一个容易忽略的点是：profile 文件和非 profile 文件是叠加关系而不是替换关系，profile 文件里没写的属性仍然会从 `application` 里取。在容器化部署里，环境变量是最常用的覆盖方式，因为改配置不用重新打镜像。\n\n## 追问与加分点\n\n- **为什么命令行参数最高**：临时覆盖最方便，排查线上问题直接 `java -jar app.jar --server.port=9090`，不用改配置、不用重新打包。\n- **为什么 `@PropertySource` 配不了 `logging.*`、`spring.main.*`**：它在 context refresh 阶段才加入 Environment，而这些属性在更早的阶段就被读取了，官方文档专门说明了这个坑。\n- **外部化配置的意义**：同一个 jar 包在不同环境用不同配置，镜像只打一次；容器里通常用环境变量注入。\n- **profile 怎么选**：`spring.profiles.active` 可以在配置文件、命令行、环境变量里指定；不指定时用 `spring.profiles.default`。\n- **环境变量命名**：环境变量不允许点号，对应关系是下划线，例如 `SPRING_PROFILES_ACTIVE` 对应 `spring.profiles.active`。\n\n## 别踩的坑\n\n- 把顺序记反：不是「先加载的覆盖后加载的」，而是后加载的赢。\n- 容器里环境变量拼错名字或大小写，配置没生效还以为是代码问题；排查时用 `/actuator/env`（注意可能脱敏）或启动日志确认。\n- 同目录同时放 `application.properties` 和 `application.yml`，以为 YAML 生效，实际上 `.properties` 优先。\n- `@ConfigurationProperties` 类忘了注册成 bean，字段全是默认值，也不报错。\n- 用 `@Value` 时占位符写错：`${app.timeout:3s}` 冒号后面才是默认值，`${app.timeout:}` 表示空字符串。\n",
+      "sources": [
+        {
+          "label": "Spring Boot 3.5 Reference — Externalized Configuration",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-bean-scope",
+      "title": "Bean 的作用域有哪些？",
+      "level": "入门",
+      "readingMinutes": 3,
+      "summary": "默认 singleton，prototype 每次新建；request/session 等只在 Web 环境有效，注入到单例要作用域代理。",
+      "tags": [
+        "作用域",
+        "单例",
+        "线程安全"
+      ],
+      "content": "## 一句话答案\n\n默认是 singleton：每个容器、每个 bean 定义只有一个实例，启动时创建、全局共享。prototype：每次获取都创建新实例，容器创建后就不管了。Web 环境还有 request、session、application、websocket 四个作用域。单例 bean 必须无状态，否则会有线程安全问题。\n\n## 展开讲\n\n| 作用域 | 实例数 | 生命周期 | 典型用途 |\n| --- | --- | --- | --- |\n| singleton | 每容器 1 个 | 容器管理，启动创建、关闭销毁 | 无状态 service、dao、配置 |\n| prototype | 每次获取 1 个 | 容器只负责创建，销毁不管 | 有状态、短生命周期对象 |\n| request | 每个 HTTP 请求 1 个 | 请求结束销毁 | 当前请求上下文 |\n| session | 每个会话 1 个 | 会话失效销毁 | 登录用户信息 |\n| application | 每个 ServletContext 1 个 | 应用级共享 | 全局缓存、计数器 |\n| websocket | 每个 WebSocket 会话 1 个 | 连接关闭销毁 | WebSocket 会话状态 |\n\nrequest、session、application、websocket 只在 web-aware 的 ApplicationContext 里有效，普通环境里用了会抛 `IllegalStateException`。声明方式：`@Scope(\"prototype\")`，或直接用 `@RequestScope`、`@SessionScope`、`@ApplicationScope`。\n\n关键机制是作用域代理：把 request 作用域的 bean 注入到单例 bean 时，必须注入一个代理，由代理在每次调用时去当前请求里取真身，否则单例在创建时就把某个请求的对象固定下来了。`@RequestScope` 默认 `proxyMode = ScopedProxyMode.TARGET_CLASS`。\n\n```java\n@Component\n@RequestScope\npublic class CurrentUser {\n\n    private String name;\n\n    public String getName() {\n        return name;\n    }\n\n    public void setName(String name) {\n        this.name = name;\n    }\n}\n```\n\n```java\n@Component\n@Scope(\"prototype\")\npublic class ReportBuilder {\n\n    private final List<String> rows = new ArrayList<>();\n\n    public void addRow(String row) {\n        rows.add(row);\n    }\n}\n```\n\n## 追问与加分点\n\n- **单例 bean 线程安全吗**：Spring 不保证。bean 本身无状态（只有方法、没有可变字段）才安全；有可变状态就要加锁、改成 prototype，或用 ThreadLocal。\n- **单例里注入 prototype 会拿到同一个对象吗**：注入发生在创建单例时，容器给了它一个原型实例，之后一直用这个；想每次拿新的要用 `ObjectProvider`、`@Lookup` 或作用域代理。\n- **`@Lookup` 方法注入**：在单例里声明一个抽象方法，容器每次调用时返回一个新实例，用来解决「单例依赖原型」。\n- **原型 bean 的销毁**：容器不调用 `@PreDestroy`，谁创建谁负责清理，这也是它不适合管理重资源的原因。\n- **什么时候用 prototype**：对象有状态、创建成本低、不希望被共享，比如一次请求内的构建器、命令对象。\n\n## 别踩的坑\n\n- 在单例 bean 里存请求级数据（当前用户、请求参数），并发下不同请求互相串数据。\n- 单例注入 request 作用域 bean 却不加代理，拿到的是启动时那个请求的旧对象。\n- 以为 prototype 注入到单例后每次调用都是新对象，实际只注入一次。\n- 在非 Web 环境（比如定时任务、单元测试）里使用 request/session 作用域，启动或运行时报错。\n- 把 `@Scope` 的值拼错（如 `\"protoype\"`），容器找不到对应作用域直接抛异常。\n",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2 — Bean Scopes",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-scopes.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-filter-interceptor",
+      "title": "Filter、Interceptor、AOP 有什么区别？",
+      "level": "进阶",
+      "readingMinutes": 3,
+      "summary": "Filter 在 Servlet 层、进 DispatcherServlet 前；Interceptor 在 MVC 内、知道 handler；AOP 在 bean 方法调用层。",
+      "tags": [
+        "Filter",
+        "Interceptor",
+        "AOP"
+      ],
+      "content": "## 一句话答案\n\n三者都能在方法前后插逻辑，但位置不同：Filter 属于 Servlet 规范，在请求进入 DispatcherServlet 之前执行，能改请求和响应，但不知道 controller；Interceptor 属于 Spring MVC，在 DispatcherServlet 内部、handler 确定之后执行，能拿到 handler 信息；AOP 在 Spring bean 方法调用层面，靠代理实现，跟 HTTP 无关。\n\n## 展开讲\n\n| 维度 | Filter | Interceptor | AOP |\n| --- | --- | --- | --- |\n| 规范/框架 | Servlet | Spring MVC | Spring AOP |\n| 执行位置 | DispatcherServlet 之前 | DispatcherServlet 内部、handler 前后 | bean 方法调用 |\n| 能拿到什么 | ServletRequest/Response | HttpServletRequest/Response、handler | 方法参数、返回值、异常 |\n| 典型用途 | 编码、CORS、鉴权、请求日志 | 登录校验、权限、统一日志 | 事务、缓存、异步、日志 |\n\nFilter 用 `FilterRegistrationBean` 注册（或 `@WebFilter` 加 `@ServletComponentScan`）；Interceptor 实现 `HandlerInterceptor`，再注册到 `WebMvcConfigurer`。\n\n```java\n@Component\npublic class AuthInterceptor implements HandlerInterceptor {\n\n    @Override\n    public boolean preHandle(HttpServletRequest request,\n                             HttpServletResponse response,\n                             Object handler) throws Exception {\n        if (request.getHeader(\"Authorization\") == null) {\n            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);\n            return false;   // false 表示中断，handler 不会执行\n        }\n        return true;\n    }\n}\n```\n\n```java\n@Configuration\npublic class WebMvcConfig implements WebMvcConfigurer {\n\n    private final AuthInterceptor authInterceptor;\n\n    public WebMvcConfig(AuthInterceptor authInterceptor) {\n        this.authInterceptor = authInterceptor;\n    }\n\n    @Override\n    public void addInterceptors(InterceptorRegistry registry) {\n        registry.addInterceptor(authInterceptor).addPathPatterns(\"/api/**\");\n    }\n}\n```\n\n\nFilter 工作在请求最外层，拿到的只有 Servlet 的请求和响应对象，所以适合做编码、CORS、请求体缓存、统一鉴权这类跟业务无关的事；它不知道最终会命中哪个 controller 方法，想做细粒度权限就比较别扭。Spring 提供的 `OncePerRequestFilter` 保证一次请求只执行一次（转发、include 时不会重复执行），自定义 Filter 时可以直接继承它。\n\n## 追问与加分点\n\n- **三个回调的执行顺序**：`preHandle` 按拦截器顺序正序执行，`postHandle` 倒序，`afterCompletion` 也是倒序；`preHandle` 返回 false 时，只有前面已经通过的那几个拦截器会走 `afterCompletion`。\n- **为什么鉴权不建议只靠拦截器**：官方指出拦截器的路径匹配可能和注解控制器不一致，不适合当安全层，安全应该在更早的 Servlet filter 链或 Spring Security 里做。\n- **`postHandle` 改不了 `@ResponseBody` 的响应**：响应在 HandlerAdapter 内已经写出并提交，想改响应体/加头要用 `ResponseBodyAdvice`。\n- **Filter 想多次读 body**：请求体是流，读一次就没了，要包一层 `HttpServletRequestWrapper` 缓存。\n- **拦截器能拿到方法上的注解**：`handler` 实际是 `HandlerMethod`，可以取到 controller 方法上的自定义注解，适合做注解式权限。\n\n- **顺序怎么控制**：多个 Filter 用 `FilterRegistrationBean.setOrder()` 或 `@Order` 控制，拦截器按 `InterceptorRegistry` 的注册顺序执行；顺序不对会出现「鉴权跑了但日志没打」。\n- **Filter 里怎么拿到 Spring 的 bean**：用 `FilterRegistrationBean` 注册的 Filter 本身是容器里的 bean，可以正常注入；`@WebFilter` 由 Servlet 容器实例化，注入不生效。\n\n## 别踩的坑\n\n- 顺序记混：请求是 filter → DispatcherServlet → interceptor → controller，响应则反过来。\n- `preHandle` 里 `response.sendError(...)` 之后忘了 `return false`，handler 还是会执行。\n- 在 `postHandle` 里给 `@ResponseBody` 接口加响应头，代码执行了但客户端看不到。\n- 用 `@WebFilter` 注册 Filter，却指望里面的 `@Autowired` 生效：这种 Filter 由 Servlet 容器创建，不是 Spring 管的对象；要注入依赖就用 `FilterRegistrationBean` 注册成 bean。\n- 拦截器路径写成 `/**` 把静态资源、健康检查也拦了，登录页自己也被拦住。\n",
+      "sources": [
+        {
+          "label": "Spring Framework 6.2 — HandlerInterceptor 拦截器",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/handlermapping-interceptor.html"
+        },
+        {
+          "label": "Jakarta Servlet 6.1 Specification",
+          "url": "https://jakarta.ee/specifications/servlet/6.1/"
+        }
+      ]
+    },
+    {
+      "id": "interview-async-threadpool",
+      "title": "@Async 和线程池怎么配才不出事？",
+      "level": "进阶",
+      "readingMinutes": 3,
+      "summary": "@Async 提交任务到线程池后立即返回；默认池队列无界，生产要自定义线程池、处理异常和拒绝策略。",
+      "tags": [
+        "@Async",
+        "线程池",
+        "异步"
+      ],
+      "content": "## 一句话答案\n\n`@Async` 让方法调用立刻返回，真正的执行被提交给 `TaskExecutor` 线程池。方法必须通过代理调用，同类自调用无效。Boot 会自动配一个 `applicationTaskExecutor`：默认 8 个核心线程、队列默认无界。生产环境应该自己定义线程池，设好核心/最大线程数和队列容量，并统一处理异步异常，否则任务堆积会 OOM。\n\n## 展开讲\n\n`@EnableAsync` 开启异步支持（`@SpringBootApplication` 不会自动开）。被 `@Async` 标注的方法由拦截器把调用提交给 Executor，返回值支持 `void`、`Future`、`CompletableFuture`。\n\nBoot 3.5 在没有 Executor bean 时自动配置 `ThreadPoolTaskExecutor`，默认 `corePoolSize = 8`；队列容量不配就是无界的 `LinkedBlockingQueue`。无界队列的后果很直接：任务永远排得下，`maxPoolSize` 根本用不上，内存一直涨。\n\n```java\n@Configuration\n@EnableAsync\npublic class AsyncConfig {\n\n    @Bean(name = \"applicationTaskExecutor\")\n    public AsyncTaskExecutor applicationTaskExecutor() {\n        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();\n        executor.setCorePoolSize(8);\n        executor.setMaxPoolSize(16);\n        executor.setQueueCapacity(100);\n        executor.setThreadNamePrefix(\"async-\");\n        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());\n        executor.initialize();\n        return executor;\n    }\n}\n```\n\nbean 名建议用 `applicationTaskExecutor`：Spring MVC、WebFlux、GraphQL 都要求存在这个名字的 bean，官方文档专门说明了这一点。你自定义 Executor 之后，Boot 的自动配置会自动退让。\n\n\n线程池的执行顺序是：先占满核心线程，再进队列，队列满了才扩到最大线程数，最大线程数也满了才走拒绝策略。这也解释了为什么队列设得太大时，`maxPoolSize` 形同虚设——任务全在队列里排队，永远轮不到扩容。\n\n## 追问与加分点\n\n- **线程池参数怎么定**：按任务类型（CPU 密集还是 IO 密集）和压测结果来，没有万能公式；队列必须有界；拒绝策略常用 `CallerRunsPolicy`，让调用方线程自己执行，形成背压而不是直接丢任务。\n- **异步方法抛异常为什么看不到**：`void` 返回值的异常无法传回调用方，默认只记日志；可以注册 `AsyncUncaughtExceptionHandler` 统一处理，有返回值时用 `CompletableFuture` 的 `exceptionally`。\n- **为什么自调用不生效**：和事务一样，`@Async` 默认是 proxy 模式，`this` 调用不经过代理；`@PostConstruct` 里也不能用。\n- **虚拟线程**：Java 21 且开启 `spring.threads.virtual.enabled=true` 时，Boot 会用支持虚拟线程的执行器，这时不要再按传统线程池的思路调大参数。\n- **异步方法里的事务**：新线程不共享调用方的事务，需要事务就在异步方法内部自己开。\n\n## 别踩的坑\n\n- 用默认线程池直接上生产：无界队列 + 核心 8 个线程，任务一堆积就是延迟飙升和内存溢出。\n- 只设了 `maxPoolSize` 没设 `queueCapacity`，以为线程会扩容，实际队列永远不满。\n- `@Async` 方法返回 `void` 又没配异常处理器，异常静默丢失，排查时找不到任何线索。\n- 同类方法自调用，注解完全失效。\n- 不设线程名前缀，日志和线程 dump 里分不清哪个池在跑。\n- 拒绝策略用了 `AbortPolicy` 却没 catch `RejectedExecutionException`，用户请求直接报错。\n",
+      "sources": [
+        {
+          "label": "Spring Boot 3.5 Reference — Task Execution and Scheduling",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/task-execution-and-scheduling.html"
+        },
+        {
+          "label": "Spring Framework 6.2 — Annotation Support for Scheduling and Asynchronous Execution",
+          "url": "https://docs.spring.io/spring-framework/reference/6.2/integration/scheduling.html"
+        }
+      ]
+    },
+    {
+      "id": "interview-graceful-shutdown",
+      "title": "优雅停机是怎么做的？",
+      "level": "进阶",
+      "readingMinutes": 3,
+      "summary": "停机时先停止接收新请求、在宽限期等存量请求跑完再销毁 bean；Boot 内嵌服务器默认开启，超时可配。",
+      "tags": [
+        "优雅停机",
+        "发布",
+        "生命周期"
+      ],
+      "content": "## 一句话答案\n\n优雅停机就是应用关闭时不让正在处理的请求被硬切断：先停止接收新请求，给存量请求一个宽限期跑完，再执行 bean 的销毁回调。Boot 3.5 对 Jetty、Reactor Netty、Tomcat、Undertow 四种内嵌服务器默认开启，随 ApplicationContext 关闭触发，发生在 SmartLifecycle 停止的最早阶段。\n\n## 展开讲\n\n触发方式：进程收到 SIGTERM、调用 `SpringApplication.exit()`、或访问 Actuator 的 shutdown 端点（默认禁用）。流程大致是：\n\n1. 关闭开始，Web 服务器进入优雅停机阶段。\n2. 不再接受新请求：Jetty、Reactor Netty、Tomcat 在网络层拒绝；Undertow 会接受连接但立刻返回 503。\n3. 宽限期内已有请求继续执行，直到完成或超时。\n4. 超时后强制继续关闭，随后停止 SmartLifecycle bean、销毁单例 bean（`@PreDestroy` 在这里执行）。\n\n```yaml\nspring:\n  lifecycle:\n    timeout-per-shutdown-phase: 20s\n# 默认已是优雅停机；要关闭（不推荐）：server.shutdown=immediate\n```\n\n注意：在 IDE 里点停止，往往不发 SIGTERM 而是直接杀进程，看起来就不优雅，别用这种方式验证。配置层面用 `server.shutdown=immediate` 才会关掉优雅停机。\n\n## 追问与加分点\n\n- **超时设多少**：要比编排系统给的终止宽限期短一点，留出销毁 bean 的时间；否则进程还没关完就被 SIGKILL，等于没优雅。\n- **为什么发布瞬间还会 502**：流量入口摘除有延迟，请求还在路上打到已经停机的实例。除了停机配置，还要考虑入口摘流和实例下线的先后顺序。\n- **除了 Web 请求还有谁要停**：MQ 消费者、定时任务、异步线程池不是内嵌 Web 服务器管的，需要在 SmartLifecycle 或 `@PreDestroy` 里主动停止拉取、等待处理完。\n- **Actuator shutdown 端点**：默认禁用且只在 jar 打包时生效；Boot 3.5 要用 `management.endpoint.shutdown.access=unrestricted` 打开访问，默认安全配置下 POST 请求还会 403，等于多了一层保护。\n- **为什么它和 SmartLifecycle 有关**：优雅停机是作为 SmartLifecycle 的最早停止阶段执行的，所以其他组件的 stop 会排在它后面，正好利用这个顺序做「先停流量、再停内部组件」。\n\n## 别踩的坑\n\n- 宽限期比编排系统给的时间还长：请求没跑完进程就被 SIGKILL，日志里出现一半的请求、一半的报错。\n- 只处理 HTTP，忘了 MQ 消费者和定时任务，停机时任务被腰斩、消息重复消费。\n- 停机时不关数据库连接池、线程池，日志刷一堆连接泄漏告警。\n- 用 IDE 的停止按钮测试优雅停机，永远测不出真实效果。\n- 打开 Actuator shutdown 端点又没做鉴权，等于给外部留了一个远程关机入口。\n- 发布时先停实例再摘流量（或反过来），中间窗口的请求照样失败，优雅停机只能兜住一部分。\n",
+      "sources": [
+        {
+          "label": "Spring Boot 3.5 Reference — Graceful Shutdown",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/web/graceful-shutdown.html"
+        },
+        {
+          "label": "Spring Boot 3.5 Reference — Actuator Endpoints",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/actuator/endpoints.html"
+        }
+      ]
+    }
+  ]
+}

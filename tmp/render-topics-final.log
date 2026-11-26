@@ -1,0 +1,304 @@
+✅ desktop_home  Spring Boot 注解与命令速查 · SpringBoot 速查  h1="把 Spring Boot 的注解，讲成人话。"  元素=16
+✅ mobile_home  Spring Boot 注解与命令速查 · SpringBoot 速查  h1="把 Spring Boot 的注解，讲成人话。"  元素=16
+✅ desktop__annotations  注解速查 · SpringBoot 速查  h1="注解速查"  元素=144
+✅ mobile__annotations  注解速查 · SpringBoot 速查  h1="注解速查"  元素=144
+✅ desktop__knowledge  知识库 · SpringBoot 速查  h1="知识库"  元素=20
+✅ mobile__knowledge  知识库 · SpringBoot 速查  h1="知识库"  元素=20
+✅ desktop__commands  命令速查 · SpringBoot 速查  h1="Linux 与 Git，各有一本小抄。"  元素=12
+✅ mobile__commands  命令速查 · SpringBoot 速查  h1="Linux 与 Git，各有一本小抄。"  元素=12
+✅ mobile__commands_linux  命令速查 · SpringBoot 速查  h1="Linux 命令"  元素=49
+✅ mobile__commands_git  命令速查 · SpringBoot 速查  h1="Git 命令"  元素=30
+✅ desktop__topics  企业实战专题 · SpringBoot 速查  h1="从「能跑」到「能上线」"  元素=8
+✅ mobile__topics  企业实战专题 · SpringBoot 速查  h1="从「能跑」到「能上线」"  元素=8
+✅ mobile__topics_conventions  实战专题 · SpringBoot 速查  h1="Spring Boot 开发规范"  元素=10
+✅ mobile__topics_interview  实战专题 · SpringBoot 速查  h1="面试高频题（面经）"  元素=12
+✅ mobile__topics_layers  实战专题 · SpringBoot 速查  h1="现代企业分层写法"  元素=9
+✅ mobile__topics_coordinates  实战专题 · SpringBoot 速查  h1="常用 Maven 坐标用法"  元素=6
+✅ desktop__favorites  我的收藏 · SpringBoot 速查  h1="我的收藏"  元素=0
+✅ mobile__favorites  我的收藏 · SpringBoot 速查  h1="我的收藏"  元素=0
+✅ desktop__about  关于与内容核查 · SpringBoot 速查  h1="关于本站与「不瞎写」"  元素=0
+✅ mobile__about  关于与内容核查 · SpringBoot 速查  h1="关于本站与「不瞎写」"  元素=0
+✅ mobile__annotations_spring-boot-application  注解详情 · SpringBoot 速查  h1="@SpringBootApplication"  元素=1
+✅ mobile__annotations_spring-boot-configuration  注解详情 · SpringBoot 速查  h1="@SpringBootConfiguration"  元素=1
+✅ mobile__annotations_enable-auto-configuration  注解详情 · SpringBoot 速查  h1="@EnableAutoConfiguration"  元素=1
+✅ mobile__annotations_configuration-properties  注解详情 · SpringBoot 速查  h1="@ConfigurationProperties"  元素=1
+✅ mobile__annotations_enable-configuration-properties  注解详情 · SpringBoot 速查  h1="@EnableConfigurationProperties"  元素=1
+✅ mobile__annotations_configuration-properties-scan  注解详情 · SpringBoot 速查  h1="@ConfigurationPropertiesScan"  元素=1
+✅ mobile__annotations_auto-configuration  注解详情 · SpringBoot 速查  h1="@AutoConfiguration"  元素=1
+✅ mobile__annotations_conditional-on-class  注解详情 · SpringBoot 速查  h1="@ConditionalOnClass"  元素=1
+✅ mobile__annotations_conditional-on-missing-bean  注解详情 · SpringBoot 速查  h1="@ConditionalOnMissingBean"  元素=1
+✅ mobile__annotations_conditional-on-property  注解详情 · SpringBoot 速查  h1="@ConditionalOnProperty"  元素=1
+✅ mobile__annotations_conditional-on-bean  注解详情 · SpringBoot 速查  h1="@ConditionalOnBean"  元素=1
+✅ mobile__annotations_conditional-on-missing-class  注解详情 · SpringBoot 速查  h1="@ConditionalOnMissingClass"  元素=1
+✅ mobile__annotations_conditional-on-web-application  注解详情 · SpringBoot 速查  h1="@ConditionalOnWebApplication"  元素=1
+✅ mobile__annotations_conditional-on-resource  注解详情 · SpringBoot 速查  h1="@ConditionalOnResource"  元素=1
+✅ mobile__annotations_servlet-component-scan  注解详情 · SpringBoot 速查  h1="@ServletComponentScan"  元素=1
+✅ mobile__annotations_enable-web-mvc  注解详情 · SpringBoot 速查  h1="@EnableWebMvc"  元素=1
+✅ mobile__annotations_import-auto-configuration  注解详情 · SpringBoot 速查  h1="@ImportAutoConfiguration"  元素=1
+✅ mobile__annotations_spring-boot-test  注解详情 · SpringBoot 速查  h1="@SpringBootTest"  元素=1
+✅ mobile__annotations_web-mvc-test  注解详情 · SpringBoot 速查  h1="@WebMvcTest"  元素=1
+✅ mobile__annotations_data-jpa-test  注解详情 · SpringBoot 速查  h1="@DataJpaTest"  元素=1
+✅ mobile__annotations_json-test  注解详情 · SpringBoot 速查  h1="@JsonTest"  元素=1
+✅ mobile__annotations_rest-client-test  注解详情 · SpringBoot 速查  h1="@RestClientTest"  元素=1
+✅ mobile__annotations_test-configuration  注解详情 · SpringBoot 速查  h1="@TestConfiguration"  元素=1
+✅ mobile__annotations_mock-bean  注解详情 · SpringBoot 速查  h1="@MockBean"  元素=1
+✅ mobile__annotations_mockito-bean  注解详情 · SpringBoot 速查  h1="@MockitoBean"  元素=1
+✅ mobile__annotations_mockito-spy-bean  注解详情 · SpringBoot 速查  h1="@MockitoSpyBean"  元素=1
+✅ mobile__annotations_auto-configure-mock-mvc  注解详情 · SpringBoot 速查  h1="@AutoConfigureMockMvc"  元素=1
+✅ mobile__annotations_active-profiles  注解详情 · SpringBoot 速查  h1="@ActiveProfiles"  元素=1
+✅ mobile__annotations_test-property-source  注解详情 · SpringBoot 速查  h1="@TestPropertySource"  元素=1
+✅ mobile__annotations_dirties-context  注解详情 · SpringBoot 速查  h1="@DirtiesContext"  元素=1
+✅ mobile__annotations_enable-web-security  注解详情 · SpringBoot 速查  h1="@EnableWebSecurity"  元素=1
+✅ mobile__annotations_enable-method-security  注解详情 · SpringBoot 速查  h1="@EnableMethodSecurity"  元素=1
+✅ mobile__annotations_pre-authorize  注解详情 · SpringBoot 速查  h1="@PreAuthorize"  元素=1
+✅ mobile__annotations_post-authorize  注解详情 · SpringBoot 速查  h1="@PostAuthorize"  元素=1
+✅ mobile__annotations_secured  注解详情 · SpringBoot 速查  h1="@Secured"  元素=1
+✅ mobile__annotations_roles-allowed  注解详情 · SpringBoot 速查  h1="@RolesAllowed"  元素=1
+✅ mobile__annotations_authentication-principal  注解详情 · SpringBoot 速查  h1="@AuthenticationPrincipal"  元素=1
+✅ mobile__annotations_with-mock-user  注解详情 · SpringBoot 速查  h1="@WithMockUser"  元素=1
+✅ mobile__annotations_component  注解详情 · SpringBoot 速查  h1="@Component"  元素=1
+✅ mobile__annotations_service  注解详情 · SpringBoot 速查  h1="@Service"  元素=1
+✅ mobile__annotations_repository  注解详情 · SpringBoot 速查  h1="@Repository"  元素=1
+✅ mobile__annotations_controller  注解详情 · SpringBoot 速查  h1="@Controller"  元素=1
+✅ mobile__annotations_configuration  注解详情 · SpringBoot 速查  h1="@Configuration"  元素=1
+✅ mobile__annotations_bean  注解详情 · SpringBoot 速查  h1="@Bean"  元素=1
+✅ mobile__annotations_component-scan  注解详情 · SpringBoot 速查  h1="@ComponentScan"  元素=1
+✅ mobile__annotations_import  注解详情 · SpringBoot 速查  h1="@Import"  元素=1
+✅ mobile__annotations_import-resource  注解详情 · SpringBoot 速查  h1="@ImportResource"  元素=1
+✅ mobile__annotations_property-source  注解详情 · SpringBoot 速查  h1="@PropertySource"  元素=1
+✅ mobile__annotations_value  注解详情 · SpringBoot 速查  h1="@Value"  元素=1
+✅ mobile__annotations_autowired  注解详情 · SpringBoot 速查  h1="@Autowired"  元素=1
+✅ mobile__annotations_qualifier  注解详情 · SpringBoot 速查  h1="@Qualifier"  元素=1
+✅ mobile__annotations_primary  注解详情 · SpringBoot 速查  h1="@Primary"  元素=1
+✅ mobile__annotations_scope  注解详情 · SpringBoot 速查  h1="@Scope"  元素=1
+✅ mobile__annotations_lazy  注解详情 · SpringBoot 速查  h1="@Lazy"  元素=1
+✅ mobile__annotations_profile  注解详情 · SpringBoot 速查  h1="@Profile"  元素=1
+✅ mobile__annotations_depends-on  注解详情 · SpringBoot 速查  h1="@DependsOn"  元素=1
+✅ mobile__annotations_order  注解详情 · SpringBoot 速查  h1="@Order"  元素=1
+✅ mobile__annotations_post-construct  注解详情 · SpringBoot 速查  h1="@PostConstruct"  元素=1
+✅ mobile__annotations_pre-destroy  注解详情 · SpringBoot 速查  h1="@PreDestroy"  元素=1
+✅ mobile__annotations_event-listener  注解详情 · SpringBoot 速查  h1="@EventListener"  元素=1
+✅ mobile__annotations_transactional-event-listener  注解详情 · SpringBoot 速查  h1="@TransactionalEventListener"  元素=1
+✅ mobile__annotations_conditional  注解详情 · SpringBoot 速查  h1="@Conditional"  元素=1
+✅ mobile__annotations_resource  注解详情 · SpringBoot 速查  h1="@Resource"  元素=1
+✅ mobile__annotations_inject  注解详情 · SpringBoot 速查  h1="@Inject"  元素=1
+✅ mobile__annotations_named  注解详情 · SpringBoot 速查  h1="@Named"  元素=1
+✅ mobile__annotations_alias-for  注解详情 · SpringBoot 速查  h1="@AliasFor"  元素=1
+✅ mobile__annotations_aspect  注解详情 · SpringBoot 速查  h1="@Aspect"  元素=1
+✅ mobile__annotations_pointcut  注解详情 · SpringBoot 速查  h1="@Pointcut"  元素=1
+✅ mobile__annotations_before  注解详情 · SpringBoot 速查  h1="@Before"  元素=1
+✅ mobile__annotations_after  注解详情 · SpringBoot 速查  h1="@After"  元素=1
+✅ mobile__annotations_after-returning  注解详情 · SpringBoot 速查  h1="@AfterReturning"  元素=1
+✅ mobile__annotations_after-throwing  注解详情 · SpringBoot 速查  h1="@AfterThrowing"  元素=1
+✅ mobile__annotations_around  注解详情 · SpringBoot 速查  h1="@Around"  元素=1
+✅ mobile__annotations_enable-aspectj-auto-proxy  注解详情 · SpringBoot 速查  h1="@EnableAspectJAutoProxy"  元素=1
+✅ mobile__annotations_transactional  注解详情 · SpringBoot 速查  h1="@Transactional"  元素=1
+✅ mobile__annotations_enable-transaction-management  注解详情 · SpringBoot 速查  h1="@EnableTransactionManagement"  元素=1
+✅ mobile__annotations_entity  注解详情 · SpringBoot 速查  h1="@Entity"  元素=1
+✅ mobile__annotations_table  注解详情 · SpringBoot 速查  h1="@Table"  元素=1
+✅ mobile__annotations_id  注解详情 · SpringBoot 速查  h1="@Id"  元素=1
+✅ mobile__annotations_generated-value  注解详情 · SpringBoot 速查  h1="@GeneratedValue"  元素=1
+✅ mobile__annotations_column  注解详情 · SpringBoot 速查  h1="@Column"  元素=1
+✅ mobile__annotations_transient  注解详情 · SpringBoot 速查  h1="@Transient"  元素=1
+✅ mobile__annotations_enumerated  注解详情 · SpringBoot 速查  h1="@Enumerated"  元素=1
+✅ mobile__annotations_many-to-one  注解详情 · SpringBoot 速查  h1="@ManyToOne"  元素=1
+✅ mobile__annotations_one-to-many  注解详情 · SpringBoot 速查  h1="@OneToMany"  元素=1
+✅ mobile__annotations_join-column  注解详情 · SpringBoot 速查  h1="@JoinColumn"  元素=1
+✅ mobile__annotations_version  注解详情 · SpringBoot 速查  h1="@Version"  元素=1
+✅ mobile__annotations_query  注解详情 · SpringBoot 速查  h1="@Query"  元素=1
+✅ mobile__annotations_modifying  注解详情 · SpringBoot 速查  h1="@Modifying"  元素=1
+✅ mobile__annotations_param-spring-data  注解详情 · SpringBoot 速查  h1="@Param"  元素=1
+✅ mobile__annotations_enable-jpa-repositories  注解详情 · SpringBoot 速查  h1="@EnableJpaRepositories"  元素=1
+✅ mobile__annotations_mapper  注解详情 · SpringBoot 速查  h1="@Mapper"  元素=1
+✅ mobile__annotations_mapper-scan  注解详情 · SpringBoot 速查  h1="@MapperScan"  元素=1
+✅ mobile__annotations_select  注解详情 · SpringBoot 速查  h1="@Select"  元素=1
+✅ mobile__annotations_insert  注解详情 · SpringBoot 速查  h1="@Insert"  元素=1
+✅ mobile__annotations_update  注解详情 · SpringBoot 速查  h1="@Update"  元素=1
+✅ mobile__annotations_delete  注解详情 · SpringBoot 速查  h1="@Delete"  元素=1
+✅ mobile__annotations_param-mybatis  注解详情 · SpringBoot 速查  h1="@Param"  元素=1
+✅ mobile__annotations_results  注解详情 · SpringBoot 速查  h1="@Results"  元素=1
+✅ mobile__annotations_enable-caching  注解详情 · SpringBoot 速查  h1="@EnableCaching"  元素=1
+✅ mobile__annotations_cacheable  注解详情 · SpringBoot 速查  h1="@Cacheable"  元素=1
+✅ mobile__annotations_cache-put  注解详情 · SpringBoot 速查  h1="@CachePut"  元素=1
+✅ mobile__annotations_cache-evict  注解详情 · SpringBoot 速查  h1="@CacheEvict"  元素=1
+✅ mobile__annotations_cache-config  注解详情 · SpringBoot 速查  h1="@CacheConfig"  元素=1
+✅ mobile__annotations_enable-async  注解详情 · SpringBoot 速查  h1="@EnableAsync"  元素=1
+✅ mobile__annotations_async  注解详情 · SpringBoot 速查  h1="@Async"  元素=1
+✅ mobile__annotations_enable-scheduling  注解详情 · SpringBoot 速查  h1="@EnableScheduling"  元素=1
+✅ mobile__annotations_scheduled  注解详情 · SpringBoot 速查  h1="@Scheduled"  元素=1
+✅ mobile__annotations_rest-controller  注解详情 · SpringBoot 速查  h1="@RestController"  元素=1
+✅ mobile__annotations_request-mapping  注解详情 · SpringBoot 速查  h1="@RequestMapping"  元素=1
+✅ mobile__annotations_get-mapping  注解详情 · SpringBoot 速查  h1="@GetMapping"  元素=1
+✅ mobile__annotations_post-mapping  注解详情 · SpringBoot 速查  h1="@PostMapping"  元素=1
+✅ mobile__annotations_put-mapping  注解详情 · SpringBoot 速查  h1="@PutMapping"  元素=1
+✅ mobile__annotations_delete-mapping  注解详情 · SpringBoot 速查  h1="@DeleteMapping"  元素=1
+✅ mobile__annotations_patch-mapping  注解详情 · SpringBoot 速查  h1="@PatchMapping"  元素=1
+✅ mobile__annotations_request-param  注解详情 · SpringBoot 速查  h1="@RequestParam"  元素=1
+✅ mobile__annotations_path-variable  注解详情 · SpringBoot 速查  h1="@PathVariable"  元素=1
+✅ mobile__annotations_request-body  注解详情 · SpringBoot 速查  h1="@RequestBody"  元素=1
+✅ mobile__annotations_response-body  注解详情 · SpringBoot 速查  h1="@ResponseBody"  元素=1
+✅ mobile__annotations_request-header  注解详情 · SpringBoot 速查  h1="@RequestHeader"  元素=1
+✅ mobile__annotations_cookie-value  注解详情 · SpringBoot 速查  h1="@CookieValue"  元素=1
+✅ mobile__annotations_model-attribute  注解详情 · SpringBoot 速查  h1="@ModelAttribute"  元素=1
+✅ mobile__annotations_request-attribute  注解详情 · SpringBoot 速查  h1="@RequestAttribute"  元素=1
+✅ mobile__annotations_session-attribute  注解详情 · SpringBoot 速查  h1="@SessionAttribute"  元素=1
+✅ mobile__annotations_session-attributes  注解详情 · SpringBoot 速查  h1="@SessionAttributes"  元素=1
+✅ mobile__annotations_init-binder  注解详情 · SpringBoot 速查  h1="@InitBinder"  元素=1
+✅ mobile__annotations_controller-advice  注解详情 · SpringBoot 速查  h1="@ControllerAdvice"  元素=1
+✅ mobile__annotations_rest-controller-advice  注解详情 · SpringBoot 速查  h1="@RestControllerAdvice"  元素=1
+✅ mobile__annotations_exception-handler  注解详情 · SpringBoot 速查  h1="@ExceptionHandler"  元素=1
+✅ mobile__annotations_response-status  注解详情 · SpringBoot 速查  h1="@ResponseStatus"  元素=1
+✅ mobile__annotations_cross-origin  注解详情 · SpringBoot 速查  h1="@CrossOrigin"  元素=1
+✅ mobile__annotations_valid  注解详情 · SpringBoot 速查  h1="@Valid"  元素=1
+✅ mobile__annotations_validated  注解详情 · SpringBoot 速查  h1="@Validated"  元素=1
+✅ mobile__annotations_not-null  注解详情 · SpringBoot 速查  h1="@NotNull"  元素=1
+✅ mobile__annotations_not-blank  注解详情 · SpringBoot 速查  h1="@NotBlank"  元素=1
+✅ mobile__annotations_not-empty  注解详情 · SpringBoot 速查  h1="@NotEmpty"  元素=1
+✅ mobile__annotations_size  注解详情 · SpringBoot 速查  h1="@Size"  元素=1
+✅ mobile__annotations_min  注解详情 · SpringBoot 速查  h1="@Min"  元素=1
+✅ mobile__annotations_max  注解详情 · SpringBoot 速查  h1="@Max"  元素=1
+✅ mobile__annotations_pattern  注解详情 · SpringBoot 速查  h1="@Pattern"  元素=1
+✅ mobile__annotations_email  注解详情 · SpringBoot 速查  h1="@Email"  元素=1
+✅ mobile__annotations_past  注解详情 · SpringBoot 速查  h1="@Past"  元素=1
+✅ mobile__annotations_future  注解详情 · SpringBoot 速查  h1="@Future"  元素=1
+✅ mobile__annotations_positive  注解详情 · SpringBoot 速查  h1="@Positive"  元素=1
+✅ mobile__knowledge_ioc-and-di  知识文章 · SpringBoot 速查  h1="IoC 和 DI：到底谁在创建对象？"  元素=1
+✅ mobile__knowledge_bean-lifecycle  知识文章 · SpringBoot 速查  h1="一个 Bean 的生命周期：从创建到销毁"  元素=1
+✅ mobile__knowledge_circular-dependency  知识文章 · SpringBoot 速查  h1="循环依赖和三级缓存到底怎么回事"  元素=1
+✅ mobile__knowledge_bean-scopes  知识文章 · SpringBoot 速查  h1="Bean 作用域怎么选：singleton 到 request"  元素=1
+✅ mobile__knowledge_aop-proxy  知识文章 · SpringBoot 速查  h1="Spring AOP 是怎么实现的：代理与自调用"  元素=1
+✅ mobile__knowledge_mvc-request-flow  知识文章 · SpringBoot 速查  h1="一个请求在 Spring MVC 里经历了什么"  元素=1
+✅ mobile__knowledge_global-exception  知识文章 · SpringBoot 速查  h1="全局异常处理：@ControllerAdvice 怎么用"  元素=1
+✅ mobile__knowledge_transaction-failure  知识文章 · SpringBoot 速查  h1="@Transactional 失效的六种情况"  元素=1
+✅ mobile__knowledge_jpa-vs-mybatis  知识文章 · SpringBoot 速查  h1="JPA 和 MyBatis 怎么选？"  元素=1
+✅ mobile__knowledge_validation-in-practice  知识文章 · SpringBoot 速查  h1="参数校验落地：@Valid、@Validated 与统一错误响应"  元素=1
+✅ mobile__knowledge_auto-configuration  知识文章 · SpringBoot 速查  h1="Spring Boot 自动配置是怎么生效的"  元素=1
+✅ mobile__knowledge_startup-flow  知识文章 · SpringBoot 速查  h1="Spring Boot 启动时到底发生了什么"  元素=1
+✅ mobile__knowledge_config-priority  知识文章 · SpringBoot 速查  h1="配置优先级：properties、环境变量、命令行谁说了算"  元素=1
+✅ mobile__knowledge_interceptor-filter-aop  知识文章 · SpringBoot 速查  h1="过滤器、拦截器、AOP 到底该用哪个"  元素=1
+✅ mobile__knowledge_async-threadpool  知识文章 · SpringBoot 速查  h1="异步任务与线程池：别让 @Async 悄悄失效"  元素=1
+✅ mobile__knowledge_scheduled-tasks  知识文章 · SpringBoot 速查  h1="定时任务：@Scheduled 的写法和两个坑"  元素=1
+✅ mobile__knowledge_packaging-deploy  知识文章 · SpringBoot 速查  h1="打包部署：可执行 jar 和 war 怎么选"  元素=1
+✅ mobile__knowledge_logging-config  知识文章 · SpringBoot 速查  h1="日志配置：从 logging.level 到 logback-spring.xml"  元素=1
+✅ mobile__knowledge_actuator-monitoring  知识文章 · SpringBoot 速查  h1="Actuator：线上怎么看应用是否健康"  元素=1
+✅ mobile__knowledge_version-migration  知识文章 · SpringBoot 速查  h1="Spring Boot 2→3→4 升级要过哪三关"  元素=1
+✅ mobile__commands_git_git-config  命令详情 · SpringBoot 速查  h1="git config"  元素=1
+✅ mobile__commands_git_git-init  命令详情 · SpringBoot 速查  h1="git init"  元素=1
+✅ mobile__commands_git_git-clone  命令详情 · SpringBoot 速查  h1="git clone"  元素=1
+✅ mobile__commands_git_git-help  命令详情 · SpringBoot 速查  h1="git help"  元素=1
+✅ mobile__commands_git_git-status  命令详情 · SpringBoot 速查  h1="git status"  元素=1
+✅ mobile__commands_git_git-add  命令详情 · SpringBoot 速查  h1="git add"  元素=1
+✅ mobile__commands_git_git-commit  命令详情 · SpringBoot 速查  h1="git commit"  元素=1
+✅ mobile__commands_git_git-diff  命令详情 · SpringBoot 速查  h1="git diff"  元素=1
+✅ mobile__commands_git_git-log  命令详情 · SpringBoot 速查  h1="git log"  元素=1
+✅ mobile__commands_git_git-show  命令详情 · SpringBoot 速查  h1="git show"  元素=1
+✅ mobile__commands_git_git-branch  命令详情 · SpringBoot 速查  h1="git branch"  元素=1
+✅ mobile__commands_git_git-switch  命令详情 · SpringBoot 速查  h1="git switch"  元素=1
+✅ mobile__commands_git_git-merge  命令详情 · SpringBoot 速查  h1="git merge"  元素=1
+✅ mobile__commands_git_git-rebase  命令详情 · SpringBoot 速查  h1="git rebase"  元素=1
+✅ mobile__commands_git_git-cherry-pick  命令详情 · SpringBoot 速查  h1="git cherry-pick"  元素=1
+✅ mobile__commands_git_git-remote  命令详情 · SpringBoot 速查  h1="git remote"  元素=1
+✅ mobile__commands_git_git-fetch  命令详情 · SpringBoot 速查  h1="git fetch"  元素=1
+✅ mobile__commands_git_git-pull  命令详情 · SpringBoot 速查  h1="git pull"  元素=1
+✅ mobile__commands_git_git-push  命令详情 · SpringBoot 速查  h1="git push"  元素=1
+✅ mobile__commands_git_git-restore  命令详情 · SpringBoot 速查  h1="git restore"  元素=1
+✅ mobile__commands_git_git-reset  命令详情 · SpringBoot 速查  h1="git reset"  元素=1
+✅ mobile__commands_git_git-revert  命令详情 · SpringBoot 速查  h1="git revert"  元素=1
+✅ mobile__commands_git_git-stash  命令详情 · SpringBoot 速查  h1="git stash"  元素=1
+✅ mobile__commands_git_git-clean  命令详情 · SpringBoot 速查  h1="git clean"  元素=1
+✅ mobile__commands_git_git-rm  命令详情 · SpringBoot 速查  h1="git rm"  元素=1
+✅ mobile__commands_git_git-blame  命令详情 · SpringBoot 速查  h1="git blame"  元素=1
+✅ mobile__commands_git_git-bisect  命令详情 · SpringBoot 速查  h1="git bisect"  元素=1
+✅ mobile__commands_git_git-reflog  命令详情 · SpringBoot 速查  h1="git reflog"  元素=1
+✅ mobile__commands_git_git-tag  命令详情 · SpringBoot 速查  h1="git tag"  元素=1
+✅ mobile__commands_git_git-worktree  命令详情 · SpringBoot 速查  h1="git worktree"  元素=1
+✅ mobile__commands_linux_linux-ls  命令详情 · SpringBoot 速查  h1="ls"  元素=1
+✅ mobile__commands_linux_linux-cd  命令详情 · SpringBoot 速查  h1="cd"  元素=1
+✅ mobile__commands_linux_linux-pwd  命令详情 · SpringBoot 速查  h1="pwd"  元素=1
+✅ mobile__commands_linux_linux-mkdir  命令详情 · SpringBoot 速查  h1="mkdir"  元素=1
+✅ mobile__commands_linux_linux-rm  命令详情 · SpringBoot 速查  h1="rm"  元素=1
+✅ mobile__commands_linux_linux-cp  命令详情 · SpringBoot 速查  h1="cp"  元素=1
+✅ mobile__commands_linux_linux-mv  命令详情 · SpringBoot 速查  h1="mv"  元素=1
+✅ mobile__commands_linux_linux-touch  命令详情 · SpringBoot 速查  h1="touch"  元素=1
+✅ mobile__commands_linux_linux-find  命令详情 · SpringBoot 速查  h1="find"  元素=1
+✅ mobile__commands_linux_linux-ln  命令详情 · SpringBoot 速查  h1="ln"  元素=1
+✅ mobile__commands_linux_linux-cat  命令详情 · SpringBoot 速查  h1="cat"  元素=1
+✅ mobile__commands_linux_linux-less  命令详情 · SpringBoot 速查  h1="less"  元素=1
+✅ mobile__commands_linux_linux-head  命令详情 · SpringBoot 速查  h1="head"  元素=1
+✅ mobile__commands_linux_linux-tail  命令详情 · SpringBoot 速查  h1="tail"  元素=1
+✅ mobile__commands_linux_linux-grep  命令详情 · SpringBoot 速查  h1="grep"  元素=1
+✅ mobile__commands_linux_linux-wc  命令详情 · SpringBoot 速查  h1="wc"  元素=1
+✅ mobile__commands_linux_linux-sort  命令详情 · SpringBoot 速查  h1="sort"  元素=1
+✅ mobile__commands_linux_linux-cut  命令详情 · SpringBoot 速查  h1="cut"  元素=1
+✅ mobile__commands_linux_linux-sed  命令详情 · SpringBoot 速查  h1="sed"  元素=1
+✅ mobile__commands_linux_linux-awk  命令详情 · SpringBoot 速查  h1="awk"  元素=1
+✅ mobile__commands_linux_linux-chmod  命令详情 · SpringBoot 速查  h1="chmod"  元素=1
+✅ mobile__commands_linux_linux-chown  命令详情 · SpringBoot 速查  h1="chown"  元素=1
+✅ mobile__commands_linux_linux-umask  命令详情 · SpringBoot 速查  h1="umask"  元素=1
+✅ mobile__commands_linux_linux-sudo  命令详情 · SpringBoot 速查  h1="sudo"  元素=1
+✅ mobile__commands_linux_linux-su  命令详情 · SpringBoot 速查  h1="su"  元素=1
+✅ mobile__commands_linux_linux-useradd  命令详情 · SpringBoot 速查  h1="useradd"  元素=1
+✅ mobile__commands_linux_linux-ps  命令详情 · SpringBoot 速查  h1="ps"  元素=1
+✅ mobile__commands_linux_linux-top  命令详情 · SpringBoot 速查  h1="top"  元素=1
+✅ mobile__commands_linux_linux-kill  命令详情 · SpringBoot 速查  h1="kill"  元素=1
+✅ mobile__commands_linux_linux-pkill  命令详情 · SpringBoot 速查  h1="pkill"  元素=1
+✅ mobile__commands_linux_linux-jobs  命令详情 · SpringBoot 速查  h1="jobs"  元素=1
+✅ mobile__commands_linux_linux-nohup  命令详情 · SpringBoot 速查  h1="nohup"  元素=1
+✅ mobile__commands_linux_linux-systemctl  命令详情 · SpringBoot 速查  h1="systemctl"  元素=1
+✅ mobile__commands_linux_linux-free  命令详情 · SpringBoot 速查  h1="free"  元素=1
+✅ mobile__commands_linux_linux-uptime  命令详情 · SpringBoot 速查  h1="uptime"  元素=1
+✅ mobile__commands_linux_linux-ip  命令详情 · SpringBoot 速查  h1="ip"  元素=1
+✅ mobile__commands_linux_linux-ping  命令详情 · SpringBoot 速查  h1="ping"  元素=1
+✅ mobile__commands_linux_linux-curl  命令详情 · SpringBoot 速查  h1="curl"  元素=1
+✅ mobile__commands_linux_linux-wget  命令详情 · SpringBoot 速查  h1="wget"  元素=1
+✅ mobile__commands_linux_linux-ss  命令详情 · SpringBoot 速查  h1="ss"  元素=1
+✅ mobile__commands_linux_linux-ssh  命令详情 · SpringBoot 速查  h1="ssh"  元素=1
+✅ mobile__commands_linux_linux-scp  命令详情 · SpringBoot 速查  h1="scp"  元素=1
+✅ mobile__commands_linux_linux-rsync  命令详情 · SpringBoot 速查  h1="rsync"  元素=1
+✅ mobile__commands_linux_linux-df  命令详情 · SpringBoot 速查  h1="df"  元素=1
+✅ mobile__commands_linux_linux-du  命令详情 · SpringBoot 速查  h1="du"  元素=1
+✅ mobile__commands_linux_linux-tar  命令详情 · SpringBoot 速查  h1="tar"  元素=1
+✅ mobile__commands_linux_linux-gzip  命令详情 · SpringBoot 速查  h1="gzip"  元素=1
+✅ mobile__commands_linux_linux-zip  命令详情 · SpringBoot 速查  h1="zip"  元素=1
+✅ mobile__commands_linux_linux-unzip  命令详情 · SpringBoot 速查  h1="unzip"  元素=1
+✅ mobile__topics_conventions_conventions-project-structure  实战专题 · SpringBoot 速查  h1="项目与包结构规范：根包、分包与扫描范围"  元素=1
+✅ mobile__topics_conventions_conventions-constructor-injection  实战专题 · SpringBoot 速查  h1="依赖注入规范：优先构造器注入"  元素=1
+✅ mobile__topics_conventions_conventions-configuration  实战专题 · SpringBoot 速查  h1="配置管理规范：类型安全与分环境"  元素=1
+✅ mobile__topics_conventions_conventions-rest-api  实战专题 · SpringBoot 速查  h1="REST 接口设计规范：资源、动词与返回体"  元素=1
+✅ mobile__topics_conventions_conventions-dto-validation  实战专题 · SpringBoot 速查  h1="DTO 与参数校验规范：边界校验、业务归位"  元素=1
+✅ mobile__topics_conventions_conventions-exception  实战专题 · SpringBoot 速查  h1="统一异常处理规范：错误码、状态码与 RFC 9457"  元素=1
+✅ mobile__topics_conventions_conventions-transaction  实战专题 · SpringBoot 速查  h1="事务使用规范：边界、回滚与自调用陷阱"  元素=1
+✅ mobile__topics_conventions_conventions-logging  实战专题 · SpringBoot 速查  h1="日志规范：接口、级别、上下文与脱敏"  元素=1
+✅ mobile__topics_conventions_conventions-testing  实战专题 · SpringBoot 速查  h1="测试规范：单元优先、切片测试与容器复用"  元素=1
+✅ mobile__topics_conventions_conventions-dependency  实战专题 · SpringBoot 速查  h1="依赖与版本管理规范：用 BOM 管版本，用 starter 收敛"  元素=1
+✅ mobile__topics_coordinates_coordinates-web  实战专题 · SpringBoot 速查  h1="Web 与参数校验依赖怎么引"  元素=1
+✅ mobile__topics_coordinates_coordinates-data  实战专题 · SpringBoot 速查  h1="数据访问：JPA、MyBatis、MySQL 与迁移"  元素=1
+✅ mobile__topics_coordinates_coordinates-security  实战专题 · SpringBoot 速查  h1="安全认证：从表单登录到 OAuth2"  元素=1
+✅ mobile__topics_coordinates_coordinates-test  实战专题 · SpringBoot 速查  h1="测试依赖与 Testcontainers"  元素=1
+✅ mobile__topics_coordinates_coordinates-ops  实战专题 · SpringBoot 速查  h1="监控与运维：Actuator、指标与打包插件"  元素=1
+✅ mobile__topics_coordinates_coordinates-utils  实战专题 · SpringBoot 速查  h1="映射与工具：Lombok 与 MapStruct 怎么配"  元素=1
+✅ mobile__topics_interview_interview-auto-configuration  实战专题 · SpringBoot 速查  h1="Spring Boot 自动配置是怎么生效的？"  元素=1
+✅ mobile__topics_interview_interview-ioc-bean-lifecycle  实战专题 · SpringBoot 速查  h1="IoC 和 Bean 生命周期怎么答？"  元素=1
+✅ mobile__topics_interview_interview-circular-dependency  实战专题 · SpringBoot 速查  h1="Spring 循环依赖是怎么回事？"  元素=1
+✅ mobile__topics_interview_interview-aop-proxy  实战专题 · SpringBoot 速查  h1="Spring AOP 的代理是怎么回事？"  元素=1
+✅ mobile__topics_interview_interview-transaction-failure  实战专题 · SpringBoot 速查  h1="为什么 @Transactional 会失效？"  元素=1
+✅ mobile__topics_interview_interview-mvc-request-flow  实战专题 · SpringBoot 速查  h1="一个 HTTP 请求在 Spring MVC 里怎么走？"  元素=1
+✅ mobile__topics_interview_interview-starter-principle  实战专题 · SpringBoot 速查  h1="spring-boot-starter 是怎么工作的？"  元素=1
+✅ mobile__topics_interview_interview-config-priority  实战专题 · SpringBoot 速查  h1="Spring Boot 配置优先级怎么记？"  元素=1
+✅ mobile__topics_interview_interview-bean-scope  实战专题 · SpringBoot 速查  h1="Bean 的作用域有哪些？"  元素=1
+✅ mobile__topics_interview_interview-filter-interceptor  实战专题 · SpringBoot 速查  h1="Filter、Interceptor、AOP 有什么区别？"  元素=1
+✅ mobile__topics_interview_interview-async-threadpool  实战专题 · SpringBoot 速查  h1="@Async 和线程池怎么配才不出事？"  元素=1
+✅ mobile__topics_interview_interview-graceful-shutdown  实战专题 · SpringBoot 速查  h1="优雅停机是怎么做的？"  元素=1
+✅ mobile__topics_layers_layers-architecture  实战专题 · SpringBoot 速查  h1="分层架构与依赖方向：把代码摆对位置"  元素=1
+✅ mobile__topics_layers_layers-controller  实战专题 · SpringBoot 速查  h1="Controller 层：只做协议转换和参数校验"  元素=1
+✅ mobile__topics_layers_layers-service  实战专题 · SpringBoot 速查  h1="Service 层：业务编排与事务的落脚点"  元素=1
+✅ mobile__topics_layers_layers-repository  实战专题 · SpringBoot 速查  h1="Repository 层：数据访问只暴露必要操作"  元素=1
+✅ mobile__topics_layers_layers-dto-conversion  实战专题 · SpringBoot 速查  h1="DTO、Entity、VO 到底怎么转换"  元素=1
+✅ mobile__topics_layers_layers-exception-errorcode  实战专题 · SpringBoot 速查  h1="统一异常与错误码：让报错可读可追踪"  元素=1
+✅ mobile__topics_layers_layers-transaction-boundary  实战专题 · SpringBoot 速查  h1="事务边界：为什么必须放在 Service"  元素=1
+✅ mobile__topics_layers_layers-common-module  实战专题 · SpringBoot 速查  h1="公共模块与工具类：能共享什么，不能共享什么"  元素=1
+✅ mobile__topics_layers_layers-modularization  实战专题 · SpringBoot 速查  h1="从单体到模块化：包结构怎么演进"  元素=1
+✅ desktop__this-page-does-not-exist  页面不存在 · SpringBoot 速查  h1="页面不存在"  元素=0
+✅ mobile__this-page-does-not-exist  页面不存在 · SpringBoot 速查  h1="页面不存在"  元素=0
+
+共检查 302 个页面，问题 0 个。报告：tmp/render-report.json

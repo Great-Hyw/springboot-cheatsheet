@@ -1,0 +1,232 @@
+{
+  "generatedBy": "content-boot",
+  "topic": "conventions",
+  "items": [
+    {
+      "id": "conventions-project-structure",
+      "title": "项目与包结构规范：根包、分包与扫描范围",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "约定根包位置与按功能分包方式，让组件扫描和实体扫描范围可控。",
+      "tags": [
+        "工程结构",
+        "包规范",
+        "组件扫描"
+      ],
+      "content": "## 推荐做法\n\n先定一个唯一的根包，例如 `com.example.app`，所有业务代码都放在它下面，启动类放在根包的最外层。`@SpringBootApplication` 会以启动类所在的包作为默认扫描起点，根包选对，controller、service、repository 才能被自动发现，也就不需要再手写 `scanBasePackages` 去补救。\n\n分包按业务功能来，而不是一上来就按技术层铺开：`order`、`user`、`payment` 各占一个包，功能包内部再分 `web`、`service`、`repository`、`dto`。跨功能调用只允许走对方 service 暴露的方法，不要直接注入对方的 repository。\n\n```text\ncom.example.app\n├── AppApplication.java          // 启动类，位于根包\n├── order/\n│   ├── web/OrderController.java\n│   ├── service/OrderService.java\n│   ├── repository/OrderRepository.java\n│   └── dto/CreateOrderRequest.java\n└── user/\n    ├── web/UserController.java\n    └── service/UserService.java\n```\n\n包名统一小写、使用反域名倒序，不要用下划线和大写字母，也不要出现没有包声明的类。测试代码保持与主代码同构的目录，`src/test/java` 下同样按功能分包，这样找一个功能的全部代码不会跨越半个工程。\n\n多模块工程里根包保持不变，各模块使用自己的子包：订单模块放 `com.example.app.order`，Web 聚合模块放 `com.example.app.web`。模块之间的依赖靠 Maven 声明，包结构本身不制造跨模块引用；不要让 common 模块反过来依赖业务模块，否则编译期就形成环。\n\n## 为什么\n\n官方文档建议把主启动类放在根包，因为它隐式定义了若干“搜索包”：组件扫描从这里往下找，JPA 的实体扫描也以这里为起点。主类放偏了，典型现象是接口写好却返回 404，或者 repository 注入失败，排查成本很高。\n\n官方同时明确不推荐 default package：没有包声明的类会让组件扫描、配置属性扫描、实体扫描去读取所有 jar 里的类，启动变慢，还容易把不该注册的类扫进来。这是少数官方直接点名“应当避免”的结构问题。\n\n启动类所在包还会影响配置属性扫描：不写 `basePackages` 时，`@ConfigurationPropertiesScan` 从注解所在类所在的包开始找。结构约定统一，扫描行为才可预测。\n\n按功能分包让改动范围收敛：一次需求通常只动一个功能包，代码评审和回滚都清楚；按技术层分包时同一个需求横跨三层，评审容易漏看。代价是公共代码的归属要提前约定，一般放进独立的 common 包，并规定 common 不能反向依赖任何功能包。\n\n## 落地检查清单\n\n- [ ] 全项目只有一个 `@SpringBootApplication`，且位于根包\n- [ ] 没有任何 default package 下的类\n- [ ] 功能包之间没有直接引用对方的 repository 或 web 层类\n- [ ] 包名为小写反域名，测试目录与主代码同构\n- [ ] 新增模块时先确认归属哪个功能包，再决定是否放进 common",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档：组织你的代码",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/using/structuring-your-code.html"
+        },
+        {
+          "label": "Spring Boot 参考文档：自动配置",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/using/auto-configuration.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-constructor-injection",
+      "title": "依赖注入规范：优先构造器注入",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "必填依赖用 final 字段加构造器传入，避免字段注入带来的半初始化与测试困难。",
+      "tags": [
+        "依赖注入",
+        "构造器注入",
+        "可测试性"
+      ],
+      "content": "## 推荐做法\n\n把所有必填依赖写成 `final` 字段，通过构造器传入；类上只有一个构造器时，Spring 会自动用它完成注入，不必再标注 `@Autowired`。可选依赖放到 setter 方法或参数化方法里，需要延迟获取时用 `ObjectProvider`；业务代码里不要出现字段注入。\n\n```java\n@Service\npublic class OrderService {\n\n    private final OrderRepository orderRepository;\n    private final PaymentClient paymentClient;\n\n    public OrderService(OrderRepository orderRepository, PaymentClient paymentClient) {\n        this.orderRepository = orderRepository;\n        this.paymentClient = paymentClient;\n    }\n\n    public OrderResponse create(CreateOrderRequest request) {\n        Order order = Order.create(request);\n        orderRepository.save(order);\n        return OrderResponse.from(order);\n    }\n}\n```\n\n构造器参数超过四五个时，先别急着加 `@Lazy` 或者把依赖塞进一个“上下文对象”，而要先回头看这个类是不是承担了太多职责。参数列表膨胀通常说明该类需要按功能拆开，继续加依赖只会让耦合更深。\n\n## 为什么\n\n官方文档的表述很直接：Spring 团队通常提倡构造器注入，因为它让组件可以做成不可变对象，保证必需的依赖不为 null，并且注入完成的组件一定处于完全初始化状态。这三条正好对应字段注入的三个坑：对象可能半初始化、依赖可以事后被改、测试时得靠反射塞值。\n\n构造器注入还是最好的文档：看一眼构造器就知道这个类依赖什么、能不能独立存在；参数列表变长会立刻暴露职责过多的设计问题。单元测试时直接 new 出对象并传入 mock，不必启动容器，也不必依赖反射工具。\n\n生命周期回调也一样：`@PostConstruct` 方法里能安全使用依赖，正是因为构造器注入保证字段在回调前已经就绪；字段注入的对象在构造阶段可能还是 null，初始化方法里用一下就会空指针。\n\n构造器注入还会让循环依赖在启动阶段直接失败，而不是等到某个请求进来才抛异常。看起来更严格，实际上是把问题更早、更便宜地暴露出来，修起来的代价小得多。\n\nsetter 注入并非完全不能用：可选依赖、允许运行期重新配置的场景适合 setter，官方也把 setter 推荐给可选依赖。规范的关键不是消灭 setter，而是让必填依赖在构造时就必须到位，避免出现“只注入了一半”的对象。\n\n## 落地检查清单\n\n- [ ] 业务类中不存在字段注入\n- [ ] 必填依赖是 `final` 字段，且只通过构造器赋值\n- [ ] 单构造器的类没有多余标注 `@Autowired`\n- [ ] 可选依赖使用 setter 或 `ObjectProvider`，而不是可空字段\n- [ ] 构造器参数超过 4 个的类已复核职责并完成拆分",
+      "sources": [
+        {
+          "label": "Spring Framework 参考文档：依赖注入与协作者",
+          "url": "https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-configuration",
+      "title": "配置管理规范：类型安全与分环境",
+      "level": "进阶",
+      "readingMinutes": 5,
+      "summary": "用 @ConfigurationProperties 聚合配置、按 profile 区分环境，敏感值不落仓库。",
+      "tags": [
+        "配置管理",
+        "类型安全",
+        "多环境"
+      ],
+      "content": "## 推荐做法\n\n把一组配置聚合成类型安全的配置对象，而不是在业务代码里散落 `@Value`。配置类放在 `config` 包，用 record 或 `final` 字段加构造器绑定，前缀用 kebab-case；在启动类上加 `@ConfigurationPropertiesScan`，或者用 `@EnableConfigurationProperties` 显式注册。\n\n```yaml\napp:\n  mail:\n    host: smtp.example.com\n    port: 465\n    from: no-reply@example.com\n```\n\n```java\n@ConfigurationProperties(prefix = \"app.mail\")\npublic record MailProperties(String host, int port, String from) {\n}\n```\n\n环境差异放在 `application-{profile}.yml` 里，只写与默认值不同的项，不要复制整份配置。密码、令牌这类敏感值通过环境变量或外部配置注入，不写进仓库；开启校验时在配置类上加 `@Validated`，字段上用 jakarta.validation 注解，配置缺失或格式错误会在启动阶段失败。\n\n不是所有配置都值得建一个类：单个开关、单个路径直接用 `@Value` 更省事；但只要同一前缀下有 3 个以上字段，或者需要默认值、校验和文档，就应该升级成 `@ConfigurationProperties`。\n\n## 为什么\n\nSpring Boot 的外部配置有一份官方定义的优先级顺序：命令行参数、环境变量、配置文件、默认属性依次生效。理解这个顺序，团队才不会把希望寄托在“我本地能跑”上，也能解释为什么线上环境变量能覆盖打包进去的配置。\n\n`@ConfigurationProperties` 提供宽松绑定：`context-path` 这样的短横线写法可以绑定到 `contextPath` 字段，环境变量也能映射进来。相比逐个 `@Value`，它把配置集中成一个可校验、可注入、可测试的对象，改字段名时编译器会直接报错。\n\n宽松绑定在实际部署中很有用：同一个配置项写成 `context-path` 能绑定到 `contextPath`，环境变量的大写形式也能映射进来，运维不必记住 Java 字段名。但这也要求命名克制，不要给同一含义起多个名字。配置类本身是普通 Bean，测试里可以直接 new 出来断言默认值。\n\n用 profile 文件隔离环境，可以避免把测试库地址带到生产；官方也支持在 `spring.config.location` 指向的目录里加载 profile 特定文件。代价是多一层文件管理，因此配置项命名必须统一，最好由配置类反向生成文档。\n\n## 落地检查清单\n\n- [ ] 业务代码中不存在成片的 `@Value`\n- [ ] 每组配置有对应的 `@ConfigurationProperties` 类型\n- [ ] 敏感配置通过环境变量或外部配置注入，仓库中无明文\n- [ ] 环境差异只在 `application-{profile}.yml` 中覆盖\n- [ ] 关键配置项有 jakarta.validation 约束并在启动时校验",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档：外部配置",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html"
+        },
+        {
+          "label": "Spring Boot 参考文档：类型安全配置属性",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html#features.external-config.typesafe-configuration-properties"
+        }
+      ]
+    },
+    {
+      "id": "conventions-rest-api",
+      "title": "REST 接口设计规范：资源、动词与返回体",
+      "level": "进阶",
+      "readingMinutes": 5,
+      "summary": "用资源路径加 HTTP 方法表达操作，统一返回 DTO、状态码与分页参数。",
+      "tags": [
+        "REST",
+        "接口设计",
+        "HTTP"
+      ],
+      "content": "## 推荐做法\n\n路径用名词复数表示资源，动作交给 HTTP 方法表达：查询用 `@GetMapping`，创建用 `@PostMapping`，整体更新用 `@PutMapping`，局部更新用 `@PatchMapping`，删除用 `@DeleteMapping`。版本号放在路径最前面，例如 `/api/v1/orders`，升级时旧版本仍可继续服务。\n\n```java\n@RestController\n@RequestMapping(\"/api/v1/orders\")\npublic class OrderController {\n\n    private final OrderService orderService;\n\n    public OrderController(OrderService orderService) {\n        this.orderService = orderService;\n    }\n\n    @GetMapping(\"/{id}\")\n    public OrderResponse get(@PathVariable Long id) {\n        return orderService.get(id);\n    }\n\n    @PostMapping\n    @ResponseStatus(HttpStatus.CREATED)\n    public OrderResponse create(@Valid @RequestBody CreateOrderRequest request) {\n        return orderService.create(request);\n    }\n}\n```\n\n接口返回专用的响应 DTO，不要直接把实体或 JPA 关联对象吐出去。创建成功返回 201，并在 `Location` 头里给出新资源地址；列表接口分页参数统一用 `page`、`size`，排序用 `sort`，并在响应里带总数与页码，前端就不必猜。\n\n确实难以用资源加方法表达的操作，例如取消订单、重发验证码，可以保留 `/orders/{id}/cancel` 这类动作型子路径，但要限制数量并集中登记，避免整个 API 退化成 RPC 风格。\n\n响应字段统一用 camelCase，时间统一 ISO 8601 并带时区，金额不要用浮点数。字段命名、空值语义、枚举取值这些细节一旦在第一个接口定下来，后续接口都会照着抄，所以要在项目早期写成接口规范。\n\n## 为什么\n\n官方把 `@GetMapping`、`@PostMapping` 这类注解称为 HTTP 方法的特定变体，作用就是让映射和请求方法一一对应。用对方法之后，网关、缓存、监控、权限规则都能按方法做区分；如果所有操作都写成 `@RequestMapping` 再在方法体里判断，这些基础设施就失去判断依据。\n\n路径里再写一遍动词（例如 `/getOrder`、`/createOrder`）会让接口风格不断分裂：有的按资源命名，有的按方法命名，最终没人说得清新增接口该照哪个抄。资源加动词的约定一旦统一，评审时只看路径就知道语义。\n\n方法语义还决定幂等性：GET、PUT、DELETE 应当幂等，POST 不保证。客户端重试、网关重试、消息重投都依赖这个约定，方法用错可能让一次重试变成重复下单。\n\n统一返回 DTO 的收益在演进期最明显：实体改字段、加关联、做懒加载，都不会直接改变对外契约；分页和状态码统一后，前端、移动端和第三方接入只需要写一套处理逻辑。\n\n## 落地检查清单\n\n- [ ] 路径为名词复数，并带版本前缀\n- [ ] 读写操作使用对应的 HTTP 方法注解，而非统一 `@RequestMapping`\n- [ ] 对外返回 DTO，未直接暴露实体\n- [ ] 创建返回 201，删除返回 204，异常由统一处理返回错误体\n- [ ] 分页与排序参数全站统一命名",
+      "sources": [
+        {
+          "label": "Spring Framework 参考文档：注解式控制器",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller.html"
+        },
+        {
+          "label": "Spring Framework 参考文档：请求映射",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-dto-validation",
+      "title": "DTO 与参数校验规范：边界校验、业务归位",
+      "level": "进阶",
+      "readingMinutes": 5,
+      "summary": "请求 DTO 不可变并声明校验注解，Controller 触发校验，业务规则留在 Service。",
+      "tags": [
+        "DTO",
+        "参数校验",
+        "校验注解"
+      ],
+      "content": "## 推荐做法\n\n每个对外入口定义独立的请求 DTO，优先用 record 保证不可变；字段上写 jakarta.validation 约束，例如 `@NotBlank`、`@Size`、`@Min`、`@Email`。Controller 参数加 `@Valid` 触发校验；嵌套对象字段也要加 `@Valid`，否则校验不会递归进去。\n\n```java\npublic record CreateOrderRequest(\n        @NotBlank String sku,\n        @Min(1) @Max(99) int quantity,\n        @Valid @NotNull AddressRequest address) {\n}\n\n@RestController\n@RequestMapping(\"/api/v1/orders\")\npublic class OrderController {\n\n    @PostMapping\n    @ResponseStatus(HttpStatus.CREATED)\n    public OrderResponse create(@Valid @RequestBody CreateOrderRequest request) {\n        return orderService.create(request);\n    }\n}\n```\n\n如果同一个 DTO 在新增和修改时需要不同约束，用校验分组：定义空接口作为标记，字段上写 `groups = Create.class`，Controller 参数改用 `@Validated(Create.class)`。库存是否充足、优惠券是否可用这类依赖数据库状态的规则，不要塞进注解，放在 Service 里显式判断。\n\n方法级校验也常用：在 Service 类上标注 `@Validated`，方法参数或返回值上直接写约束注解，适合校验非请求体的入参，例如内部任务 ID 列表。这类异常与请求体校验抛出的类型不同，统一异常处理里要分别覆盖。\n\n## 为什么\n\nSpring Boot 在类路径存在 Bean Validation 实现时会自动配置校验支持，因此引入 `spring-boot-starter-validation` 后，`@Valid` 就能直接生效，不需要手写 Validator 工厂。官方文档还说明：在类型级别标注 `@Validated` 的类，其方法参数和返回值上的内联约束才会被搜索并校验——这也是方法级校验与请求体校验写法不同的原因。\n\n官方校验章节特别提醒：目标类需要在类型级别标注 `@Validated`，其方法参数和返回值上的内联约束才会被搜索——只在方法参数上写注解而不加类级 `@Validated`，约束不会生效，这是“校验写了却没触发”的常见原因。\n\n校验放在边界层，Service 就可以假设传入对象基本合法，专注业务规则；如果每个 Service 方法都重复写判空和格式判断，代码会迅速膨胀，而且难以保证各处规则一致。\n\n校验失败必须转成 400 和结构化错误信息，而不是让异常堆栈直接透出。把这一步交给统一的异常处理，接口契约才稳定，前端也不需要为每个接口写不同的错误解析。\n\n## 落地检查清单\n\n- [ ] 每个写接口有独立请求 DTO，未直接接收实体\n- [ ] 请求 DTO 字段声明了必要的校验注解\n- [ ] 嵌套对象和集合元素使用 `@Valid` 触发级联校验\n- [ ] 分组校验使用 `@Validated` 指定分组，未混用默认组\n- [ ] 依赖数据库状态的规则在 Service 中校验，未写进注解\n- [ ] 校验异常统一转换为 400 响应",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档：校验",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/io/validation.html"
+        },
+        {
+          "label": "Spring Framework 参考文档：Bean Validation",
+          "url": "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-exception",
+      "title": "统一异常处理规范：错误码、状态码与 RFC 9457",
+      "level": "进阶",
+      "readingMinutes": 5,
+      "summary": "业务异常带错误码，@RestControllerAdvice 统一转换状态码与响应体。",
+      "tags": [
+        "异常处理",
+        "错误码",
+        "RFC 9457"
+      ],
+      "content": "## 推荐做法\n\n定义业务异常基类，携带错误码和对应的 HTTP 状态；具体异常继承它，例如订单不存在、库存不足。Controller 层不要写 try/catch 把异常吞掉再返回 200，让异常抛到统一处理层。\n\n```java\n@RestControllerAdvice\npublic class GlobalExceptionHandler {\n\n    @ExceptionHandler(OrderNotFoundException.class)\n    public ProblemDetail handleOrderNotFound(OrderNotFoundException ex) {\n        ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());\n        detail.setProperty(\"code\", ex.getCode());\n        return detail;\n    }\n\n    @ExceptionHandler(MethodArgumentNotValidException.class)\n    public ProblemDetail handleInvalidArgument(MethodArgumentNotValidException ex) {\n        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);\n        detail.setProperty(\"code\", \"INVALID_ARGUMENT\");\n        detail.setProperty(\"errors\", ex.getBindingResult().getFieldErrors().stream()\n                .map(error -> error.getField() + \": \" + error.getDefaultMessage())\n                .toList());\n        return detail;\n    }\n}\n```\n\n未知异常单独兜底：记录 ERROR 级别日志并带上请求标识，对外只返回 500 和通用错误码，不把堆栈和 SQL 语句返回给调用方。错误响应里至少包含 `code`、`message`、`traceId` 三个字段，方便用户报障时直接提供。\n\n错误码按层设计：通用错误码（参数错误、未认证、无权限、系统错误）全站固定，业务错误码按领域分段，例如以 `ORDER_`、`PAY_` 开头。HTTP 状态码表达类别，业务错误码表达具体原因，两者不要互相替代。\n\n## 为什么\n\nSpring Framework 支持 RFC 9457 的 Problem Details 规范，官方文档明确：`@ExceptionHandler` 或 `@RequestMapping` 方法可以直接返回 `ProblemDetail` 或 `ErrorResponse`，框架会按其中状态渲染响应，并把内容类型切换为 `application/problem+json`。这意味着统一错误体不必自己发明一套格式。\n\nSpring Boot 默认提供 `/error` 映射兜底，机器客户端会收到包含状态和路径的 JSON；异常 message 与堆栈默认不返回，需要通过 server.error.include-message、server.error.include-stacktrace 显式打开。它适合兜底，不适合作为业务错误契约：字段固定、无法携带业务错误码，也不方便前端做分支处理，所以要有自己的统一处理层。\n\n把异常转换集中在一处，Controller 和 Service 可以只关心成功路径；错误码集中定义后，客户端、文档、监控告警能共享同一套语义，出问题时定位也更快。\n\n并不是所有异常都值得告警：4xx 通常是调用方问题，记录 WARN 即可；5xx 和关键业务失败才触发告警，否则告警会迅速疲劳，真正的问题反而没人看。\n\n统一处理层还要注意别把内部细节暴露出去：数据库约束名、类名、SQL 片段都可能帮助攻击者推断系统结构。对外只给稳定错误码和可读提示，详细信息写进日志，用 traceId 关联。\n\n## 落地检查清单\n\n- [ ] 存在业务异常基类，包含错误码与 HTTP 状态\n- [ ] 所有 Controller 无吞异常后返回 200 的代码\n- [ ] 统一异常处理覆盖业务异常、参数校验异常与未知异常\n- [ ] 错误响应包含 code、message、traceId\n- [ ] 未知异常记录 ERROR 日志，未把堆栈返回给调用方\n- [ ] 错误码在单一位置定义，文档与客户端共用",
+      "sources": [
+        {
+          "label": "Spring Framework 参考文档：REST 异常处理",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html"
+        },
+        {
+          "label": "Spring Framework 参考文档：@ExceptionHandler",
+          "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html"
+        },
+        {
+          "label": "Spring Boot 参考文档：错误处理",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/web/servlet.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-transaction",
+      "title": "事务使用规范：边界、回滚与自调用陷阱",
+      "level": "进阶",
+      "readingMinutes": 5,
+      "summary": "事务注解放在 Service 具体类方法上，明确回滚规则，避免自调用与长事务。",
+      "tags": [
+        "事务",
+        "事务注解",
+        "数据一致性"
+      ],
+      "content": "## 推荐做法\n\n`@Transactional` 注在 Service 的具体类公开方法上，不要依赖接口上的注解；只读查询加 `readOnly = true`，让数据库有机会优化。默认只有 RuntimeException 和 Error 会触发回滚，需要 checked 异常也回滚时显式写 `rollbackFor = Exception.class`。\n\n```java\n@Service\npublic class TransferService {\n\n    private final AccountRepository accountRepository;\n\n    public TransferService(AccountRepository accountRepository) {\n        this.accountRepository = accountRepository;\n    }\n\n    @Transactional(rollbackFor = Exception.class)\n    public void transfer(Long fromId, Long toId, BigDecimal amount) {\n        Account from = accountRepository.findById(fromId).orElseThrow();\n        Account to = accountRepository.findById(toId).orElseThrow();\n        from.withdraw(amount);\n        to.deposit(amount);\n    }\n}\n```\n\n同一个类里方法 A 调用方法 B，即使 B 标了 `@Transactional` 也不会开启新事务，因为调用没有经过代理。需要独立事务时，把 B 拆到另一个 bean，或者通过注入自身代理来调用；更推荐前者，依赖关系也更清楚。\n\n事务方法里不要做 HTTP 调用、发消息、写文件这类耗时或不可回滚的操作。确需跨资源一致时，把本地事务收短，用事务消息或对账补偿处理，而不是把长事务越拉越长。\n\n传播行为按场景选：默认的 `REQUIRED` 会加入外层事务，适合大多数业务；`REQUIRES_NEW` 会挂起外层、独立提交，只用于审计日志这类“外层回滚也要保留”的操作；`NESTED` 依赖保存点，适用面更窄。每选一个传播行为，都应该能说清理由。\n\n## 为什么\n\n官方文档给出 `@Transactional` 的默认设置：事务为读写、隔离级别为默认、超时跟随底层实现，并且“任何 RuntimeException 或 Error 触发回滚，任何 checked 异常不触发回滚”。不写 `rollbackFor` 却期望 checked 异常回滚，是线上数据不一致的常见来源。\n\n官方还明确：代理模式下只有通过代理进入的外部调用会被拦截，自调用（目标对象内部方法互调）不会产生真正的事务；接口代理的方法必须是 public，且定义在接口里。把注解写在实现类的公开方法上，是官方推荐的做法，能同时兼容两种代理方式。\n\n事务边界越短，锁持有时间越短，数据库连接占用越少，系统吞吐越稳定。长事务还会让回滚成本变高，一旦中间某步失败，前面的远程副作用无法撤销。\n\n事务还会占用数据库连接：方法里夹杂远程调用时，连接被长时间持有，高峰期连接池很快耗尽。把远程调用移到事务外，先查数据、再调用、最后写库，连接占用时间会明显下降。\n\n## 落地检查清单\n\n- [ ] `@Transactional` 只出现在 Service 层具体类的公开方法上\n- [ ] 查询方法标注了 `readOnly = true`\n- [ ] 需要 checked 异常回滚的方法显式声明 `rollbackFor`\n- [ ] 不存在同类内部自调用事务方法\n- [ ] 事务方法内无远程调用、消息发送、文件写入\n- [ ] 传播行为有明确理由，不是照抄默认值",
+      "sources": [
+        {
+          "label": "Spring Framework 参考文档：使用 @Transactional",
+          "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-logging",
+      "title": "日志规范：接口、级别、上下文与脱敏",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "统一用 SLF4J 与参数化日志，规定级别语义，关键业务字段必须带上下文。",
+      "tags": [
+        "日志",
+        "SLF4J",
+        "可观测性"
+      ],
+      "content": "## 推荐做法\n\n业务代码统一使用 SLF4J 的 `LoggerFactory` 获取 logger，不直接依赖 Logback 或 Log4j2 的 API。日志内容用占位符参数化传入，不要在方法调用前拼字符串；异常对象作为最后一个参数传入，保留完整堆栈。\n\n```java\nprivate static final Logger log = LoggerFactory.getLogger(OrderService.class);\n\npublic OrderResponse create(CreateOrderRequest request) {\n    log.info(\"创建订单开始 sku={} quantity={}\", request.sku(), request.quantity());\n    try {\n        Order order = doCreate(request);\n        log.info(\"创建订单成功 orderId={}\", order.getId());\n        return OrderResponse.from(order);\n    } catch (RuntimeException ex) {\n        log.error(\"创建订单失败 sku={} quantity={}\", request.sku(), request.quantity(), ex);\n        throw ex;\n    }\n}\n```\n\n级别语义要固定：ERROR 表示需要人处理、可能影响业务的失败；WARN 表示可恢复的异常或可疑状态；INFO 记录关键业务节点和状态变化；DEBUG 留给诊断细节，生产默认关闭。日志里带上订单号、用户号、请求标识等业务主键，脱敏手机号、身份证、令牌，禁止打印完整请求体和密码。\n\n需要跨方法串联一次请求时，用 MDC 放 traceId，在过滤器或拦截器里写入、在 finally 里清理；异步线程不会自动继承 MDC，切换线程时要显式传递，否则日志会断链。\n\n生产环境通过 `logging.file.name` 输出到文件，配合 `logging.level.<logger-name>` 按包临时调级别；需要结构化日志时再引入对应 encoder，不要在每个类里自己拼 JSON。\n\n## 为什么\n\n官方文档说明 Spring Boot 内部使用 Commons Logging，但对底层实现保持开放，starter 默认引入 Logback 并做好其他日志框架的路由。这意味着团队不需要替换日志依赖，直接用 SLF4J 门面就能和框架日志统一输出。\n\n级别支持在 Environment 中配置，例如 `logging.level.root=warn`、`logging.level.org.springframework.web=debug`，改级别不用改代码、不用重新打包。参数化日志只在级别开启时才格式化参数，避免无谓的字符串拼接开销。\n\n日志是排障时最便宜的输入。\n\n日志量本身也有成本：把大对象、完整请求体、循环内的逐条记录都打成 INFO，磁盘和采集费用会迅速上升，真正有用的错误反而被淹没。级别和内容一起控制，日志才是资产而不是负担。只写“操作失败”而不带任何业务标识，等于把定位成本转移给值班同学；反过来，带上下文、级别正确、不泄密的日志，能让大多数问题在几分钟内定位。\n\n## 落地检查清单\n\n- [ ] 统一使用 SLF4J 门面，无直接依赖具体日志实现\n- [ ] 日志使用 `{}` 占位符，无字符串拼接\n- [ ] 异常日志传入异常对象，未只打印 `ex.getMessage()`\n- [ ] 关键业务日志带订单号、用户号或 traceId\n- [ ] 敏感字段已脱敏，未打印密码、令牌、完整请求体\n- [ ] 生产级别通过配置调整，未硬编码在代码里",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档：日志",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/features/logging.html"
+        },
+        {
+          "label": "Spring Boot How-to：日志",
+          "url": "https://docs.spring.io/spring-boot/3.5/how-to/logging.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-testing",
+      "title": "测试规范：单元优先、切片测试与容器复用",
+      "level": "进阶",
+      "readingMinutes": 5,
+      "summary": "单元测试不启动容器，集成测试按切片选择注解，替换 bean 用 @MockitoBean。",
+      "tags": [
+        "测试",
+        "JUnit",
+        "切片测试"
+      ],
+      "content": "## 推荐做法\n\n测试按成本分层：纯逻辑用普通 JUnit 测试，直接 new 被测对象并传 mock，不启动 Spring；Web 层用 `@WebMvcTest` 只加载 MVC 切片；数据访问用 `@DataJpaTest`；只有需要完整链路的场景才用 `@SpringBootTest`，并且控制数量。\n\n```java\n@WebMvcTest(OrderController.class)\nclass OrderControllerTest {\n\n    @Autowired\n    private MockMvc mockMvc;\n\n    @MockitoBean\n    private OrderService orderService;\n\n    @Test\n    void 查询不存在的订单返回404() throws Exception {\n        given(orderService.get(1L)).willThrow(new OrderNotFoundException(1L));\n\n        mockMvc.perform(get(\"/api/v1/orders/1\"))\n                .andExpect(status().isNotFound());\n    }\n}\n```\n\n替换容器里的 bean 用 `@MockitoBean`，需要保留真实逻辑并观察调用时用 `@MockitoSpyBean`；这两个注解从 Boot 3.4 起取代了已废弃的 `@MockBean`/`@SpyBean`。测试方法名写清场景与期望，断言用 AssertJ 链式写法，一个测试只验证一个行为。不要在测试之间共享可变状态，也不要靠 `@DirtiesContext` 反复重建上下文来掩盖污染。\n\n需要真实数据库行为时，优先用 Testcontainers 或项目统一的嵌入式数据库配置，而不是让测试连开发库；测试数据用工厂方法构造，测试结束后由事务回滚或清理脚本还原，避免相互污染。\n\n## 为什么\n\n官方文档说明 `@SpringBootTest` 通过 `SpringApplication` 创建测试使用的 ApplicationContext，因此能获得完整的外部配置和 Boot 特性，代价是启动慢。官方同时提供了一系列切片测试注解，只加载应用的一部分，让 Web 层、数据层测试既贴近真实又足够快。\n\n切片测试的价值在于边界清晰：`@WebMvcTest` 不启动数据库，`@DataJpaTest` 不加载 Controller，前者的失败基本可以定位到参数绑定、序列化、状态码，后者的失败集中在映射和查询。上下文缓存还能让同类测试复用同一个容器，整体耗时远低于每个测试都全量启动。\n\n测试慢和测试不稳定是团队放弃写测试的两个主因：切片测试与上下文缓存解决慢，固定数据、隔离环境、避免时间与随机数依赖解决不稳定。规范要同时盯住这两点，覆盖率只是参考指标，核心业务规则和边界条件必须有测试。\n\n官方对 `@MockitoBean` 的定义是：为 ApplicationContext 中的 bean 定义一个 Mockito mock，容器里已有对应 bean 时替换它。用注解替换依赖，比手工反射或构造测试子类更稳定，也不会把测试专用的配置泄漏到生产代码。\n\n## 落地检查清单\n\n- [ ] 存在不启动 Spring 的纯单元测试，覆盖核心业务规则\n- [ ] Web 层测试使用 `@WebMvcTest`，未启动完整上下文\n- [ ] 数据层测试使用 `@DataJpaTest`\n- [ ] 替换 bean 使用 `@MockitoBean`/`@MockitoSpyBean`，无新增 `@MockBean`\n- [ ] 测试方法名描述场景与期望，断言明确\n- [ ] 测试数据相互隔离，未依赖执行顺序",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档：测试 Spring Boot 应用",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/testing/spring-boot-applications.html"
+        },
+        {
+          "label": "Spring Framework 参考文档：测试",
+          "url": "https://docs.spring.io/spring-framework/reference/testing.html"
+        }
+      ]
+    },
+    {
+      "id": "conventions-dependency",
+      "title": "依赖与版本管理规范：用 BOM 管版本，用 starter 收敛",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "继承 parent 或导入 BOM 统一版本，优先 starter，不随手写依赖版本。",
+      "tags": [
+        "Maven",
+        "依赖管理",
+        "BOM"
+      ],
+      "content": "## 推荐做法\n\n新项目继承 `spring-boot-starter-parent`，多模块项目则在父 POM 里导入 `spring-boot-dependencies` BOM。依赖优先选官方 starter，而不是逐个引 Spring 模块：starter 会把一组相互兼容的依赖和自动配置一起带进来。\n\n```xml\n<parent>\n    <groupId>org.springframework.boot</groupId>\n    <artifactId>spring-boot-starter-parent</artifactId>\n    <version>3.5.0</version>\n</parent>\n\n<dependencies>\n    <dependency>\n        <groupId>org.springframework.boot</groupId>\n        <artifactId>spring-boot-starter-web</artifactId>\n    </dependency>\n</dependencies>\n```\n\n业务模块里的依赖不写 `version`，版本由 BOM 统一管理；确实需要覆盖时，在 `properties` 里修改对应版本属性，而不是零散地给单个依赖写版本。测试依赖加 `<scope>test</scope>`，只在运行期需要的驱动放进 runtime scope；不需要的传递依赖用 `<exclusions>` 排除，并写清排除原因。\n\n升级 Boot 时整包升级，不要只升其中某个 starter；多模块工程的第三方库版本统一收敛到父 POM 的 `dependencyManagement`，子模块只声明 groupId 和 artifactId。\n\n插件版本同样交给 parent：`spring-boot-maven-plugin` 不单独写版本，多模块项目把插件配置放进父 POM 的 `pluginManagement`，子模块按需启用。\n\n## 为什么\n\n官方构建系统文档说明：每个 Spring Boot 版本都提供一份经过筛选的依赖清单，这些依赖不需要在构建配置里写版本，升级 Boot 时会以一致的方式一起升级；如果需要，也可以显式指定版本来覆盖官方建议。这正是团队不该随手写版本的原因——一旦分散指定，升级就变成逐个排查。\n\nstarter 的定位是“依赖描述符”，把快速启动一个类型应用所需的依赖以一致的、受支持的传递依赖集合打包进来。自己逐个拼 Spring 模块，很容易出现版本错配，或者漏掉某项自动配置需要的类。\n\nstarter 的命名约定 `spring-boot-starter-*` 也方便排查：看到这个前缀就知道它属于 Boot 官方生态，版本应当由 BOM 决定；第三方 starter 通常有自己的命名，需要单独确认兼容的 Boot 版本。定期运行 `mvn dependency:tree` 检查重复与冲突，是比出事后再排查更便宜的习惯。\n\n版本冲突往往不是立刻报错，而是在运行期以 `NoSuchMethodError`、类加载失败的形式出现。把版本决策集中到 BOM，冲突面就从“每个模块各自猜”收敛到“一份清单”，排查成本下降一个量级。\n\n## 落地检查清单\n\n- [ ] 项目继承 `spring-boot-starter-parent` 或导入 `spring-boot-dependencies` BOM\n- [ ] 业务依赖未写 `version`，覆盖版本时使用属性\n- [ ] 优先使用官方 starter，而非逐个引用 Spring 模块\n- [ ] 测试依赖已标注 `test` scope\n- [ ] 排除传递依赖时写明原因\n- [ ] 升级 Boot 时所有模块同步升级",
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档：构建系统",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/using/build-systems.html"
+        },
+        {
+          "label": "Spring Boot 参考文档：starters",
+          "url": "https://docs.spring.io/spring-boot/3.5/reference/using/build-systems.html#using.build-systems.starters"
+        }
+      ]
+    }
+  ]
+}

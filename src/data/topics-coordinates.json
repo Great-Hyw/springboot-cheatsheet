@@ -1,0 +1,423 @@
+{
+  "generatedBy": "content-data",
+  "topic": "coordinates",
+  "items": [
+    {
+      "id": "coordinates-web",
+      "title": "Web 与参数校验依赖怎么引",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "讲清 Web、校验、接口文档和 devtools 该引哪个 starter，版本交给谁管",
+      "tags": [
+        "Web",
+        "参数校验",
+        "springdoc",
+        "devtools"
+      ],
+      "content": "## 什么时候用\n\n做 Spring Boot 的 Web 服务，第一件事就是选对 starter。写 REST 接口、返回 JSON、用内嵌 Tomcat，引 `spring-boot-starter-web` 就够了，它已经把 Spring MVC、Jackson 和内嵌容器带了进来。\n\n请求参数要 `@NotNull`、`@Size` 这类校验时，再单独加 `spring-boot-starter-validation`。从 Boot 2.3 起它不再被 web starter 传递引入，不加就不会触发校验。要给前端或第三方提供 OpenAPI 文档和 Swagger 页面，加 springdoc 的 starter；开发期想改完代码自动重启，再加 devtools。要用 WebClient 调第三方接口又不想引入整套响应式栈，可以引 `spring-boot-starter-webflux`。\n\n## 坐标清单\n\n| 依赖 | 用途 | 版本 |\n| --- | --- | --- |\n| `spring-boot-starter-web` | MVC、内嵌 Tomcat、Jackson 序列化 | BOM 管理 |\n| `spring-boot-starter-validation` | Bean Validation 参数校验 | BOM 管理 |\n| `springdoc-openapi-starter-webmvc-ui` | 生成 OpenAPI 文档与 Swagger UI | 2.8.17 |\n| `spring-boot-devtools` | 开发期热重启、关闭模板缓存 | BOM 管理 |\n| `spring-boot-starter-webflux` | 提供 WebClient，调用外部 HTTP 接口 | BOM 管理 |\n\n带 starter 的组都由 Spring Boot BOM 管版本，`pom.xml` 里不要写 `version`；springdoc 不在 Boot BOM 里，必须自己写版本，2.8.x 对应 Boot 3.x 线。\n\n## 配置与坑\n\n```yaml\nspring:\n  jackson:\n    default-property-inclusion: non_null\n  mvc:\n    problemdetails:\n      enabled: true\nspringdoc:\n  api-docs:\n    path: /v3/api-docs\n  swagger-ui:\n    path: /swagger-ui.html\n```\n\n- validation starter 必须单独引，只引 web starter 时 `@Valid` 不会触发校验，接口照样返回 200。\n- 想让 WebClient 和 MVC 共存就同时引 web 与 webflux，Boot 会按 MVC 启动；只引 webflux 时应用会按响应式 Web 应用启动，别引错栈。\n- web starter 已经带了 Jackson，不要再单独引 `jackson-databind` 并写死版本，否则会覆盖 BOM 里的版本，升级 Boot 时容易冲突。\n- devtools 只在开发期有用，建议标记 optional，生产打包不要依赖它。\n- springdoc 的版本要和 Boot 大版本一起升级，升级 Boot 后先确认 swagger 页面还能打开。\n- 接口文档上线前把 `/v3/api-docs` 的访问权限收紧，别把内部接口顺手暴露到外网。",
+      "coordinates": [
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-web",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "写 REST 接口、内嵌 Tomcat、Jackson 序列化"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-validation",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "参数校验（Bean Validation 规范）"
+        },
+        {
+          "groupId": "org.springdoc",
+          "artifactId": "springdoc-openapi-starter-webmvc-ui",
+          "version": "2.8.17",
+          "managed": false,
+          "scope": null,
+          "usage": "生成 OpenAPI 文档并提供 Swagger UI 页面"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-devtools",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "开发期热重启、关闭模板缓存"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-webflux",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "用 WebClient 调第三方 HTTP 接口"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档：Web（Servlet）",
+          "url": "https://docs.spring.io/spring-boot/reference/web/servlet.html"
+        },
+        {
+          "label": "Spring Boot 参考文档：Validation",
+          "url": "https://docs.spring.io/spring-boot/reference/io/validation.html"
+        },
+        {
+          "label": "Maven Central：springdoc-openapi-starter-webmvc-ui",
+          "url": "https://repo1.maven.org/maven2/org/springdoc/springdoc-openapi-starter-webmvc-ui/"
+        }
+      ]
+    },
+    {
+      "id": "coordinates-data",
+      "title": "数据访问：JPA、MyBatis、MySQL 与迁移",
+      "level": "进阶",
+      "readingMinutes": 5,
+      "summary": "选 JPA 还是 MyBatis，MySQL 驱动和 Flyway 怎么配，版本由谁管理",
+      "tags": [
+        "数据访问",
+        "JPA",
+        "MyBatis",
+        "MySQL",
+        "Flyway"
+      ],
+      "content": "## 什么时候用\n\n业务以实体和关系为主、想少写 SQL，用 `spring-boot-starter-data-jpa`；只想用 JdbcTemplate 手写 SQL、不要 ORM，用 `spring-boot-starter-jdbc`；已有大量 SQL、需要精细控制，就用 MyBatis 的 starter。三者可以共存，但同一个业务边界里最好只选一种主方案。\n\n数据库是 MySQL 时，驱动坐标已经从 `mysql:mysql-connector-java` 换成 `com.mysql:mysql-connector-j`，旧坐标不再更新。缓存用 Redis 就加 `spring-boot-starter-data-redis`；表结构要版本化，用 Flyway 的 `flyway-core` 或 Liquibase 的 `liquibase-core`，二选一，不要同时上。\n\n选型别只看习惯：复杂查询和报表多就 MyBatis，实体关系为主就 JPA。两种都上会让事务和缓存边界变复杂，新项目尽量只选一种主方案。\n\n## 坐标清单\n\n| 依赖 | 用途 | 版本 |\n| --- | --- | --- |\n| `spring-boot-starter-data-jpa` | Spring Data JPA + Hibernate，实体与仓库接口 | BOM 管理 |\n| `spring-boot-starter-jdbc` | JdbcTemplate 与 DataSource，手写 SQL | BOM 管理 |\n| `mysql-connector-j` | MySQL 官方 JDBC 驱动 | BOM 管理 |\n| `mybatis-spring-boot-starter` | MyBatis 自动配置、Mapper 扫描 | 3.0.5 |\n| `spring-boot-starter-data-redis` | Lettuce 客户端、RedisTemplate | BOM 管理 |\n| `flyway-core` | 版本化 SQL 脚本管理表结构 | BOM 管理 |\n| `liquibase-core` | changeset 方式管理表结构 | BOM 管理 |\n\nMyBatis 的 starter 不在 Boot BOM 里，必须自己写版本；3.0.x 是配 Spring Boot 3 的线。其余带 starter 的坐标不要写版本。\n\n## 配置与坑\n\n```yaml\nspring:\n  datasource:\n    url: jdbc:mysql://localhost:3306/demo?serverTimezone=Asia/Shanghai&characterEncoding=utf8\n    username: demo\n    password: ${DB_PASSWORD}\n  jpa:\n    hibernate:\n      ddl-auto: validate\n    open-in-view: false\n  flyway:\n    enabled: true\nmybatis:\n  mapper-locations: classpath:mapper/*.xml\n```\n\n- `ddl-auto` 只在本地开 `update`，生产用 `validate` 或 `none`，建表和改表交给 Flyway，否则两边都会改结构。\n- 自己给驱动写版本会覆盖 BOM，升级 Boot 后容易和 Hibernate 方言对不上，删掉 `version` 交给 BOM。\n- 同一个方法里混用 JPA 和 MyBatis 时，先确认事务管理器能覆盖两边，拿不准就显式指定 `transactionManager`。\n- Flyway 10 起把部分数据库支持拆成独立模块，换数据库时按官方文档补对应模块，不要只引 `flyway-core`。\n- Redis 的 `spring.data.redis.timeout` 是 Duration 类型，写 `500ms` 这种格式，别写成裸数字。",
+      "coordinates": [
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-data-jpa",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "Spring Data JPA + Hibernate，实体映射与仓库接口"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-jdbc",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "JdbcTemplate 与 DataSource，手写 SQL 不走 ORM"
+        },
+        {
+          "groupId": "com.mysql",
+          "artifactId": "mysql-connector-j",
+          "version": null,
+          "managed": true,
+          "scope": "runtime",
+          "usage": "MySQL 官方 JDBC 驱动"
+        },
+        {
+          "groupId": "org.mybatis.spring.boot",
+          "artifactId": "mybatis-spring-boot-starter",
+          "version": "3.0.5",
+          "managed": false,
+          "scope": null,
+          "usage": "MyBatis 自动配置、SqlSession 与 Mapper 扫描"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-data-redis",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "Redis 客户端 Lettuce 与 RedisTemplate"
+        },
+        {
+          "groupId": "org.flywaydb",
+          "artifactId": "flyway-core",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "用版本化 SQL 脚本管理表结构"
+        },
+        {
+          "groupId": "org.liquibase",
+          "artifactId": "liquibase-core",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "用 changeset 管理表结构，Flyway 的替代方案"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档：SQL 数据访问",
+          "url": "https://docs.spring.io/spring-boot/reference/data/sql.html"
+        },
+        {
+          "label": "MyBatis-Spring-Boot 官方文档",
+          "url": "https://mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/"
+        },
+        {
+          "label": "Spring Boot how-to：数据初始化（Flyway/Liquibase）",
+          "url": "https://docs.spring.io/spring-boot/how-to/data-initialization.html"
+        }
+      ]
+    },
+    {
+      "id": "coordinates-security",
+      "title": "安全认证：从表单登录到 OAuth2",
+      "level": "进阶",
+      "readingMinutes": 5,
+      "summary": "Security、资源服务器、OAuth2 客户端三个 starter 的取舍与最小配置",
+      "tags": [
+        "安全",
+        "Security",
+        "OAuth2",
+        "JWT"
+      ],
+      "content": "## 什么时候用\n\n只要项目需要登录、权限控制，就引 `spring-boot-starter-security`，它自带过滤器链、密码编码器和默认登录页。前后端分离、接口用 JWT 校验的，再加 `spring-boot-starter-oauth2-resource-server`；要接第三方登录（GitHub、企业 SSO），用 `spring-boot-starter-oauth2-client`；自己要当授权服务器发 token，才需要 `spring-boot-starter-oauth2-authorization-server`。\n\nOAuth2 的两个 starter 已经传递依赖 security starter，不用重复引。只做账号密码登录的后台系统，一个 security starter 加自定义 `UserDetailsService` 就够了。\n\n## 坐标清单\n\n| 依赖 | 用途 | 版本 |\n| --- | --- | --- |\n| `spring-boot-starter-security` | 过滤器链、密码编码器、默认登录页 | BOM 管理 |\n| `spring-boot-starter-oauth2-resource-server` | 资源服务器，校验 JWT access token | BOM 管理 |\n| `spring-boot-starter-oauth2-client` | 第三方 OAuth2 / OIDC 登录 | BOM 管理 |\n| `spring-boot-starter-oauth2-authorization-server` | 自建授权服务器签发 token | BOM 管理 |\n\n四组坐标都归 Boot BOM 管理，`pom.xml` 里不写版本；不要在项目里单独引 `spring-security-web`、`spring-security-config` 再手写版本。\n\n## 配置与坑\n\n```yaml\nspring:\n  security:\n    oauth2:\n      resourceserver:\n        jwt:\n          issuer-uri: https://id.example.com\n      client:\n        registration:\n          github:\n            client-id: ${CLIENT_ID}\n            client-secret: ${CLIENT_SECRET}\n            scope: read:user\n```\n\n- 引入 security starter 后所有请求默认要认证，健康检查和登录回调要显式 `permitAll`，否则监控探针一直 401。\n- 资源服务器二选一：`issuer-uri` 会去拉 `/.well-known/openid-configuration`，`jwk-set-uri` 直接给公钥地址；内网拉不到 issuer 时应用会启动失败，改用后者。\n- 前后端分离用 JWT 时 CSRF 可以关，但别图省事把整条过滤器链都 `permitAll`，认证和授权仍然是两件事。\n- 配了自定义 `UserDetailsService` 后，Boot 不再生成默认内存用户，`spring.security.user` 那套配置也就失效了。\n- 授权服务器 starter 和资源服务器 starter 是两种角色，别在同一个业务服务里既发 token 又校验 token。",
+      "coordinates": [
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-security",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "认证授权过滤器链、密码编码器、默认登录页"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-oauth2-resource-server",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "把接口当资源服务器，校验 JWT access token"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-oauth2-client",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "接第三方 OAuth2 / OIDC 登录"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-oauth2-authorization-server",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "自己作为授权服务器签发 token"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档：Spring Security",
+          "url": "https://docs.spring.io/spring-boot/reference/web/spring-security.html"
+        },
+        {
+          "label": "Spring Security 参考文档：OAuth2 资源服务器",
+          "url": "https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/index.html"
+        }
+      ]
+    },
+    {
+      "id": "coordinates-test",
+      "title": "测试依赖与 Testcontainers",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "单元测试、切片测试、容器化集成测试分别该引哪些坐标，版本从哪来",
+      "tags": [
+        "测试",
+        "JUnit",
+        "容器测试",
+        "H2"
+      ],
+      "content": "## 什么时候用\n\n写测试先引 `spring-boot-starter-test`，一次带齐 JUnit 5、Mockito、AssertJ、Spring Test 和 JSON 断言。需要真数据库做集成测试时，加 Testcontainers：`spring-boot-testcontainers` 负责把容器连接信息接进 Spring 环境，`org.testcontainers:mysql` 提供 MySQL 容器，`org.testcontainers:junit-jupiter` 提供 `@Testcontainers` 生命周期。\n\n不想在每台机器装 Docker 的项目，可以用 H2 内存库做冒烟测试，但它和 MySQL 的方言、函数差异不小，关键 SQL 还是要用真库验证。\n\n## 坐标清单\n\n| 依赖 | 用途 | 版本 |\n| --- | --- | --- |\n| `spring-boot-starter-test` | JUnit 5、Mockito、AssertJ、Spring Test | BOM 管理 |\n| `spring-boot-testcontainers` | 容器连接信息自动注入 Spring 环境 | BOM 管理 |\n| `org.testcontainers:junit-jupiter` | `@Testcontainers` 容器生命周期 | BOM 管理 |\n| `org.testcontainers:mysql` | MySQL 容器 | BOM 管理 |\n| `com.h2database:h2` | 内存数据库，轻量冒烟测试 | BOM 管理 |\n\nTestcontainers 各模块的版本由 Boot BOM 间接引入的 testcontainers-bom 管理，`pom.xml` 里同样不要手写版本。\n\n## 配置与坑\n\n```java\n@SpringBootTest\n@Testcontainers\nclass OrderRepositoryIT {\n\n    @Container\n    @ServiceConnection\n    static MySQLContainer<?> mysql = new MySQLContainer<>(\"mysql:8.4\");\n\n    @Autowired\n    OrderRepository repository;\n\n    @Test\n    void savesOrder() {\n        // 用真实 MySQL 跑仓库层测试\n    }\n}\n```\n\n- `spring-boot-starter-test` 里已经是 JUnit 5，不要再引 `junit:junit` 的 4.x，混用会出现测试不被发现。\n- 容器测试要求本机或 CI 有 Docker；没 Docker 的环境用 `@Testcontainers(disabledWithoutDocker = true)` 跳过，别让流水线一直红。\n- `h2` 的 scope 用 `test`，写成 `runtime` 会被打进生产包。\n- `@SpringBootTest` 默认从 `@SpringBootApplication` 往上找配置类，测试不在主类包下时要显式写 `classes`。\n- `@ServiceConnection` 是 Boot 3.1 起的能力，配上之后不用再手写 `@DynamicPropertySource` 搬运连接地址。\n- 测试分层要控制成本：Service 层尽量用 Mockito 隔离，只有仓库层和真实 SQL 才值得起容器，容器启动慢，全用它会把流水线拖长。\n- 容器镜像版本要和线上一致，本地用 `mysql:8.4`、生产是 8.0 的话，方言差异会在集成测试里被漏掉。",
+      "coordinates": [
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-test",
+          "version": null,
+          "managed": true,
+          "scope": "test",
+          "usage": "JUnit 5、Mockito、AssertJ、Spring Test 一次带齐"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-testcontainers",
+          "version": null,
+          "managed": true,
+          "scope": "test",
+          "usage": "把容器连接信息自动注入 Spring 环境"
+        },
+        {
+          "groupId": "org.testcontainers",
+          "artifactId": "junit-jupiter",
+          "version": null,
+          "managed": true,
+          "scope": "test",
+          "usage": "提供 @Testcontainers 容器生命周期管理"
+        },
+        {
+          "groupId": "org.testcontainers",
+          "artifactId": "mysql",
+          "version": null,
+          "managed": true,
+          "scope": "test",
+          "usage": "MySQL 容器，本地和 CI 跑真实数据库"
+        },
+        {
+          "groupId": "com.h2database",
+          "artifactId": "h2",
+          "version": null,
+          "managed": true,
+          "scope": "test",
+          "usage": "内存数据库，冒烟测试的轻量替代"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档：Testcontainers",
+          "url": "https://docs.spring.io/spring-boot/reference/testing/testcontainers.html"
+        },
+        {
+          "label": "Testcontainers 官方 MySQL 模块",
+          "url": "https://testcontainers.com/modules/mysql/"
+        },
+        {
+          "label": "Spring Boot 参考文档：测试 Spring Boot 应用",
+          "url": "https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html"
+        }
+      ]
+    },
+    {
+      "id": "coordinates-ops",
+      "title": "监控与运维：Actuator、指标与打包插件",
+      "level": "入门",
+      "readingMinutes": 4,
+      "summary": "健康检查、Prometheus 指标和 Boot 打包插件的最小依赖组合",
+      "tags": [
+        "Actuator",
+        "Micrometer",
+        "Prometheus",
+        "打包"
+      ],
+      "content": "## 什么时候用\n\n上线前至少要有健康检查和指标。`spring-boot-starter-actuator` 提供 `/actuator/health`、`/actuator/metrics` 这类端点；要接 Prometheus 抓取，再加 `micrometer-registry-prometheus`，它把 Micrometer 指标暴露成 Prometheus 格式；要在代码里自己打业务指标，会用到 `micrometer-core` 的 `MeterRegistry`。\n\n`spring-boot-maven-plugin` 是构建期插件，负责把项目 repackage 成可执行 jar，以及 `mvn spring-boot:run` 启动应用，不是运行期依赖。\n\n## 坐标清单\n\n| 依赖 | 用途 | 版本 |\n| --- | --- | --- |\n| `spring-boot-starter-actuator` | 健康检查、指标、环境等运维端点 | BOM 管理 |\n| `micrometer-registry-prometheus` | 指标暴露成 Prometheus 抓取格式 | BOM 管理 |\n| `spring-boot-maven-plugin` | repackage 可执行 jar、本地运行 | BOM 管理 |\n| `micrometer-core` | 代码里用 MeterRegistry 自定义指标 | BOM 管理 |\n\nActuator 和 Micrometer 的版本都由 Boot BOM 管（Micrometer 走 BOM 里的 micrometer-bom），插件版本跟随 `spring-boot-starter-parent`，都不要手写版本。\n\n## 配置与坑\n\n```yaml\nmanagement:\n  endpoints:\n    web:\n      exposure:\n        include: health,info,metrics,prometheus\n  endpoint:\n    health:\n      show-details: when_authorized\n```\n\n- Actuator 默认只暴露 `health`，不配 `exposure.include` 就看不到 metrics 和 prometheus，不是依赖没生效。\n- 暴露 `env`、`heapdump`、`threaddump` 之前先确认鉴权，内网也不等于安全。\n- 不引 `micrometer-registry-prometheus`，`/actuator/prometheus` 直接 404；这个 registry 不会随 actuator 自动带上。\n- 插件版本跟着 Boot 走：用 `spring-boot-starter-parent` 时自动继承，手写版本升级时会漏改。\n- 数据库、Redis 的健康探针是自动装配的，但明细要 `show-details` 才展示；上 K8s 时把探针指向 health 分组，别让滚动发布被完整检查拖慢。\n- 指标标签的基数要提前控制：把用户 ID、订单号这类高基数字段当标签，会让 Prometheus 的时序数量爆炸，内存很快吃满。\n- 端点路径可以用 `management.endpoints.web.base-path` 改，但改完监控脚本和 K8s 探针要一起改，别只改一半。",
+      "coordinates": [
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-starter-actuator",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "健康检查、指标、环境等运维端点"
+        },
+        {
+          "groupId": "io.micrometer",
+          "artifactId": "micrometer-registry-prometheus",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "把指标暴露成 Prometheus 抓取格式"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-maven-plugin",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "repackage 成可执行 jar、mvn spring-boot:run"
+        },
+        {
+          "groupId": "io.micrometer",
+          "artifactId": "micrometer-core",
+          "version": null,
+          "managed": true,
+          "scope": null,
+          "usage": "代码里用 MeterRegistry 打自定义指标"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Spring Boot 参考文档：Actuator",
+          "url": "https://docs.spring.io/spring-boot/reference/actuator/index.html"
+        },
+        {
+          "label": "Spring Boot 参考文档：Actuator 指标",
+          "url": "https://docs.spring.io/spring-boot/reference/actuator/metrics.html"
+        },
+        {
+          "label": "Micrometer 官方文档",
+          "url": "https://micrometer.io/docs"
+        }
+      ]
+    },
+    {
+      "id": "coordinates-utils",
+      "title": "映射与工具：Lombok 与 MapStruct 怎么配",
+      "level": "进阶",
+      "readingMinutes": 5,
+      "summary": "减少样板代码的两个库怎么引，注解处理器顺序和版本约束是什么",
+      "tags": [
+        "Lombok",
+        "MapStruct",
+        "DTO 映射",
+        "注解处理器"
+      ],
+      "content": "## 什么时候用\n\n实体和 DTO 上大量 getter、setter、构造器、日志字段，用 Lombok 消掉样板；Entity 和 DTO 之间字段搬运多、又不想手写转换，用 MapStruct 在编译期生成映射实现。两者经常一起用，这时注解处理器的注册顺序就决定了能不能编译出正确代码。\n\n只在少数类上写几行 getter 的项目，其实不引这两个库也行；一旦 DTO 超过几十个，收益才明显。\n\nMapStruct 的实现在编译期生成，IDE 要开启注解处理，否则会报找不到 Mapper 实现；Lombok 同理。\n\n## 坐标清单\n\n| 依赖 | 用途 | 版本 |\n| --- | --- | --- |\n| `lombok` | 注解生成 getter/setter、构造器、日志对象 | BOM 管理 |\n| `mapstruct` | 声明式字段映射接口，编译期生成实现 | 1.6.3 |\n| `mapstruct-processor` | MapStruct 注解处理器，与 mapstruct 同版本 | 1.6.3 |\n| `lombok-mapstruct-binding` | 让 MapStruct 读到 Lombok 生成的成员 | 0.2.0 |\n| `spring-boot-configuration-processor` | 为 `@ConfigurationProperties` 生成配置提示 | BOM 管理 |\n\nLombok 和 configuration-processor 由 Boot BOM 管版本，不写 `version`；MapStruct 三件套不在 BOM 里，必须写版本，并且 `mapstruct` 与 `mapstruct-processor` 版本要完全一致。\n\n## 配置与坑\n\n```xml\n<dependency>\n  <groupId>org.projectlombok</groupId>\n  <artifactId>lombok</artifactId>\n  <scope>provided</scope>\n</dependency>\n\n<dependency>\n  <groupId>org.mapstruct</groupId>\n  <artifactId>mapstruct</artifactId>\n  <version>1.6.3</version>\n</dependency>\n```\n\n- 只引 `mapstruct` 不引 `mapstruct-processor`，编译不会生成 `XxxMapperImpl`，启动时报找不到实现类。\n- 同时用 Lombok 时，在 `maven-compiler-plugin` 的 `annotationProcessorPaths` 里按 Lombok、`lombok-mapstruct-binding`、MapStruct 处理器的顺序声明，顺序反了映射字段会全变成 null。\n- `mapstruct-processor` 只在编译期需要，scope 用 `provided`，不要打进运行期 jar。\n- Lombok 的版本由 Boot BOM 管理，手写 `version` 覆盖后升级 Boot 容易和 JDK 不兼容。\n- 实体上慎用 `@Data`：它会生成包含全部字段的 `equals`/`hashCode`，JPA 懒加载集合和双向关联上容易出问题，用 `@Getter`/`@Setter` 更稳。",
+      "coordinates": [
+        {
+          "groupId": "org.projectlombok",
+          "artifactId": "lombok",
+          "version": null,
+          "managed": true,
+          "scope": "provided",
+          "usage": "用注解生成 getter/setter、构造器、日志对象"
+        },
+        {
+          "groupId": "org.mapstruct",
+          "artifactId": "mapstruct",
+          "version": "1.6.3",
+          "managed": false,
+          "scope": null,
+          "usage": "声明式字段映射接口，编译期生成实现"
+        },
+        {
+          "groupId": "org.mapstruct",
+          "artifactId": "mapstruct-processor",
+          "version": "1.6.3",
+          "managed": false,
+          "scope": "provided",
+          "usage": "MapStruct 注解处理器，必须与 mapstruct 同版本"
+        },
+        {
+          "groupId": "org.projectlombok",
+          "artifactId": "lombok-mapstruct-binding",
+          "version": "0.2.0",
+          "managed": false,
+          "scope": "provided",
+          "usage": "让 MapStruct 能读到 Lombok 生成的成员"
+        },
+        {
+          "groupId": "org.springframework.boot",
+          "artifactId": "spring-boot-configuration-processor",
+          "version": null,
+          "managed": true,
+          "scope": "provided",
+          "usage": "为 @ConfigurationProperties 生成 IDE 配置提示"
+        }
+      ],
+      "sources": [
+        {
+          "label": "Lombok 官方 Maven 安装说明",
+          "url": "https://projectlombok.org/setup/maven"
+        },
+        {
+          "label": "MapStruct 官方安装文档",
+          "url": "https://mapstruct.org/documentation/installation/"
+        },
+        {
+          "label": "MapStruct 官方参考文档",
+          "url": "https://mapstruct.org/documentation/stable/reference/html/"
+        }
+      ]
+    }
+  ]
+}

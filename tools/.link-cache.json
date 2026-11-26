@@ -21,931 +21,931 @@
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/using/using-the-springbootapplication-annotation.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/SpringBootApplication.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/SpringBootApplication.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/SpringBootConfiguration.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/SpringBootConfiguration.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/using/auto-configuration.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/using/auto-configuration.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html#features.external-config.typesafe-configuration-properties": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/ConfigurationProperties.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/ConfigurationProperties.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/EnableConfigurationProperties.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/EnableConfigurationProperties.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/ConfigurationPropertiesScan.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/context/properties/ConfigurationPropertiesScan.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/AutoConfiguration.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/AutoConfiguration.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html#features.developing-auto-configuration.condition-annotations": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/developing-auto-configuration.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnClass.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnClass.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnProperty.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnProperty.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnBean.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnBean.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnMissingClass.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnMissingClass.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnResource.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/condition/ConditionalOnResource.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/web/servlet.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/web/servlet.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/web/servlet/ServletComponentScan.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/web/servlet/ServletComponentScan.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/enable.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/enable.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/ImportAutoConfiguration.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/autoconfigure/ImportAutoConfiguration.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/testing/spring-boot-applications.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/testing/spring-boot-applications.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/context/SpringBootTest.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/context/SpringBootTest.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/servlet/WebMvcTest.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/servlet/WebMvcTest.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/orm/jpa/DataJpaTest.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/orm/jpa/DataJpaTest.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/json/JsonTest.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/json/JsonTest.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/client/RestClientTest.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/client/RestClientTest.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/context/TestConfiguration.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/context/TestConfiguration.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/mock/mockito/MockBean.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/mock/mockito/MockBean.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-mockitobean.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-mockitobean.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/bean/override/mockito/MockitoBean.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/bean/override/mockito/MockitoBean.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/bean/override/mockito/MockitoSpyBean.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/bean/override/mockito/MockitoSpyBean.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/servlet/AutoConfigureMockMvc.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/api/java/org/springframework/boot/test/autoconfigure/web/servlet/AutoConfigureMockMvc.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-activeprofiles.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-activeprofiles.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/ActiveProfiles.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/ActiveProfiles.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-testpropertysource.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-testpropertysource.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/TestPropertySource.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/context/TestPropertySource.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-dirtiescontext.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/testing/annotations/integration-spring/annotation-dirtiescontext.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/annotation/DirtiesContext.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/test/annotation/DirtiesContext.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-security/reference/servlet/configuration/java.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-security/reference/servlet/configuration/java.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-security/reference/servlet/authentication/architecture.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-security/reference/servlet/authentication/architecture.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/authentication.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/authentication.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/classpath-scanning.html#beans-stereotype-annotations": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/classpath-scanning.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/configuration-annotation.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/configuration-annotation.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/bean-annotation.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/bean-annotation.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/classpath-scanning.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/classpath-scanning.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/composing-configuration-classes.html#beans-java-using-import": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/composing-configuration-classes.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/composing-configuration-classes.html#beans-java-combining-xml-centric": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/java/composing-configuration-classes.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/environment.html#beans-using-propertysource": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/environment.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/value-annotations.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/value-annotations.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired-qualifiers.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired-qualifiers.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired-primary.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired-primary.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-scopes.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-scopes.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-lazy-init.html#lazy": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-lazy-init.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/environment.html#beans-definition-profiles": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/environment.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-dependson.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-dependson.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired.html#beans-factory-ordered": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/autowired.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/core/annotation/Order.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/core/annotation/Order.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/postconstruct-and-predestroy-annotations.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/postconstruct-and-predestroy-annotations.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/annotations/2.1/apidocs/jakarta.annotation/jakarta/annotation/PostConstruct.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/annotations/2.1/apidocs/jakarta.annotation/jakarta/annotation/PostConstruct.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/annotations/2.1/apidocs/jakarta.annotation/jakarta/annotation/PreDestroy.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/annotations/2.1/apidocs/jakarta.annotation/jakarta/annotation/PreDestroy.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/context-introduction.html#context-functionality-events-annotation": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/context-introduction.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/event.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/event.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/context/annotation/Conditional.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/context/annotation/Conditional.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/resource.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/annotation-config/resource.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/annotations/3.0/apidocs/jakarta.annotation/jakarta/annotation/Resource.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/annotations/3.0/apidocs/jakarta.annotation/jakarta/annotation/Resource.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/standard-annotations.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/standard-annotations.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/core/annotation/AliasFor.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/core/annotation/AliasFor.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/at-aspectj.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/at-aspectj.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/pointcuts.html#aop-pointcuts-designators": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/pointcuts.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-advice-before": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-advice-after-finally": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-advice-after-returning": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-advice-after-throwing": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html#aop-ataspectj-around-advice": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/advice.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/aspectj-support.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/ataspectj/aspectj-support.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/context/annotation/EnableAspectJAutoProxy.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/context/annotation/EnableAspectJAutoProxy.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/transaction/annotation/Transactional.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/transaction/annotation/Transactional.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/transaction/annotation/EnableTransactionManagement.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/transaction/annotation/EnableTransactionManagement.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Entity.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Entity.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Table.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Table.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Id.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Id.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/GeneratedValue.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/GeneratedValue.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/GenerationType.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/GenerationType.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Column.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Column.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Transient.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Transient.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Enumerated.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Enumerated.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/ManyToOne.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/ManyToOne.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/OneToMany.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/OneToMany.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/JoinColumn.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/JoinColumn.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Version.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/Version.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/Query.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/Query.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/Modifying.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/Modifying.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-data/commons/docs/3.5.13/api/org/springframework/data/repository/query/Param.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-data/commons/docs/3.5.13/api/org/springframework/data/repository/query/Param.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/config/EnableJpaRepositories.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-data/jpa/docs/3.5.13/api/org/springframework/data/jpa/repository/config/EnableJpaRepositories.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://mybatis.org/mybatis-3/java-api.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://mybatis.org/mybatis-3/java-api.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Mapper.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Mapper.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://mybatis.org/spring/mappers.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://mybatis.org/spring/mappers.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://mybatis.org/spring/apidocs/org/mybatis/spring/annotation/MapperScan.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://mybatis.org/spring/apidocs/org/mybatis/spring/annotation/MapperScan.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Select.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Select.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Param.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Param.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Results.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/Results.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/integration/cache.html#enable-caching": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/integration/cache.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/EnableCaching.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/EnableCaching.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/Cacheable.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/Cacheable.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CachePut.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CachePut.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CacheEvict.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CacheEvict.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CacheConfig.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/cache/annotation/CacheConfig.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/integration/scheduling.html#scheduling-annotation-support-async": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/EnableAsync.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/EnableAsync.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/Async.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/Async.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/integration/scheduling.html#scheduling-annotation-support-scheduled": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/EnableScheduling.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/EnableScheduling.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RestController.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RestController.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PostMapping.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PostMapping.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/DeleteMapping.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/DeleteMapping.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PatchMapping.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PatchMapping.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestparam.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestparam.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/arguments.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/arguments.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestbody.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestbody.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/responsebody.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/responsebody.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestHeader.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestHeader.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestheader.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestheader.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/CookieValue.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/CookieValue.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/cookievalue.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/cookievalue.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ModelAttribute.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ModelAttribute.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/modelattrib-method-args.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/modelattrib-method-args.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestAttribute.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RequestAttribute.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestattrib.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestattrib.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/SessionAttribute.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/SessionAttribute.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/sessionattribute.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/sessionattribute.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/SessionAttributes.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/SessionAttributes.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/sessionattributes.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/sessionattributes.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/InitBinder.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/InitBinder.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-initbinder.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-initbinder.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ControllerAdvice.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ControllerAdvice.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/ann-advice.html": {
   "status": 404,
@@ -957,13 +957,13 @@
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/RestControllerAdvice.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ExceptionHandler.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ExceptionHandler.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/ann-exceptionhandler.html": {
   "status": 404,
@@ -975,25 +975,25 @@
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/ResponseStatus.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/Valid.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/Valid.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/ann-validation.html": {
   "status": 404,
@@ -1005,324 +1005,324 @@
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/validation/annotation/Validated.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotNull.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotNull.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotBlank.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotBlank.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotEmpty.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotEmpty.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Size.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Size.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Min.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Min.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Max.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Max.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Pattern.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Pattern.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Email.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Email.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Past.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Past.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Future.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Future.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Positive.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/Positive.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/introduction.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/introduction.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-nature.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/factory-nature.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-collaborators.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/beans/dependencies/factory-collaborators.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/appendix/application-properties/index.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/appendix/application-properties/index.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://github.com/spring-projects/spring-framework/blob/6.2.x/spring-beans/src/main/java/org/springframework/beans/factory/support/DefaultSingletonBeanRegistry.java": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://github.com/spring-projects/spring-framework/blob/6.2.x/spring-beans/src/main/java/org/springframework/beans/factory/support/DefaultSingletonBeanRegistry.java",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/aop/introduction-defn.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/introduction-defn.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/aop/proxying.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/aop/proxying.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/sequence.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/sequence.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/special-bean-types.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-servlet/special-bean-types.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-methods/responsebody.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-methods/responsebody.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-advice.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-advice.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-exceptionhandler.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-exceptionhandler.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/annotations.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/annotations.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/tx-propagation.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/tx-propagation.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/rolling-back.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/data-access/transaction/declarative/rolling-back.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/data/sql.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/data/sql.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/io/validation.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/io/validation.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-validation.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/web/webmvc/mvc-controller/ann-validation.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/6.2/core/validation/beanvalidation.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/6.2/core/validation/beanvalidation.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/features/spring-application.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/spring-application.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/external-config.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/features/profiles.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/profiles.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/interceptors.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/interceptors.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/filters.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/filters.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/features/aop.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/aop.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/integration/scheduling.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/features/task-execution-and-scheduling.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/task-execution-and-scheduling.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/maven-plugin/packaging.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/maven-plugin/packaging.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/how-to/deployment/traditional-deployment.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/how-to/deployment/traditional-deployment.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/web/graceful-shutdown.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/web/graceful-shutdown.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/features/logging.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/features/logging.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/actuator/enabling.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/actuator/enabling.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/reference/actuator/endpoints.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/reference/actuator/endpoints.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/3.5/system-requirements.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/3.5/system-requirements.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/overview.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/overview.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-boot/4.0/system-requirements.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-boot/4.0/system-requirements.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-advice.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-advice.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  },
  "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html": {
   "status": 200,
   "ok": true,
   "finalUrl": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html",
-  "checkedAt": 1795680660890
+  "checkedAt": 1795707692302
  }
 }
